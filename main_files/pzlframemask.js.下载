@@ -1,0 +1,89 @@
+//myFrameMaskFrame.js
+var isIE = (document.all) ? true : false; //document.all 只有ie支持此属性
+var ieVersion = 7; //IE版本，默认为7
+if (isIE) {
+    ieVersion = parseFloat(navigator.appVersion.split("MSIE")[1]);
+}
+var de = getBodyObj();
+function getBodyObj() {
+    return (document.documentElement) ? document.documentElement : document.body;
+}
+function resetCSS(elem, prop) { for (var i in prop) { elem.style[i] = prop[i]; } }
+//滚动条位置
+function scrollX() { return self.pageXOffset || de && de.scrollLeft || document.body.scrollLeft; }
+function scrollY() { return self.pageYOffset || de && de.scrollTop || document.body.scrollTop; }
+//可视尺寸
+function windowW() { return self.innerWidth || de && de.clientWidth || document.body.clientWidth; }
+function windowH() { return self.innerHeight || de && de.clientHeight || document.body.clientHeight; }
+//页面尺寸（最小不小于可视尺寸）
+function pageW() { var s = document.body.scrollWidth; var c = windowW(); return s > c ? s : c; }
+function pageH() { var s = document.body.scrollHeight; var c = windowH(); return s > c ? s : c; }
+//FrameMask显示和隐藏
+function XFrameMask(xtitle,w, h, href) {
+	if(w==0)
+	{w=window.screen.availWidth*0.8;
+	if(w>1000)w=1000;
+	if(w<640) w=640;
+	}
+	if(h==0)
+	{h=window.screen.availHeight*0.8;
+	//if(h<680) h=680;
+	}
+	 
+    //内容
+    var tempInnerHtml = "<div id=\"divProcessHead\" class=\"News-PTlist\"  id='overprogress' style=\"width:"+w+"px;\">";
+    tempInnerHtml += " <h2><span>"+xtitle+"</span> <span id=\"spanCloseFrameMask\" class=\"more\" onclick=\"closeFrameMask()\" style=\"cursor: pointer; color: Blue\"><img src=\"js/images/xclose.gif\" style='padding-top:8px'></span></h2></div>";
+    tempInnerHtml += " <div  style=\"width:"+w+"px;\"><iframe id=\"XFrame\" scrolling='auto' frameborder='0' src='" + href + "' width='"+w+"' height='"+h+"'></iframe></div>";
+    //建立FrameMask
+    var over = document.createElement("div");
+    over.id = "myFrameMaskLayer";
+    var over2 = document.createElement("div");
+    over2.id = "myProcessLayer";
+    document.body.appendChild(over);
+    document.body.appendChild(over2);
+    //重设FrameMask尺寸和位置
+    function resetOver() {
+        //设定遮掩层尺寸
+        resetCSS(over, { position: "absolute", zIndex: "998", top: "0px", left: "0px", backgroundColor: "gray", opacity: "0.5", filter: "alpha(opacity=80)", width: pageW() + "px", height: pageH() + "px" });
+
+        //设定弹出层尺寸和位置
+        var eh = windowH() - h;
+        var ew = windowW() - w;
+        eh = eh < 0 ? 0 : eh;
+        ew = ew < 0 ? 0 : ew;
+        resetCSS(over2, { position: "absolute", zIndex: "999", width: w + "px", height: h + "px", left: scrollX() + parseInt(ew / 2) + "px", top: scrollY() + parseInt(eh / 2) + "px", overFlow: "hidden" });
+        // over2.onmousedown = "down(this)";
+    };
+    resetOver();
+    window.onresize = resetOver;
+    window.onscroll = resetOver;
+    if (ieVersion != 7) { //将所有select置为不可用
+        var oSelects = document.getElementsByTagName("select");
+        for (var i = 0; i < oSelects.length; i++) {
+            oSelects[i].disabled = true;
+        }
+    }
+    over2.innerHTML = tempInnerHtml;
+}
+function NewFrameMask(xurl) {
+	window.open(xurl);
+closeFrameMask();
+}
+
+//点击关闭FrameMask
+function closeFrameMask() {
+    var over = document.getElementById("myFrameMaskLayer");
+    var over2 = document.getElementById("myProcessLayer");
+   var over3 = document.getElementById("XFrame");
+  // document.body.removeChild(over3);
+  over3.src='about:blank';
+ document.body.removeChild(over);
+          // window.href=window.href;
+    document.body.removeChild(over2);
+    if (ieVersion != 7) { //将所有select置为可用
+        var oSelects = document.getElementsByTagName("select");
+        for (var i = 0; i < oSelects.length; i++) {
+            oSelects[i].disabled = false;
+        }
+    }
+}

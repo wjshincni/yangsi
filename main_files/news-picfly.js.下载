@@ -1,0 +1,82 @@
+var isIE=!(navigator.userAgent.indexOf('MSIE')==-1);
+var news;
+var curNew=0;
+var timer;
+function init(pic,txt)
+{
+    if(!pic)pic="NewsPic";
+    if(!txt)txt="NewsPicTxt";
+	var div=document.getElementById(pic);
+	if(!div)return;
+	var nav=document.createElement("DIV");
+	nav.className="Nav";
+	var nodes;
+	if(isIE)
+	{
+	    nodes=div.childNodes;
+	}
+	else
+	{
+	    nodes=childrenNodes(div.childNodes);
+	}
+	news=new Array(nodes.length);
+	for(var i=nodes.length-1;i>=0;i--)
+	{
+	    var element=nodes[i];
+	    
+	    
+		news[i]={};
+		news[i].Element=element;
+		news[i].Text=element.getAttribute("title");
+		news[i].Url=element.getAttribute("href");
+		
+		var n=document.createElement("span");
+		n.innerHTML="<a herf=\"javascript:;\" onclick=\"javascript:curNew="+(i-1)+";change('"+pic+"','"+txt+"');\">"+(i+1)+"</a>";
+		if(i==curNew)n.className="Cur";
+		nav.appendChild(n);
+		
+		news[i].LinkElement=n;
+	}
+	div.appendChild(nav);
+	curNew--;
+	window.setTimeout("change('"+pic+"','"+txt+"')",3000);
+
+}
+function childrenNodes(node)
+{
+    var c=new Array();
+    for(var i=0;i<node.length;i++)
+    {
+        if(node[i].nodeName.toLowerCase()=="a")
+            c.push(node[i]);
+    }
+    return c;
+}
+function change(pic,txt)
+{
+    var div=document.getElementById(pic);
+    var text=document.getElementById(txt);
+    if(!div)return;
+    curNew=curNew+1;
+    if(curNew>=news.length)curNew=0;
+    for(var i=0;i<news.length;i++)
+    {
+        if(i==curNew)
+        {
+            news[i].Element.style.display="block";
+            news[i].Element.style.visibility="visible";
+            news[i].LinkElement.className="Cur";
+            text.innerHTML="<a href=\""+news[i].Url+"\" title=\""+news[i].Text+"\" target=\"_blank\">"+news[i].Text+"</a>";
+        }
+        else
+        {
+            news[i].Element.style.visibility="hidden";
+            news[i].Element.style.display="none";
+            news[i].LinkElement.className="Normal";
+        }
+    }
+    if(timer)window.clearTimeout(timer);
+    timer=window.setTimeout("change('"+pic+"','"+txt+"')",3000);
+    
+}
+

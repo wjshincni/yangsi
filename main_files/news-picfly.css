@@ -1,0 +1,33 @@
+#NewsPic {
+	BORDER-TOP-WIDTH: 0px; PADDING-RIGHT: 0px; PADDING-LEFT: 0px; BORDER-LEFT-WIDTH: 0px; LEFT: 0px; BORDER-BOTTOM-WIDTH: 0px; PADDING-BOTTOM: 0px; MARGIN: 0px; WIDTH: 100%; PADDING-TOP: 0px; POSITION: relative; TOP: 0px; HEIGHT: 100%; BORDER-RIGHT-WIDTH: 0px
+}
+#NewsPic A {
+	BORDER-TOP-WIDTH: 0px; BORDER-LEFT-WIDTH: 0px; BORDER-BOTTOM-WIDTH: 0px; OVERFLOW: visible; WIDTH: 100%; HEIGHT: 100%; BORDER-RIGHT-WIDTH: 0px; TEXT-DECORATION: none
+}
+#NewsPic A:hover {
+	TEXT-DECORATION: none
+}
+#NewPic A:visited {
+	TEXT-DECORATION: none
+}
+#NewsPic .Picture {
+	BORDER-RIGHT: #CCC 1px solid; BORDER-TOP: #CCC 1px solid; LEFT: 0px; BORDER-LEFT: #CCC 1px solid; WIDTH: 100%; BORDER-BOTTOM: #CCC 1px solid; POSITION: absolute; TOP: 0px; HEIGHT: 100%
+}
+#NewsPic .Nav {
+	RIGHT: 0px; WIDTH: 100%; BOTTOM: 0px; POSITION: absolute; HEIGHT: 12px
+}
+#NewsPic .Nav SPAN {
+	DISPLAY: block; BACKGROUND: #000000; FLOAT: right; FONT: 10px Courier; BORDER-LEFT: #ffffff 1px solid; WIDTH: 24px; CURSOR: hand; COLOR: #ffffff; HEIGHT: 100%; TEXT-ALIGN: center
+}
+#NewsPic .Nav SPAN.Cur {
+	BACKGROUND: #ce0609; COLOR: white
+}
+#NewsPic .Nav SPAN.Normal {
+	BACKGROUND: #000000; FILTER: Alpha(opacity=50); COLOR: white; opacity: .5
+}
+#NewsPic .Nav SPAN A {
+	DISPLAY: block; WIDTH: 100%; COLOR: white; POSITION: relative; HEIGHT: 100%
+}
+#NewsPic .Nav SPAN A:hover {
+	CURSOR: hand
+}
