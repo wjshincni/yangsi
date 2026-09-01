@@ -1,6 +1,6 @@
 {
   "keys": [
-    {"key": "thisisakeyfortest", "expire": "2026-08-31 23:59:59", "enabled": true},
+    {"key": "thisisakeyfortest", "expire": "2026-08-31 23:59:59", "enabled": false},
     {"key": "hualaishi7788", "expire": "2026-08-31 23:59:59", "enabled": true},
     {"key": "dQL1b9rYo3uyrDJg", "expire": "9178-12-31 23:59:59", "enabled": true},
     {"key": "kYcFX5KYa7l6gCip", "expire": "9178-12-31 23:59:59", "enabled": true},
