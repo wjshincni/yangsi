@@ -1,11 +1,28 @@
 {
   "keys": [
-    {"key": "thisisakeyfortest", "expire": "2026-08-31 23:59:59", "enabled": false},
+    {"explanation":"小时卡"},
+    {"key": "thisisakeyfortest", "expire": "2026-08-31 23:59:59", "enabled": true},
     {"key": "hualaishi7788", "expire": "2026-08-31 23:59:59", "enabled": true},
+
+    {"explanation":"天/周卡"},
+    {"key": "tMMTeJrGkkoW801X", "expire": "2026-09-03 23:59:59", "enabled": true},
+
+    {"explanation":"永久卡"},
+    {"key": "4hLmYnXylPyyA4tY", "expire": "9178-12-31 23:59:59", "enabled": true},
+    {"key": "EjeteI347sfhe4I2", "expire": "9178-12-31 23:59:59", "enabled": true},
+    
+    {"explanation":"待售"},
     {"key": "dQL1b9rYo3uyrDJg", "expire": "9178-12-31 23:59:59", "enabled": true},
     {"key": "kYcFX5KYa7l6gCip", "expire": "9178-12-31 23:59:59", "enabled": true},
-    {"key": "tMMTeJrGkkoW801X", "expire": "2026-09-03 23:59:59", "enabled": true},
-    {"key": "EjeteI347sfhe4I2", "expire": "9178-12-31 23:59:59", "enabled": true},
-    {"key": "4hLmYnXylPyyA4tY", "expire": "9178-12-31 23:59:59", "enabled": true}
+    {"key": "GWDcEWvfr8AbtTWI", "expire": "9178-12-31 23:59:59", "enabled": true},
+    {"key": "G91fpeJRVMykN5MO", "expire": "9178-12-31 23:59:59", "enabled": true},
+    {"key": "RsGUeBolRCbVwcZl", "expire": "9178-12-31 23:59:59", "enabled": true},
+    {"key": "btT8UITfTcTlZ19p", "expire": "9178-12-31 23:59:59", "enabled": true},
+    {"key": "N5h7KtqeR34LCgtU", "expire": "9178-12-31 23:59:59", "enabled": true},
+    {"key": "F1BmglNwemsskfqz", "expire": "9178-12-31 23:59:59", "enabled": true},
+    {"key": "JLJR6tRG6cEkrSFB", "expire": "9178-12-31 23:59:59", "enabled": true},
+    {"key": "ODBW6En10TxiTTLR", "expire": "9178-12-31 23:59:59", "enabled": true},
+    {"key": "o5LNcTdxud6c65dh", "expire": "9178-12-31 23:59:59", "enabled": true},
+    {"key": "5EmgRpO1dVpEjZSS", "expire": "9178-12-31 23:59:59", "enabled": true}
   ]
 }
