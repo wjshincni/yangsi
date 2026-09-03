@@ -3,7 +3,7 @@
 
     {"key": "小时卡", "expire": "小时卡", "enabled": false},
     {"key": "thisisakeyfortest", "expire": "2026-08-31 23:59:59", "enabled": true},
-    {"key": "hualaishi7788", "expire": "2026-08-31 23:59:59", "enabled": true},
+    {"key": "hualaishi7788", "expire": "2026-09-03 23:59:59", "enabled": true},
 
     {"key": "天/周卡", "expire": "天/周卡", "enabled": false},
     {"key": "tMMTeJrGkkoW801X", "expire": "2026-09-03 23:59:59", "enabled": true},
