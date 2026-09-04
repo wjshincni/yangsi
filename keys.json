@@ -3,15 +3,27 @@
 
     {"key": "小时卡", "expire": "小时卡", "enabled": false},
     {"key": "thisisakeyfortest", "expire": "2026-08-31 23:59:59", "enabled": true},
-    {"key": "hualaishi7788", "expire": "2026-09-03 23:59:59", "enabled": true},
+    {"key": "hualaishi7788", "expire": "2026-08-31 23:59:59", "enabled": true},
 
     {"key": "天/周卡", "expire": "天/周卡", "enabled": false},
     {"key": "tMMTeJrGkkoW801X", "expire": "2026-09-03 23:59:59", "enabled": true},
 
+    {"key": "周卡", "expire": "周卡", "enabled": false},
+    {"key": "7LiiFpGPkGi3EMRd", "expire": "2026-09-11 23:59:59", "enabled": true},
+    {"key": "XOkK0wG4Y9SmwB8M", "expire": "2026-09-11 23:59:59", "enabled": true},
+
+    {"key": "月卡", "expire": "月卡", "enabled": false},
+    {"key": "K4yUQe1w0LscguG2", "expire": "2026-10-04 23:59:59", "enabled": true},
+    {"key": "P85DsLCLEnKFXdci", "expire": "2026-10-04 23:59:59", "enabled": true},
+
+    {"key": "年卡", "expire": "年卡", "enabled": false},
+    {"key": "HVsJY7N3WxTpDnXn", "expire": "2027-09-04 23:59:59", "enabled": true},
+    {"key": "3aXxG4d92mPmTwZW", "expire": "2027-09-04 23:59:59", "enabled": true},
+
     {"key": "永久卡", "expire": "永久卡", "enabled": false},
     {"key": "4hLmYnXylPyyA4tY", "expire": "9178-12-31 23:59:59", "enabled": true},
     {"key": "EjeteI347sfhe4I2", "expire": "9178-12-31 23:59:59", "enabled": true},
-    
+
     {"key": "待售", "expire": "待售", "enabled": false},
     {"key": "dQL1b9rYo3uyrDJg", "expire": "9178-12-31 23:59:59", "enabled": true},
     {"key": "kYcFX5KYa7l6gCip", "expire": "9178-12-31 23:59:59", "enabled": true},
@@ -24,6 +36,11 @@
     {"key": "JLJR6tRG6cEkrSFB", "expire": "9178-12-31 23:59:59", "enabled": true},
     {"key": "ODBW6En10TxiTTLR", "expire": "9178-12-31 23:59:59", "enabled": true},
     {"key": "o5LNcTdxud6c65dh", "expire": "9178-12-31 23:59:59", "enabled": true},
-    {"key": "5EmgRpO1dVpEjZSS", "expire": "9178-12-31 23:59:59", "enabled": true}
+    {"key": "5EmgRpO1dVpEjZSS", "expire": "9178-12-31 23:59:59", "enabled": true},
+    {"key": "sKVKC6dSvCr41XHb", "expire": "9178-12-31 23:59:59", "enabled": true},
+    {"key": "QhM7GpbN2tRvrkjk", "expire": "9178-12-31 23:59:59", "enabled": true},
+    {"key": "Y663SMl66EBENiHe", "expire": "9178-12-31 23:59:59", "enabled": true},
+    {"key": "fyWwjbQDsHSSoslL", "expire": "9178-12-31 23:59:59", "enabled": true},
+    {"key": "cHg5bOJD6PBCnX9T", "expire": "9178-12-31 23:59:59", "enabled": true}
   ]
 }
