@@ -21,7 +21,7 @@
     {"key": "3aXxG4d92mPmTwZW", "expire": "2027-09-04 23:59:59", "enabled": true},
 
     {"key": "永久卡", "expire": "永久卡", "enabled": false},
-    {"key": "4hLmYnXylPyyA4tY", "expire": "9178-12-31 23:59:59", "enabled": false},
+    {"key": "4hLmYnXylPyyA4tY", "expire": "9178-12-31 23:59:59", "enabled": true},
     {"key": "EjeteI347sfhe4I2", "expire": "9178-12-31 23:59:59", "enabled": true},
 
     {"key": "待售", "expire": "待售", "enabled": false},
