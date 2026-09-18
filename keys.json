@@ -5,8 +5,8 @@
     {"key": "thisisakeyfortest", "expire": "2026-09-01 23:59:59", "enabled": true},
     {"key": "hualaishi9178", "expire": "2026-09-18 22:59:59", "enabled": true},
 
-    {"key": "天/周卡", "expire": "天/周卡", "enabled": false},
-    {"key": "tMMTeJrGkkoW801L", "expire": "2026-09-19 21:05:59", "enabled": true},
+    {"key": "天卡", "expire": "天卡", "enabled": false},
+    {"key": "tMMTeJrGkkoW801L", "expire": "2026-09-19 23:05:59", "enabled": true},
 
     {"key": "周卡", "expire": "周卡", "enabled": false},
     {"key": "7LiiFpGPkGi3EMRd", "expire": "2026-09-11 23:59:59", "enabled": true},
