@@ -3,7 +3,7 @@
 
     {"key": "小时卡", "expire": "小时卡", "enabled": false},
     {"key": "thisisakeyfortest", "expire": "2026-09-01 23:59:59", "enabled": true},
-    {"key": "maidanglao9178", "expire": "2026-09-22 19:05:59", "enabled": true},
+    {"key": "maidanglao9178", "expire": "2026-09-22 19:15:59", "enabled": true},
 
     {"key": "天卡", "expire": "天卡", "enabled": false},
     {"key": "tMMTeJrGkkoW801L", "expire": "2026-09-19 23:05:59", "enabled": true},
