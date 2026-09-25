@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#F7F1E7">
+<title>订购小抄</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23C7451E'/%3E%3Ctext x='32' y='45' font-size='34' font-family=''Noto Serif SC',serif' font-weight='700' fill='%23FFF' text-anchor='middle'%3E订%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://miaoda.feishu.cn" crossorigin>
+<link href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Serif+SC:wght@700;900&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="index.css">
+</head>
+<body>
+  <main class="page">
+    <header class="brand">
+      <span class="seal" aria-hidden="true">订</span>
+      <h1 class="brand-title">订购小抄</h1>
+      <p class="brand-sub">填写姓名，一键完成订购</p>
+    </header>
+
+    <section class="card">
+      <form id="orderForm" class="form" novalidate>
+        <div class="field">
+          <label class="field-label" for="nameInput">您的姓名</label>
+          <input id="nameInput" class="input" type="text" name="name" placeholder="请输入姓名"
+                 autocomplete="name" maxlength="30" spellcheck="false" autofocus>
+          <p id="nameError" class="field-error" role="alert" hidden></p>
+        </div>
+
+        <button id="orderBtn" class="btn" type="submit">
+          <span class="btn-spinner" aria-hidden="true"></span>
+          <span class="btn-text">立即订购</span>
+        </button>
+      </form>
+
+      <div id="result" class="result" role="status" aria-live="polite" hidden></div>
+    </section>
+
+    <footer class="foot">提交即表示同意订购服务 · 请确认姓名无误</footer>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+  <script src="index.js"></script>
+</body>
+</html>
