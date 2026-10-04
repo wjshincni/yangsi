@@ -3,7 +3,7 @@
 
     {"key": "小时卡", "expire": "小时卡", "enabled": false},
     {"key": "thisisnotakeyfortest", "expire": "2026-10-06 12:59:59", "enabled": true},
-    {"key": "gotsingkuaile", "expire": "2026-10-03 20:19:59", "enabled": true},
+    {"key": "gotsingkuaile", "expire": "2026-10-04 13:19:59", "enabled": true},
 
     {"key": "天卡", "expire": "天卡", "enabled": false},
     {"key": "GWDcEWvfhlAbtTWI", "expire": "2026-10-05 13:00:59", "enabled": true},
