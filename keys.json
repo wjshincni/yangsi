@@ -1,7 +1,7 @@
 {
   "keys": [
     {"key": "小时卡", "expire": "小时卡", "enabled": false, "device": []},
-    {"key": "gotsingkuaile", "expire": "2026-10-06 23:36:59", "enabled": true, "device": []},
+    {"key": "gotsingkuaile", "expire": "2026-10-07 07:56:59", "enabled": true, "device": []},
     {"key": "天卡", "expire": "天卡", "enabled": false, "device": []},
     {"key": "RsGUeBolRCbVwcZl", "expire": "2026-10-07 11:00:59", "enabled": true, "device": ["vivo_V2425A", "OnePlus_PLK110"]},
     {"key": "G91fpklmVMyk369O", "expire": "2026-10-08 03:09:59", "enabled": true, "device": []},
