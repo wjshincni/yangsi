@@ -1,11 +1,1367 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>密码强度测试</title>
+    <style>
+        /* ===== 全局重置 & 基础 ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Segoe UI', 'PingFang SC', Roboto, 'Helvetica Neue', sans-serif;
+            background: #0b0e1a;
+            color: #fff;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* ===== 主容器 ===== */
+        .app-wrapper {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+            background: radial-gradient(ellipse at 20% 30%, #1a1f35 0%, #0b0e1a 70%);
+        }
+
+        /* ===== 滑动容器 ===== */
+        .slider {
+            display: flex;
+            width: 300vw;
+            height: 100vh;
+            transition: transform 0.7s cubic-bezier(0.65, 0.05, 0.36, 1);
+            will-change: transform;
+            position: relative;
+        }
+        .slider.screen-1-active {
+            transform: translateX(0);
+        }
+        .slider.screen-2-active {
+            transform: translateX(-100vw);
+        }
+        .slider.screen-3-active {
+            transform: translateX(-200vw);
+        }
+
+        /* ===== 每个画面 ===== */
+        .screen {
+            flex: 0 0 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            transition: background 0.6s ease, backdrop-filter 0.6s ease;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* ===== 画面1 ===== */
+        .screen-1 {
+            justify-content: flex-start;
+            padding-top: 10vh;
+            background: transparent;
+        }
+        .screen-1 .title-wrap {
+            flex: 0 0 auto;
+            margin-top: 12vh;
+            margin-bottom: 8vh;
+            text-align: center;
+        }
+        .screen-1 .main-title {
+            font-size: clamp(2.2rem, 8vw, 4.2rem);
+            font-weight: 800;
+            background: linear-gradient(135deg, #f0e9d8, #ffd78a, #f0e9d8);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmerTitle 4s ease-in-out infinite alternate;
+            text-shadow: 0 0 60px rgba(255, 215, 138, 0.15);
+            letter-spacing: 0.04em;
+            line-height: 1.2;
+        }
+        @keyframes shimmerTitle {
+            0% {
+                background-position: 0% 50%;
+            }
+            100% {
+                background-position: 100% 50%;
+            }
+        }
+        .screen-1 .sub-glow {
+            font-size: clamp(0.75rem, 2vw, 1rem);
+            color: rgba(255, 215, 138, 0.35);
+            letter-spacing: 0.3em;
+            margin-top: 0.5rem;
+            font-weight: 300;
+        }
+
+        .input-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: min(90%, 480px);
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 60px;
+            padding: 4px 4px 4px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.10);
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+            transition: border 0.3s, box-shadow 0.3s;
+            flex-shrink: 0;
+            margin-bottom: 2vh;
+        }
+        .input-row:focus-within {
+            border-color: rgba(255, 215, 138, 0.5);
+            box-shadow: 0 8px 50px rgba(255, 215, 138, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.10);
+        }
+
+        .input-row input {
+            flex: 1;
+            min-width: 0;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #fff;
+            font-size: clamp(1rem, 3vw, 1.3rem);
+            padding: 14px 0;
+            font-weight: 400;
+            letter-spacing: 0.04em;
+        }
+        .input-row input::placeholder {
+            color: rgba(255, 255, 255, 0.25);
+            font-weight: 300;
+            letter-spacing: 0.06em;
+        }
+        .input-row input:disabled {
+            opacity: 0.4;
+        }
+
+        .input-row .btn-icon {
+            flex: 0 0 auto;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: none;
+            background: transparent;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            touch-action: manipulation;
+        }
+        .input-row .btn-icon:hover {
+            background: rgba(255, 255, 255, 0.06);
+            color: #fff;
+        }
+        .input-row .btn-icon:active {
+            transform: scale(0.88);
+        }
+        .input-row .btn-icon.active {
+            color: #ffd78a;
+        }
+
+        .input-row .btn-next {
+            flex: 0 0 auto;
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(135deg, #ffd78a, #f5a623);
+            color: #0b0e1a;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 24px rgba(245, 166, 35, 0.3);
+            touch-action: manipulation;
+        }
+        .input-row .btn-next:active {
+            transform: scale(0.85);
+        }
+        .input-row .btn-next:disabled {
+            opacity: 0.3;
+            transform: scale(0.9);
+            box-shadow: none;
+            pointer-events: none;
+        }
+
+        /* 密码长度提示 */
+        .hint-text {
+            font-size: clamp(0.7rem, 1.6vw, 0.85rem);
+            color: rgba(255, 255, 255, 0.2);
+            margin-top: 1vh;
+            letter-spacing: 0.08em;
+            font-weight: 300;
+        }
+        .hint-text span {
+            color: rgba(255, 215, 138, 0.4);
+        }
+
+        /* ===== 画面2 & 画面3 共用布局 ===== */
+        .screen-2,
+        .screen-3 {
+            justify-content: flex-start;
+            padding-top: 5vh;
+            background: rgba(11, 14, 26, 0.85);
+            backdrop-filter: blur(2px);
+            -webkit-backdrop-filter: blur(2px);
+        }
+        .screen-2 .screen-title,
+        .screen-3 .screen-title {
+            font-size: clamp(1.2rem, 4vw, 2rem);
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 1.5vh;
+            letter-spacing: 0.06em;
+            text-align: center;
+        }
+        .screen-2 .screen-title .highlight,
+        .screen-3 .screen-title .highlight {
+            color: #ffd78a;
+        }
+
+        /* 进度条 */
+        .progress-wrap {
+            width: min(88%, 560px);
+            height: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 1vh;
+            box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.3);
+            flex-shrink: 0;
+        }
+        .progress-wrap .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #ffd78a, #f5a623, #ffd78a);
+            background-size: 200% 100%;
+            border-radius: 12px;
+            transition: width 0.3s ease;
+            animation: progressShine 1.8s linear infinite;
+        }
+        @keyframes progressShine {
+            0% {
+                background-position: 0% 0%;
+            }
+            100% {
+                background-position: 200% 0%;
+            }
+        }
+        .progress-label {
+            width: min(88%, 560px);
+            display: flex;
+            justify-content: space-between;
+            font-size: clamp(0.65rem, 1.4vw, 0.8rem);
+            color: rgba(255, 255, 255, 0.3);
+            margin-top: -0.5vh;
+            margin-bottom: 1vh;
+            font-weight: 300;
+            letter-spacing: 0.04em;
+            flex-shrink: 0;
+        }
+
+        /* 信息行（第三屏专用） */
+        .info-row {
+            width: min(88%, 560px);
+            display: flex;
+            justify-content: space-between;
+            font-size: clamp(0.7rem, 1.6vw, 0.9rem);
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 1vh;
+            flex-shrink: 0;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .info-row .info-item {
+            background: rgba(255, 255, 255, 0.04);
+            padding: 4px 14px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            white-space: nowrap;
+        }
+        .info-row .info-item strong {
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 500;
+        }
+
+        /* 日志块 */
+        .log-container {
+            width: min(88%, 560px);
+            flex: 1 1 auto;
+            min-height: 120px;
+            max-height: 45vh;
+            background: rgba(0, 0, 0, 0.35);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            border-radius: 20px;
+            padding: 14px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            box-shadow: inset 0 2px 20px rgba(0, 0, 0, 0.3);
+            scroll-behavior: smooth;
+            margin-bottom: 2vh;
+        }
+        .log-container::-webkit-scrollbar {
+            width: 3px;
+        }
+        .log-container::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .log-container::-webkit-scrollbar-thumb {
+            background: rgba(255, 215, 138, 0.25);
+            border-radius: 12px;
+        }
+
+        .log-entry {
+            font-size: clamp(0.75rem, 1.8vw, 0.95rem);
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            color: rgba(255, 255, 255, 0.55);
+            font-weight: 300;
+            letter-spacing: 0.02em;
+            animation: logFadeIn 0.3s ease forwards;
+            opacity: 0;
+            transform: translateY(4px);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            word-break: break-all;
+        }
+        .log-entry .log-icon {
+            flex: 0 0 18px;
+            font-size: 0.9rem;
+        }
+        .log-entry.match {
+            color: #ffd78a;
+            font-weight: 500;
+        }
+        .log-entry.match .log-icon {
+            color: #ffd78a;
+        }
+        .log-entry.done {
+            color: rgba(255, 255, 255, 0.3);
+        }
+        .log-entry.success {
+            color: #7ddfb0;
+        }
+        .log-entry.success .log-icon {
+            color: #7ddfb0;
+        }
+        .log-entry.warn {
+            color: #f5a623;
+        }
+        .log-entry.warn .log-icon {
+            color: #f5a623;
+        }
+        .log-entry.danger {
+            color: #ff6b6b;
+        }
+        .log-entry.danger .log-icon {
+            color: #ff6b6b;
+        }
+        .log-entry strong {
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 500;
+        }
+        @keyframes logFadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ===== 画面2 特殊状态 ===== */
+        .screen-2.danger-bg {
+            background: rgba(255, 160, 50, 0.25) !important;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+        .screen-2.danger-bg .log-container {
+            border-color: rgba(255, 160, 50, 0.25);
+        }
+
+        /* ===== 画面3 安全等级背景 ===== */
+        .screen-3.level-unsafe {
+            background: rgba(255, 160, 50, 0.15) !important;
+        }
+        .screen-3.level-safe {
+            background: rgba(80, 220, 160, 0.10) !important;
+        }
+        .screen-3.level-strong {
+            background: rgba(60, 220, 120, 0.12) !important;
+        }
+
+        /* ===== 画面3 底部按钮 ===== */
+        .retry-btn-wrap {
+            flex-shrink: 0;
+            margin-top: 2vh;
+            width: min(88%, 400px);
+            display: flex;
+            justify-content: center;
+        }
+        .btn-retry {
+            padding: 14px 48px;
+            border-radius: 60px;
+            border: none;
+            background: linear-gradient(135deg, #ffd78a, #f5a623);
+            color: #0b0e1a;
+            font-size: clamp(1rem, 2.8vw, 1.2rem);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 6px 32px rgba(245, 166, 35, 0.25);
+            letter-spacing: 0.04em;
+            touch-action: manipulation;
+            width: 100%;
+        }
+        .btn-retry:active {
+            transform: scale(0.94);
+        }
+        .btn-retry:hover {
+            box-shadow: 0 8px 48px rgba(245, 166, 35, 0.4);
+        }
+
+        /* ===== 模态框 ===== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+            padding: 20px;
+        }
+        .modal-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-box {
+            background: rgba(20, 25, 45, 0.92);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 32px;
+            padding: clamp(28px, 5vw, 48px) clamp(20px, 4vw, 40px);
+            max-width: 460px;
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            box-shadow: 0 24px 80px rgba(0, 0, 0, 0.7);
+            transform: scale(0.92) translateY(20px);
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease;
+            opacity: 0;
+            text-align: center;
+        }
+        .modal-overlay.open .modal-box {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+        }
+
+        .modal-box .modal-icon {
+            font-size: clamp(2.8rem, 8vw, 4.2rem);
+            margin-bottom: 0.5rem;
+        }
+        .modal-box h2 {
+            font-size: clamp(1.3rem, 4vw, 2rem);
+            font-weight: 700;
+            margin-bottom: 0.8rem;
+            color: #fff;
+        }
+        .modal-box p {
+            font-size: clamp(0.95rem, 2.4vw, 1.2rem);
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.6;
+            margin-bottom: 1.8rem;
+            font-weight: 300;
+        }
+        .modal-box p .strong-text {
+            color: #ffd78a;
+            font-weight: 500;
+        }
+        .modal-box .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .modal-box .modal-actions button {
+            padding: 12px 32px;
+            border-radius: 60px;
+            border: none;
+            font-size: clamp(0.95rem, 2.2vw, 1.1rem);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            touch-action: manipulation;
+            min-width: 100px;
+            flex: 1 1 auto;
+        }
+        .modal-box .modal-actions .btn-primary {
+            background: linear-gradient(135deg, #ffd78a, #f5a623);
+            color: #0b0e1a;
+            box-shadow: 0 4px 20px rgba(245, 166, 35, 0.25);
+        }
+        .modal-box .modal-actions .btn-primary:active {
+            transform: scale(0.94);
+        }
+        .modal-box .modal-actions .btn-secondary {
+            background: rgba(255, 255, 255, 0.06);
+            color: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .modal-box .modal-actions .btn-secondary:active {
+            transform: scale(0.94);
+        }
+        .modal-box .modal-actions .btn-danger {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(238, 90, 36, 0.25);
+        }
+        .modal-box .modal-actions .btn-danger:active {
+            transform: scale(0.94);
+        }
+
+        /* ===== 装饰粒子 ===== */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 215, 138, 0.08);
+            animation: floatParticle linear infinite alternate;
+        }
+        @keyframes floatParticle {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 0.2;
+            }
+            100% {
+                transform: translate(30px, -40px) scale(1.6);
+                opacity: 0.6;
+            }
+        }
+
+        /* ===== 响应式微调 ===== */
+        @media (max-width: 480px) {
+            .screen-1 {
+                padding-top: 6vh;
+            }
+            .screen-1 .title-wrap {
+                margin-top: 8vh;
+                margin-bottom: 5vh;
+            }
+            .input-row {
+                padding: 2px 2px 2px 14px;
+                gap: 4px;
+            }
+            .input-row input {
+                padding: 12px 0;
+                font-size: 1rem;
+            }
+            .input-row .btn-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 1.1rem;
+            }
+            .input-row .btn-next {
+                width: 44px;
+                height: 44px;
+                font-size: 1.2rem;
+            }
+            .log-container {
+                max-height: 35vh;
+                padding: 10px 12px;
+            }
+            .modal-box {
+                padding: 24px 18px;
+            }
+            .modal-box .modal-actions button {
+                padding: 10px 20px;
+                min-width: 80px;
+            }
+            .info-row {
+                flex-direction: column;
+                align-items: center;
+                gap: 6px;
+            }
+        }
+        @media (max-width: 380px) {
+            .screen-1 .main-title {
+                font-size: 1.8rem;
+            }
+            .input-row input {
+                font-size: 0.85rem;
+            }
+            .log-entry {
+                font-size: 0.7rem;
+            }
+        }
+        @media (min-height: 800px) {
+            .log-container {
+                max-height: 50vh;
+            }
+        }
+
+        /* 安全等级徽章 - 画面3 */
+        .level-badge {
+            display: inline-block;
+            padding: 6px 20px;
+            border-radius: 60px;
+            font-size: clamp(0.85rem, 2vw, 1.1rem);
+            font-weight: 600;
+            margin-top: 0.2vh;
+            margin-bottom: 1vh;
+            letter-spacing: 0.06em;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        .level-badge.unsafe {
+            color: #f5a623;
+            border-color: rgba(245, 166, 35, 0.3);
+            background: rgba(245, 166, 35, 0.08);
+        }
+        .level-badge.safe {
+            color: #7ddfb0;
+            border-color: rgba(125, 223, 176, 0.3);
+            background: rgba(125, 223, 176, 0.08);
+        }
+        .level-badge.strong {
+            color: #4cdb7b;
+            border-color: rgba(76, 219, 123, 0.3);
+            background: rgba(76, 219, 123, 0.08);
+        }
+
+        .level-indicator {
+            width: min(88%, 560px);
+            height: 4px;
+            border-radius: 12px;
+            margin-top: 0.5vh;
+            margin-bottom: 0.5vh;
+            transition: background 0.6s ease;
+            flex-shrink: 0;
+        }
+        .level-indicator.unsafe {
+            background: linear-gradient(90deg, #f5a623, #ffd78a);
+        }
+        .level-indicator.safe {
+            background: linear-gradient(90deg, #7ddfb0, #b8f0d0);
+        }
+        .level-indicator.strong {
+            background: linear-gradient(90deg, #4cdb7b, #8ef0b0);
+        }
+
+        /* 画面2返回按钮 */
+        #backBtn2 {
+            padding: 12px 36px;
+            border-radius: 60px;
+            border: none;
+            background: rgba(255, 255, 255, 0.06);
+            color: rgba(255, 255, 255, 0.6);
+            font-size: clamp(0.9rem, 2vw, 1rem);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            width: 100%;
+        }
+        #backBtn2:active {
+            transform: scale(0.94);
+        }
+        .back-wrap {
+            flex-shrink: 0;
+            margin-top: 2vh;
+            width: min(88%, 400px);
+            display: flex;
+            justify-content: center;
+        }
+    </style>
 </head>
 <body>
-    <a href="https://futrue.asia/download">前往主页
+
+    <!-- ===== 装饰粒子 ===== -->
+    <div class="particles" id="particles" aria-hidden="true"></div>
+
+    <!-- ===== 主容器 ===== -->
+    <div class="app-wrapper" id="appWrapper">
+
+        <!-- ===== 滑动容器 ===== -->
+        <div class="slider screen-1-active" id="slider">
+
+            <!-- ===== 画面1 ===== -->
+            <div class="screen screen-1" id="screen1">
+                <div class="title-wrap">
+                    <div class="main-title">测试你的密码强度</div>
+                    <div class="sub-glow"> v 1 . 0 </div>
+                </div>
+                <div class="input-row" id="inputRow">
+                    <input type="password" id="passwordInput" placeholder="请输入密码 (字母/数字/符号)" maxlength="20" autocomplete="off" autocorrect="off" spellcheck="false">
+                    <button class="btn-icon" id="togglePasswordBtn" aria-label="显示密码" type="button">👁</button>
+                    <button class="btn-next" id="nextBtn" aria-label="下一步" type="button">→</button>
+                </div>
+                <div class="hint-text">允许 <span>字母 数字 部分符号</span> · 1~20 位</div>
+            </div>
+
+            <!-- ===== 画面2 ===== -->
+            <div class="screen screen-2" id="screen2">
+                <div class="screen-title"> 常用密码 <span class="highlight">扫描</span></div>
+                <div class="progress-wrap">
+                    <div class="progress-bar" id="progressBar2"></div>
+                </div>
+                <div class="progress-label">
+                    <span id="progressText2">0%</span>
+                    <span id="progressCount2">0 / 0</span>
+                </div>
+                <div class="log-container" id="logContainer2"></div>
+            </div>
+
+            <!-- ===== 画面3 ===== -->
+            <div class="screen screen-3" id="screen3">
+                <div class="screen-title"> 穷举 <span class="highlight">强度评估</span></div>
+                <div class="progress-wrap">
+                    <div class="progress-bar" id="progressBar3"></div>
+                </div>
+                <div class="progress-label">
+                    <span id="progressText3">0%</span>
+                    <span id="progressCount3">计算中...</span>
+                </div>
+                <div class="info-row" id="infoRow3">
+                    <span class="info-item" id="infoComb">理论组合数: —</span>
+                    <span class="info-item" id="infoTime">理论破解时间: —</span>
+                </div>
+                <div class="level-indicator" id="levelIndicator"></div>
+                <div class="level-badge" id="levelBadge">—</div>
+                <div class="log-container" id="logContainer3"></div>
+                <div class="retry-btn-wrap">
+                    <button class="btn-retry" id="retryBtn"> 换一个密码</button>
+                </div>
+            </div>
+
+        </div><!-- /slider -->
+    </div><!-- /app-wrapper -->
+
+    <!-- ===== 模态框 ===== -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-box" id="modalBox">
+            <div class="modal-icon" id="modalIcon">⚠️</div>
+            <h2 id="modalTitle">提示</h2>
+            <p id="modalMessage">消息内容</p>
+            <div class="modal-actions" id="modalActions">
+                <button class="btn-primary" id="modalBtnPrimary">确定</button>
+                <button class="btn-secondary" id="modalBtnSecondary">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            'use strict';
+
+            const COMMON_PASSWORDS = [
+                '123456', 'password', '12345678', 'qwerty', '123456789',
+                '12345', '1234567', '111111', '123123', 'abc123',
+                'password1', 'iloveyou', 'admin', 'welcome', 'letmein',
+                'monkey', 'dragon', 'master', 'sunshine', 'princess',
+                'qwertyuiop', '123321', '1q2w3e4r', 'zaq12wsx', 'qwerty123',
+                '987654321', 'mypassword', '1234567890', 'hello123', 'fuckyou',
+                '666666', '7777777', '1234', '888888', '112233',
+                'abcd1234', 'passw0rd', 'password123', 'qwerty123456', '123456a',
+                '11111111', '222222', '333333', '444444', '555555',
+                '654321', '987654', 'a123456', 'p@ssw0rd', 'admin123',
+                'root', 'toor', 'letmein123', 'iloveyou1', 'sunshine1','456321','qwertyuiopasdfghjkl','joker666','joker888','5288250',
+                'password12', '123qwe', 'qwe123', 'qwerty1', '1qaz2wsx',
+                'qwertyuiop1', 'pass123', 'pass1234', 'love123', 'loveyou',
+                'jordan', 'michael', 'kobe', 'lakers', 'yankees',
+                'baseball', 'football', 'soccer', 'hockey', 'golf',
+                'tennis', 'basketball', 'volleyball', 'softball', 'swimming',
+                'running', 'fishing', 'hunting', 'skating', 'skiing',
+                'dallas', 'houston', 'chicago', 'newyork', 'losangeles',
+                'seattle', 'boston', 'denver', 'phoenix', 'miami',
+                'orlando', 'atlanta', 'detroit', 'cleveland', 'cincinnati',
+                'indianapolis', 'kansas', 'memphis', 'nashville', 'neworleans',
+                'philadelphia', 'pittsburgh', 'sanantonio', 'sandiego', 'sanfrancisco',
+                'sanjose', 'washington', 'abcde', 'fghij', 'klmno',
+                '1234qwer', '1234asdf', '1234zxcv', 'qwer1234', 'asdf1234',
+                'zxcv1234', '1q2w3e', '1q2w3e4r5t', 'qwertyuiopasdf', 'zxcvbnm',
+                '123456789a', '1234567890q', 'qwerty123456', 'password1234',
+                'iloveyou123', 'sunshine123', 'princess123', 'admin1234',
+                'welcome123', 'letmein123', 'monkey123', 'dragon123',
+                'master123', 'fuckyou123', 'abc123456', '123abc456',
+                '111111111', '2222222', '3333333', '4444444', '5555555',
+                '6666666', '7777777', '8888888', '9999999', '0000000',
+                '1234567890qwerty', 'qwertyuiop123', '1q2w3e4r5t6y', 'zaq1xsw2',
+                'qazwsxedc', 'rfvtgbyhn', 'ujmikolp', '1qazxsw2', '2wsx3edc',
+                '4rfv5tgb', '6yhn7ujm', '8ik9ol0p', 'qwertyuiop[]', 'asdfghjkl;',
+                'zxcvbnm', '!@#$%^&*()', 'qwertyuiop', '1234!@#$', 'password!',
+                'admin!@#', 'welcome!', 'letmein!', 'iloveyou!', 'sunshine!',
+                'princess!', 'monkey!', 'dragon!', 'master!', 'fuckyou!',
+                '1234567890!', 'qwertyuiop!', 'asdfghjkl!', 'zxcvbnm!',
+                'password123!', 'admin123!', 'welcome123!', 'iloveyou123!',
+                '1q2w3e4r', '1qazxsw2', 'qazwsxedc', 'rfvtgbyhn',
+                'ujmikolp', 'zaq1xsw2', '2wsx3edc', '4rfv5tgb!',
+                '6yhn7ujm', '8ik9ol0p', 'qwertyuiop', 'asdfghjkl',
+                'zxcvbnm','123456','1234567891011121314','1234567890','12345678910','1234567891011','123456789101112','12345678910111213',
+                '12345678','123123','666666','888888','000000','111111','123456789',
+                '12345','5201314','1314520','654321','123321','87654321','qwerty',
+                'abc123','password','admin','admin123','root','123456a','a123456',
+                '123654','987654','147258','258369','147258369','520520','13141314',
+                '789456','666888','888666','012345','112233','223344','334455','668899',
+                '123abc','abc321','qwe123','asd123','zxc123','qazwsx','wsxedc','love123',
+                'iloveyou','woaini','niwoai','19900101','20000101','080808','0520520','123000',
+                '88888888','11111111','00000000','zs950412','ls980723','wh021105','ly930217','cy000908','lh970522','wj030114',
+                'zx940830','hy991206','ty010325','sbsbsbsb','sbsbsb','sbsbsbsbsb','love','lovesb','love520','520love',
+                'gx960611','mj041018','qz920704','xj910516','ch000228','fm981121','by950913','sj020407','ky971222','yj930805',
+                'mh010619','gz940310','lj030727','rh990123','py961002','dw000514','ny920926','jz980209','sh040817','cy951103',
+                'wx970421','qt021215','bn930608','fj011024','hm940119','ly990711','kt030905','rz960322','dy000813','gb920530',
+                'ms980617','aq040204','ev951209','fz971028','gt020111','hp930416','iq010725','jr940902','ks990518','lv031107',
+                'mx960223','nz000614','oy920820','pr980306','qs040712','rt951015','su970127','tv020909','uw931203','vx010521',
+                'wy940826','xz990411','yz030602','za961118','zb000214','zc920730','zd980508','ze040922','zf950106','zg971219',
+                'zh020317','zi931025','zj010605','zk940812','zl990227','zm030714','zn960403','zo000917','zp921124','zq980610',
+                'zr040121','zs950807','zt970329','zu021013','zv930519','zw011208','zx940724','zy990904','zz030216','aj960526',
+                'bk000811','cl920422','dm980115','en040628','fo951005','gp970220','hq020914','ir930701','js011127','kt940318',
+                'lu990609','mv031223','nw960804','ox000512','py921021','qz980207','ra040716','sb950928','tc970419','ud020103',
+                've930825','wf010613','xg941108','yh990320','zi031017','aj960129','bk000706','cl921211','dm980424','en040815',
+                'fo950222','gp970603','hq021119','ir930907','js010528','kt941214','lu990721','mv030409','nw961026','ox000218',
+                'py920612','qz980901','ra040327','sb951104','tc970823','ud020510','ve930125','wf010916','xg940405','yh991211',
+                'zi030624','aj960313','bk000920','cl920108','dm980718','en041122','fo950502','gp971009','hq020214','ir930627',
+                'js010819','kt940123','lu990417','mv030903','nw961207','ox000828','py920315','qz980511','ra040226','sb950722',
+                'tc971113','ud020601','ve931019','wf010308','xg940924','yh990116','zi030521','aj960704','bk001102','cl920814',
+                'dm980211','en040423','fo951217','gp970509','hq020829','ir930306','js010712','kt940620','lu991004','mv030118',
+                'nw960911','ox000425','py921115','qz980803','ra040619','sb950124','tc970918','ud020312','ve930507','wf011121',
+                'xg940209','yh990614','zi030827','aj960416','bk001013','cl920726','dm980319','en040105','fo950821','gp971202',
+                'wocao','wocaonima','wocaonm','cnm','cnmsb','sbcnm','sb250','cnmsb250','cnm250','9178','917813','7891','789113'
+            ];
+
+            // ============================================================
+            //  2. DOM 引用
+            // ============================================================
+            const slider = document.getElementById('slider');
+            const screen1 = document.getElementById('screen1');
+            const screen2 = document.getElementById('screen2');
+            const screen3 = document.getElementById('screen3');
+            const passwordInput = document.getElementById('passwordInput');
+            const togglePasswordBtn = document.getElementById('togglePasswordBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const retryBtn = document.getElementById('retryBtn');
+
+            const progressBar2 = document.getElementById('progressBar2');
+            const progressText2 = document.getElementById('progressText2');
+            const progressCount2 = document.getElementById('progressCount2');
+            const logContainer2 = document.getElementById('logContainer2');
+
+            const progressBar3 = document.getElementById('progressBar3');
+            const progressText3 = document.getElementById('progressText3');
+            const progressCount3 = document.getElementById('progressCount3');
+            const logContainer3 = document.getElementById('logContainer3');
+            const levelIndicator = document.getElementById('levelIndicator');
+            const levelBadge = document.getElementById('levelBadge');
+            const infoComb = document.getElementById('infoComb');
+            const infoTime = document.getElementById('infoTime');
+
+            const modalOverlay = document.getElementById('modalOverlay');
+            const modalBox = document.getElementById('modalBox');
+            const modalIcon = document.getElementById('modalIcon');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalMessage = document.getElementById('modalMessage');
+            const modalActions = document.getElementById('modalActions');
+
+            // ============================================================
+            //  3. 状态
+            // ============================================================
+            let userPassword = '';
+            let isPasswordVisible = false;
+            let isChecking = false;
+            let currentScreen = 0;
+            let matchedCommon = false;
+
+            // ============================================================
+            //  4. 工具函数（优化：中文单位 + 滚动修复）
+            // ============================================================
+            function sleep(ms) {
+                return new Promise(r => setTimeout(r, ms));
+            }
+
+            /**
+             * 将数字转换为中文单位表示（不使用 K/M/B 等字母）
+             * 例如：12345 → "1.2万"，123456789 → "1.2亿"
+             * 小于1万直接显示数字
+             */
+            function formatNum(n) {
+                if (typeof n !== 'number' || isNaN(n) || n < 0) return '0';
+                if (n < 10000) return n.toString();
+                if (n < 1e8) {
+                    return (n / 1e4).toFixed(1) + '万';
+                }
+                if (n < 1e12) {
+                    return (n / 1e8).toFixed(1) + '亿';
+                }
+                if (n < 1e16) {
+                    return (n / 1e12).toFixed(1) + '万亿';
+                }
+                // 更大数量级，继续用中文
+                if (n < 1e20) {
+                    return (n / 1e16).toFixed(1) + '京';
+                }
+                // 再大就用科学计数法？但用户要求不用字母，我们用“×10^N”或直接显示完整数字（可能超长）
+                // 这里简单处理，超过1e20就用完整数字字符串（很长，但避免字母）
+                return n.toString();
+            }
+
+            // 估算破解时间 (秒) 简洁版
+            function estimateCrackTime(combinations) {
+                const speed = 1e9;
+                const sec = combinations / speed;
+                if (sec < 1) return '<1秒';
+                if (sec < 60) return Math.round(sec) + '秒';
+                if (sec < 3600) return Math.round(sec / 60) + '分钟';
+                if (sec < 86400) return Math.round(sec / 3600) + '小时';
+                if (sec < 31536000) return Math.round(sec / 86400) + '天';
+                return (sec / 31536000).toFixed(1) + '年';
+            }
+
+            // 获取密码字符类型
+            function getPasswordType(pwd) {
+                const hasDigit = /\d/.test(pwd);
+                const hasLetter = /[a-zA-Z]/.test(pwd);
+                const hasLower = /[a-z]/.test(pwd);
+                const hasUpper = /[A-Z]/.test(pwd);
+                const hasSpecial = /[^a-zA-Z0-9]/.test(pwd);
+                if (hasSpecial) return 'complex';
+                if (hasDigit && hasLetter) return 'mixed';
+                if (hasDigit && !hasLetter) return 'digit';
+                if (hasLetter && !hasDigit) {
+                    if (hasUpper && hasLower) return 'letter_mixed';
+                    if (hasUpper) return 'letter_upper';
+                    return 'letter_lower';
+                }
+                return 'unknown';
+            }
+
+            // 计算理论组合数
+            function calcCombinations(pwd) {
+                const len = pwd.length;
+                if (len === 0) return 0;
+                const type = getPasswordType(pwd);
+                let charsetSize = 0;
+                switch (type) {
+                    case 'digit':
+                        charsetSize = 10;
+                        break;
+                    case 'letter_lower':
+                        charsetSize = 26;
+                        break;
+                    case 'letter_upper':
+                        charsetSize = 26;
+                        break;
+                    case 'letter_mixed':
+                        charsetSize = 52;
+                        break;
+                    case 'mixed':
+                        charsetSize = 62;
+                        break;
+                    case 'complex':
+                        charsetSize = 72; // 62 + 10 个特殊符
+                        break;
+                    default:
+                        charsetSize = 62;
+                }
+                return Math.pow(charsetSize, len);
+            }
+
+            // 安全等级
+            function getSecurityLevel(combinations) {
+                if (combinations < 1e10) return { level: 'unsafe', label: '不安全', color: '#f5a623', badge: '⚠️ 不安全' };
+                if (combinations < 1e30) return { level: 'safe', label: '较为安全', color: '#7ddfb0', badge: '✅ 较为安全' };
+                return { level: 'strong', label: '很安全', color: '#4cdb7b', badge: '🛡️ 很安全' };
+            }
+
+            // ============================================================
+            //  5. 画面切换
+            // ============================================================
+            function goToScreen(index, animate = true) {
+                if (index === currentScreen) return;
+                currentScreen = index;
+                if (!animate) {
+                    slider.style.transition = 'none';
+                } else {
+                    slider.style.transition = 'transform 0.7s cubic-bezier(0.65, 0.05, 0.36, 1)';
+                }
+                slider.className = 'slider';
+                if (index === 0) slider.classList.add('screen-1-active');
+                else if (index === 1) slider.classList.add('screen-2-active');
+                else if (index === 2) slider.classList.add('screen-3-active');
+                if (!animate) {
+                    void slider.offsetHeight;
+                    slider.style.transition = 'transform 0.7s cubic-bezier(0.65, 0.05, 0.36, 1)';
+                }
+            }
+
+            // ============================================================
+            //  6. 密码输入控制
+            // ============================================================
+            passwordInput.addEventListener('input', function(e) {
+                let val = this.value;
+                val = val.replace(/[^a-zA-Z0-9\-_!?@#$%^&*]/g, '');
+                if (val.length > 20) val = val.slice(0, 20);
+                this.value = val;
+                userPassword = val;
+                nextBtn.disabled = val.length < 1;
+            });
+
+            togglePasswordBtn.addEventListener('click', function() {
+                isPasswordVisible = !isPasswordVisible;
+                passwordInput.type = isPasswordVisible ? 'text' : 'password';
+                this.classList.toggle('active', isPasswordVisible);
+                this.textContent = isPasswordVisible ? '🙈' : '👁';
+            });
+
+            passwordInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !nextBtn.disabled) {
+                    e.preventDefault();
+                    nextBtn.click();
+                }
+            });
+
+            // ============================================================
+            //  7. 下一步 → 画面2
+            // ============================================================
+            nextBtn.addEventListener('click', function() {
+                if (this.disabled || isChecking) return;
+                userPassword = passwordInput.value.trim();
+                if (userPassword.length < 1) return;
+                passwordInput.disabled = true;
+                this.disabled = true;
+                goToScreen(1);
+                startCommonPasswordCheck();
+            });
+
+            // ============================================================
+            //  8. 常用密码检查 (画面2) —— 优化滚动
+            // ============================================================
+            async function startCommonPasswordCheck() {
+                if (isChecking) return;
+                isChecking = true;
+                matchedCommon = false;
+
+                logContainer2.innerHTML = '';
+                progressBar2.style.width = '0%';
+                progressText2.textContent = '0%';
+                progressCount2.textContent = `0 / ${COMMON_PASSWORDS.length}`;
+                screen2.classList.remove('danger-bg');
+
+                const total = COMMON_PASSWORDS.length;
+                const lowerPwd = userPassword.toLowerCase();
+
+                for (let i = 0; i < total; i++) {
+                    if (!isChecking) break;
+                    const common = COMMON_PASSWORDS[i];
+                    const lowerCommon = common.toLowerCase();
+                    const isMatch = lowerPwd === lowerCommon;
+
+                    const pct = ((i + 1) / total * 100);
+                    progressBar2.style.width = pct + '%';
+                    progressText2.textContent = Math.round(pct) + '%';
+                    progressCount2.textContent = `${i + 1} / ${total}`;
+
+                    const entry = document.createElement('div');
+                    entry.className = 'log-entry';
+                    if (isMatch) {
+                        entry.classList.add('match');
+                        entry.innerHTML = `<span class="log-icon">🔥</span> 匹配: <strong>${common}</strong> — 危险！`;
+                        logContainer2.appendChild(entry);
+                        matchedCommon = true;
+                        screen2.classList.add('danger-bg');
+                        isChecking = false;
+                        // 滚动到底部（使用 requestAnimationFrame 避免抽搐）
+                        requestAnimationFrame(() => {
+                            logContainer2.scrollTop = logContainer2.scrollHeight;
+                        });
+                        await showDangerModal(common);
+                        return;
+                    } else {
+                        entry.innerHTML = `<span class="log-icon">✗</span> 检查: ${common}`;
+                        logContainer2.appendChild(entry);
+                    }
+                    // 滚动到底部（使用 requestAnimationFrame）
+                    requestAnimationFrame(() => {
+                        logContainer2.scrollTop = logContainer2.scrollHeight;
+                    });
+                    await sleep(25 + Math.random() * 35);
+                }
+
+                if (!matchedCommon && isChecking) {
+                    isChecking = false;
+                    await showPassModal();
+                }
+            }
+
+            // ============================================================
+            //  9. 模态框系统
+            // ============================================================
+            function showModal(icon, title, message, buttons) {
+                return new Promise((resolve) => {
+                    modalIcon.textContent = icon || '⚠️';
+                    modalTitle.textContent = title || '提示';
+                    modalMessage.innerHTML = message || '';
+                    modalActions.innerHTML = '';
+                    buttons.forEach((btn) => {
+                        const el = document.createElement('button');
+                        el.textContent = btn.label;
+                        el.className = btn.className || 'btn-primary';
+                        el.addEventListener('click', function() {
+                            modalOverlay.classList.remove('open');
+                            resolve(btn.value);
+                        });
+                        modalActions.appendChild(el);
+                    });
+                    modalOverlay.classList.add('open');
+                });
+            }
+
+            function showDangerModal(matchedPwd) {
+                const crackTime = estimateCrackTime(calcCombinations(userPassword));
+                const msg = `
+                    此密码与常用密码 <strong style="color:#ffd78a;">"${matchedPwd}"</strong> 匹配，<br>
+                    极度不安全！<br>
+                    破解时间：<strong style="color:#ff6b6b;">${crackTime}</strong><br>
+                    <span style="color:rgba(255,255,255,0.4);font-size:0.85rem;">请尽快更换！</span>
+                `;
+                return showModal('愚蠢的密码！', '⚠️ 极度不安全！', msg, [
+                    { label: '知道了', className: 'btn-danger', value: 'ok' }
+                ]).then(() => {
+                    addBackButtonToScreen2();
+                });
+            }
+
+            function addBackButtonToScreen2() {
+                if (document.getElementById('backBtn2')) return;
+                const wrap = document.createElement('div');
+                wrap.className = 'back-wrap';
+                const btn = document.createElement('button');
+                btn.id = 'backBtn2';
+                btn.textContent = '← 返回重试';
+                btn.addEventListener('click', function() {
+                    resetToScreen1();
+                });
+                wrap.appendChild(btn);
+                screen2.appendChild(wrap);
+            }
+
+            function showPassModal() {
+                return showModal('✅', '通过初步安全测试', '您的密码未在常用密码库中匹配。<br>是否继续 <strong style="color:#ffd78a;">穷举强度评估</strong>？', [
+                    { label: '否', className: 'btn-secondary', value: 'no' },
+                    { label: '是', className: 'btn-primary', value: 'yes' }
+                ]).then((result) => {
+                    if (result === 'yes') {
+                        goToScreen(2);
+                        startStrengthTest();
+                    } else {
+                        resetToScreen1();
+                    }
+                });
+            }
+
+            // ============================================================
+            //  10. 强度测试 (画面3) —— 优化滚动 + 中文单位
+            // ============================================================
+            async function startStrengthTest() {
+                logContainer3.innerHTML = '';
+                progressBar3.style.width = '0%';
+                progressText3.textContent = '0%';
+                progressCount3.textContent = '分析中...';
+                levelIndicator.className = 'level-indicator';
+                levelBadge.textContent = '—';
+                levelBadge.className = 'level-badge';
+                screen3.classList.remove('level-unsafe', 'level-safe', 'level-strong');
+                infoComb.textContent = '理论组合数: —';
+                infoTime.textContent = '理论破解时间: —';
+
+                const pwd = userPassword;
+                const len = pwd.length;
+                const totalComb = calcCombinations(pwd);
+                const finalSec = getSecurityLevel(totalComb);
+                const crackTime = estimateCrackTime(totalComb);
+
+                // 模拟逐位显示
+                const steps = [];
+                for (let i = 1; i <= len; i++) {
+                    const subPwd = pwd.slice(0, i);
+                    const subComb = calcCombinations(subPwd);
+                    const subType = getPasswordType(subPwd);
+                    let typeLabel = '未知';
+                    if (subType === 'digit') typeLabel = '纯数字';
+                    else if (subType === 'letter_lower') typeLabel = '小写';
+                    else if (subType === 'letter_upper') typeLabel = '大写';
+                    else if (subType === 'letter_mixed') typeLabel = '大小写';
+                    else if (subType === 'mixed') typeLabel = '字母+数字';
+                    else if (subType === 'complex') typeLabel = '含特殊符';
+                    steps.push({ len: i, typeLabel, combinations: subComb, formatted: formatNum(subComb) });
+                }
+
+                const totalSteps = steps.length;
+                for (let i = 0; i < totalSteps; i++) {
+                    const step = steps[i];
+                    const pct = ((i + 1) / totalSteps * 100);
+                    progressBar3.style.width = pct + '%';
+                    progressText3.textContent = Math.round(pct) + '%';
+                    progressCount3.textContent = `长度 ${step.len} · ${step.typeLabel}`;
+
+                    const currentComb = step.combinations;
+                    const currentTime = estimateCrackTime(currentComb);
+                    infoComb.textContent = `理论组合数: ${step.formatted}`;
+                    infoTime.textContent = `理论破解时间: ${currentTime}`;
+
+                    const entry = document.createElement('div');
+                    entry.className = 'log-entry';
+                    entry.innerHTML = `
+                        <span class="log-icon"></span>
+                        长度 ${step.len} · ${step.typeLabel} · 组合 ${step.formatted}
+                    `;
+                    logContainer3.appendChild(entry);
+                    // 滚动到底部
+                    requestAnimationFrame(() => {
+                        logContainer3.scrollTop = logContainer3.scrollHeight;
+                    });
+                    await sleep(100 + Math.random() * 60);
+                }
+
+                // 最终结果
+                const finalComb = totalComb;
+                const finalSecResult = getSecurityLevel(finalComb);
+                const finalCrack = estimateCrackTime(finalComb);
+
+                const levelMap = {
+                    'unsafe': { cls: 'level-unsafe', badgeCls: 'unsafe', indicatorCls: 'unsafe', label: '⚠️ 不安全' },
+                    'safe': { cls: 'level-safe', badgeCls: 'safe', indicatorCls: 'safe', label: '✅ 较为安全' },
+                    'strong': { cls: 'level-strong', badgeCls: 'strong', indicatorCls: 'strong', label: '🛡️ 很安全' }
+                };
+                const info = levelMap[finalSecResult.level];
+                screen3.classList.add(info.cls);
+                levelIndicator.className = 'level-indicator ' + info.indicatorCls;
+                levelBadge.textContent = `${info.label} · ${finalCrack}`;
+                levelBadge.className = 'level-badge ' + info.badgeCls;
+
+                infoComb.textContent = `理论组合数: ${formatNum(finalComb)}`;
+                infoTime.textContent = `理论破解时间: ${finalCrack}`;
+
+                const finalEntry = document.createElement('div');
+                finalEntry.className = 'log-entry success';
+                finalEntry.innerHTML = `
+                    <span class="log-icon"></span>
+                    评估完成！组合数 <strong>${formatNum(finalComb)}</strong> · 等级 <strong style="color:${finalSecResult.color}">${finalSecResult.label}</strong>
+                `;
+                logContainer3.appendChild(finalEntry);
+                requestAnimationFrame(() => {
+                    logContainer3.scrollTop = logContainer3.scrollHeight;
+                });
+                progressCount3.textContent = `✅ 完成 · ${finalSecResult.label}`;
+                retryBtn.style.display = 'block';
+            }
+
+            // ============================================================
+            //  11. 返回画面1 (重置)
+            // ============================================================
+            function resetToScreen1() {
+                isChecking = false;
+                const backBtn = document.getElementById('backBtn2');
+                if (backBtn) backBtn.parentElement?.remove();
+
+                screen2.classList.remove('danger-bg');
+                logContainer2.innerHTML = '';
+                progressBar2.style.width = '0%';
+                progressText2.textContent = '0%';
+                progressCount2.textContent = '0 / 0';
+
+                logContainer3.innerHTML = '';
+                progressBar3.style.width = '0%';
+                progressText3.textContent = '0%';
+                progressCount3.textContent = '计算中...';
+                levelIndicator.className = 'level-indicator';
+                levelBadge.textContent = '—';
+                levelBadge.className = 'level-badge';
+                screen3.classList.remove('level-unsafe', 'level-safe', 'level-strong');
+                infoComb.textContent = '理论组合数: —';
+                infoTime.textContent = '理论破解时间: —';
+                retryBtn.style.display = 'none';
+
+                passwordInput.disabled = false;
+                nextBtn.disabled = userPassword.length < 1;
+                goToScreen(0);
+            }
+
+            // ============================================================
+            //  12. "换一个密码试试"
+            // ============================================================
+            retryBtn.addEventListener('click', resetToScreen1);
+            retryBtn.style.display = 'none';
+
+            // ============================================================
+            //  13. 粒子背景
+            // ============================================================
+            function createParticles() {
+                const container = document.getElementById('particles');
+                for (let i = 0; i < 30; i++) {
+                    const p = document.createElement('div');
+                    p.className = 'particle';
+                    const size = 4 + Math.random() * 20;
+                    p.style.width = size + 'px';
+                    p.style.height = size + 'px';
+                    p.style.left = Math.random() * 100 + '%';
+                    p.style.top = Math.random() * 100 + '%';
+                    p.style.animationDuration = (12 + Math.random() * 20) + 's';
+                    p.style.animationDelay = (Math.random() * 10) + 's';
+                    p.style.opacity = 0.1 + Math.random() * 0.2;
+                    p.style.background = `radial-gradient(circle, rgba(255,215,138,${0.1+Math.random()*0.15}), transparent)`;
+                    container.appendChild(p);
+                }
+            }
+            createParticles();
+
+            // ============================================================
+            //  14. 初始化
+            // ============================================================
+            nextBtn.disabled = true;
+            goToScreen(0, false);
+            passwordInput.value = '';
+            userPassword = '';
+
+            console.log('密码强度测试 | 常用密码库大小:', COMMON_PASSWORDS.length);
+        })();
+    </script>
 </body>
 </html>
