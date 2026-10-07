@@ -7,19 +7,16 @@
       "device": []
     },
     {
+      "key": "gotsingkuailer",
+      "expire": "2026-10-07 11:30:00",
+      "enabled": true,
+      "cat": "小时卡"
+    },
+    {
       "key": "天卡",
       "expire": "天卡",
       "enabled": false,
       "device": []
-    },
-    {
-      "key": "RsGUeBolRCbVwcZl",
-      "expire": "2026-10-07 11:00:59",
-      "enabled": true,
-      "device": [
-        "vivo_V2425A",
-        "OnePlus_PLK110"
-      ]
     },
     {
       "key": "G91fpklmVMyk369O",
