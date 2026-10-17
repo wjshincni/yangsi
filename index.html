@@ -6,13 +6,13 @@
 <title>野鸡电竞</title>
 <link rel="icon" type="image/png" href="logo.png">
 <style>
-:root{--ink:#1a1d26;--sub:#7a8190;--line:#e9edf2;--green:#07c160;--blue:#1677ff;--warn:#faad14;--bg:#f5f6f8}
+:root{--ink:#1a1d26;--sub:#7a8190;--line:#e9edf2;--green:#07c160;--blue:#1677ff;--warn:#faad14;--red:#fa5151;--bg:#f5f6f8}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html{scroll-behavior:smooth}
 section{scroll-margin-top:64px}
 body{font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
 
-/* ========== 首屏 hero：logo 常驻，Q弹入场 + 双按钮 ========== */
+/* ========== 首屏 hero：logo 常驻，Q弹入场 + 按钮组 ========== */
 .hero{min-height:100vh;background:radial-gradient(circle at 50% 38%,#1e2637 0%,#0d1117 70%);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px 20px}
 .hero .logo{width:148px;height:148px;border-radius:26px;object-fit:cover;box-shadow:0 24px 70px rgba(0,0,0,.55);opacity:0;animation:pop .92s cubic-bezier(.22,.9,.32,1.18) forwards;transform-origin:center}
 @keyframes pop{
@@ -22,19 +22,20 @@ body{font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-s
   84%{transform:scale(1.07)}
   100%{transform:scale(1);opacity:1}
 }
-.hero .cta{display:flex;gap:14px;margin-top:32px;opacity:0;transform:translateY(14px);transition:opacity .5s ease,transform .5s ease}
+.hero .cta{display:flex;gap:14px;margin-top:32px;flex-wrap:wrap;justify-content:center;opacity:0;transform:translateY(14px);transition:opacity .5s ease,transform .5s ease}
 .hero.show-cta .cta{opacity:1;transform:none}
 .hero .btn{min-width:132px;padding:13px 0;border:none;border-radius:26px;font-size:15px;font-weight:700;cursor:pointer;transition:transform .12s,box-shadow .12s}
 .hero .btn:active{transform:scale(.96)}
 .btn-buy{background:linear-gradient(135deg,#07c160,#0fb97a);color:#fff;box-shadow:0 10px 26px rgba(7,193,96,.35)}
 .btn-guide{background:#fff;color:var(--ink);border:1.5px solid var(--line)}
+.btn-account{background:rgba(255,255,255,.12);color:#e8ecf4;border:1.5px solid rgba(255,255,255,.35)}
 
 /* ========== 顶栏（fixed/sticky，logo 常驻承接） ========== */
 .topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:10px;padding:12px 16px;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);animation:fadeDown .5s ease}
 .topbar .logo{width:34px;height:34px;border-radius:10px;object-fit:cover;flex:none;background:#f0f2f4}
 .topbar b{font-size:16px}
 .topbar nav{margin-left:auto;display:flex;gap:8px}
-.topbar nav a{padding:7px 14px;border-radius:18px;font-size:13px;color:var(--sub);text-decoration:none;cursor:pointer}
+.topbar nav a{padding:7px 14px;border-radius:18px;font-size:13px;color:var(--sub);text-decoration:none;cursor:pointer;white-space:nowrap}
 .topbar nav a:active{background:#f0f2f4}
 .topbar nav a.buy{background:var(--green);color:#fff;font-weight:700}
 @keyframes fadeDown{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:none}}
@@ -69,15 +70,129 @@ body{font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-s
 .footer{text-align:center;color:#c2c7cd;font-size:12px;margin-top:28px}
 #main{animation:fadeUp .5s ease}
 @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+
+/* ========== 账户信息页 ========== */
+.acc-head{display:flex;align-items:center;gap:10px;padding:14px 4px 4px}
+.acc-head .back{background:#fff;border:1px solid var(--line);border-radius:18px;padding:8px 16px;font-size:13px;color:var(--ink);cursor:pointer;font-weight:700}
+.acc-head .back:active{background:#f0f2f4}
+.acc-head .ttl{font-size:17px;font-weight:700}
+.acc-head .act{margin-left:auto;font-size:12px;color:var(--sub)}
+.acc-head a{color:var(--sub);cursor:pointer;text-decoration:underline}
+
+/* 登录 */
+.login-card{padding:30px 22px;text-align:center;margin-top:22px}
+.login-card h2{font-size:18px}
+.login-card p{font-size:13px;color:var(--sub);margin:8px 0 18px}
+.login-card input{width:100%;padding:13px 14px;border:1.5px solid var(--line);border-radius:12px;font-size:16px;letter-spacing:1px;text-align:center;outline:none}
+.login-card input:focus{border-color:var(--green)}
+.login-card button{width:100%;margin-top:14px;padding:13px;border:none;border-radius:12px;background:var(--green);color:#fff;font-size:15px;font-weight:700;cursor:pointer}
+.login-card button:disabled{background:#c8c9cc;cursor:not-allowed}
+.login-hint{font-size:12px;color:var(--sub);margin-top:12px}
+
+/* 概览行 */
+.ov-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.ov-cell{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px}
+.ov-cell .lb{font-size:12px;color:var(--sub)}
+.ov-cell .vl{font-size:26px;font-weight:800;color:var(--ink);margin-top:4px}
+.ov-cell .vl em{font-style:normal;font-size:12px;color:var(--sub);font-weight:400}
+.ov-cell .vl.green{color:var(--green)}
+
+/* 卡密信息 */
+.key-info{padding:16px}
+.key-info .row{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px dashed var(--line);font-size:13px}
+.key-info .row:last-child{border-bottom:none}
+.key-info .row b{font-weight:700}
+.key-info .row span{color:var(--sub);word-break:break-all;text-align:right}
+.key-info .row span.v{color:var(--ink);font-weight:700}
+
+/* 续费 */
+.renew-bar{display:flex;align-items:center;gap:12px;padding:16px;background:linear-gradient(135deg,#f0faf4,#eaf6ff);border-radius:16px;margin-top:12px}
+.renew-bar .txt{flex:1}
+.renew-bar .txt b{font-size:14px}
+.renew-bar .txt p{font-size:12px;color:var(--sub)}
+.renew-bar button{flex:none;background:var(--green);color:#fff;border:none;border-radius:18px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer}
+
+/* 资产（优惠券） */
+.asset-item{display:flex;align-items:center;gap:12px;padding:13px 16px;border-bottom:1px solid var(--line)}
+.asset-item:last-child{border-bottom:none}
+.asset-tag{flex:none;width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#fff3d6,#ffe8c2);display:flex;flex-direction:column;align-items:center;justify-content:center}
+.asset-tag b{font-size:16px;color:#c76f00}
+.asset-tag i{font-style:normal;font-size:10px;color:#c76f00}
+.asset-info{flex:1;min-width:0}
+.asset-info b{font-size:14px}
+.asset-info p{font-size:12px;color:var(--sub);margin-top:1px}
+.asset-use{flex:none;background:var(--blue);color:#fff;border:none;border-radius:16px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer}
+.asset-empty{padding:20px;text-align:center;color:var(--sub);font-size:13px}
+
+/* 抽奖 */
+.lot-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:12px}
+.lot-item{background:#fff;border:1.5px solid var(--line);border-radius:16px;padding:14px 12px;cursor:pointer;position:relative;transition:transform .1s,border-color .15s}
+.lot-item:active{transform:scale(.96)}
+.lot-item.dim{opacity:.55;cursor:not-allowed}
+.lot-item .cost{position:absolute;top:10px;right:10px;font-size:12px;font-weight:800;color:#c76f00}
+.lot-item .cost em{font-style:normal;font-size:10px;font-weight:400;color:var(--sub)}
+.lot-item .nm{font-size:17px;font-weight:800}
+.lot-item .nm i{font-style:normal;font-size:10px;color:#fff;background:var(--green);border-radius:6px;padding:1px 6px;margin-left:6px;vertical-align:2px}
+.lot-item .ds{font-size:12px;color:var(--sub);margin-top:6px;line-height:1.5}
+
+/* 优惠券使用 */
+.cp-head{display:flex;align-items:center;gap:12px;padding:14px 16px}
+.cp-head .tag{flex:none;width:58px;height:58px;border-radius:14px;background:linear-gradient(135deg,#fff3d6,#ffe8c2);display:flex;align-items:center;justify-content:center;font-weight:800;color:#c76f00;font-size:18px}
+.cp-head .txt{flex:1}
+.cp-head .txt b{font-size:15px}
+.cp-head .txt p{font-size:12px;color:var(--sub)}
+.mode-row{display:flex;gap:10px;margin:12px 0}
+.mode-row .md{flex:1;text-align:center;padding:12px 0;border:1.5px solid var(--line);border-radius:14px;font-size:14px;font-weight:700;color:var(--sub);cursor:pointer;background:#fff}
+.mode-row .md.on{border-color:var(--green);color:var(--green);background:#f0faf4}
+.cp-list{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cp-item{border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;cursor:pointer;background:#fff;transition:border-color .15s,transform .1s}
+.cp-item:active{transform:scale(.97)}
+.cp-item .pnm{font-size:14px;font-weight:700;display:flex;justify-content:space-between;align-items:center}
+.cp-item .ppr{font-size:15px;font-weight:800;color:var(--green);margin-top:4px}
+.cp-item .ppr i{font-style:normal;font-size:11px}
+.cp-item .ppr del{font-size:11px;color:#c2c7cd;font-weight:400;margin-left:6px}
+.cp-item.on{border-color:var(--green);background:#f0faf4}
+.cp-pay{margin-top:14px;padding:13px;border:none;border-radius:12px;background:var(--green);color:#fff;font-size:15px;font-weight:700;cursor:pointer;width:100%}
+.cp-pay:disabled{background:#c8c9cc;cursor:not-allowed}
+.cp-note{font-size:12px;color:var(--sub);margin-top:10px}
+
+/* ========== 模态框 ========== */
+.mask{position:fixed;inset:0;z-index:100;background:rgba(13,17,23,.55);display:flex;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(2px)}
+.modal{background:#fff;border-radius:20px;width:min(92vw,360px);padding:26px 22px;text-align:center;animation:popIn .3s cubic-bezier(.22,.9,.32,1.18)}
+@keyframes popIn{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
+.modal .m-ico{width:64px;height:64px;border-radius:20px;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800;color:#fff}
+.modal .m-ico.green{background:linear-gradient(135deg,#07c160,#0fb97a)}
+.modal .m-ico.blue{background:linear-gradient(135deg,#1677ff,#4d94ff)}
+.modal .m-ico.orange{background:linear-gradient(135deg,#faad14,#ffc53d);color:#fff}
+.modal .m-ico.gray{background:linear-gradient(135deg,#8c94a3,#aab1bd)}
+.modal h3{font-size:17px;font-weight:800}
+.modal .m-txt{font-size:13px;color:var(--sub);margin-top:8px;line-height:1.7}
+.modal .m-txt b{color:var(--ink)}
+.modal .m-row{display:flex;gap:10px;margin-top:18px}
+.modal .m-row button{flex:1;padding:11px 0;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer}
+.modal .btn-p{background:var(--green);color:#fff}
+.modal .btn-s{background:#f0f2f4;color:var(--ink)}
+.modal .btn-b{background:var(--blue);color:#fff}
+.modal .btn-or{background:linear-gradient(135deg,#faad14,#ffc53d);color:#fff}
+
+/* 抽奖动画 */
+.draw-mask{position:fixed;inset:0;z-index:200;background:rgba(13,17,23,.85);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff}
+.draw-ring{width:120px;height:120px;border-radius:50%;background:conic-gradient(from 0deg,#07c160,#1677ff,#faad14,#07c160);-webkit-mask:radial-gradient(circle,transparent 58%,#000 60%);mask:radial-gradient(circle,transparent 58%,#000 60%);animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.draw-mask .txt{margin-top:18px;font-size:15px;font-weight:700;letter-spacing:2px}
+.draw-mask .sub{margin-top:6px;font-size:12px;color:rgba(255,255,255,.7)}
+
+.toast{position:fixed;left:50%;top:38%;transform:translateX(-50%);z-index:300;background:rgba(20,24,32,.92);color:#fff;font-size:13px;padding:10px 18px;border-radius:12px;max-width:80vw;text-align:center}
 </style>
 </head>
 <body>
 
-<!-- ========== 首屏：logo 常驻 + Q弹入场 + 双按钮 ========== -->
+<!-- ========== 首屏：logo 常驻 + Q弹入场 + 按钮组 ========== -->
 <section class="hero" id="hero">
   <img class="logo" src="assets/logo.png" alt="野鸡电竞">
   <div class="cta">
     <button class="btn btn-buy" onclick="location.href='https://pay.futrue.asia'">购买卡密</button>
+    <button class="btn btn-account" onclick="showAccount()">我的卡密</button>
     <button class="btn btn-guide" onclick="showMain()">查看教程</button>
   </div>
 </section>
@@ -89,6 +204,7 @@ body{font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-s
   <nav>
     <a onclick="go('#dl')">下载</a>
     <a onclick="go('#video')">教程</a>
+    <a onclick="showAccount()">我的卡密</a>
     <a class="buy" onclick="location.href='https://pay.futrue.asia'">购卡</a>
   </nav>
 </header>
@@ -125,56 +241,486 @@ body{font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-s
   <div class="footer">野鸡电竞 · 辅助工具 · 下载·教程·购卡</div>
 </main>
 
+<!-- ========== 账户信息页（我的卡密） ========== -->
+<main class="hidden wrap" id="account">
+  <div class="acc-head">
+    <button class="back" onclick="showHome()">返回</button>
+    <div class="ttl">我的卡密</div>
+    <div class="act"><a id="logoutLink" class="hidden" onclick="logout()">退出登录</a></div>
+  </div>
+
+  <!-- 登录视图 -->
+  <div id="acc-login">
+    <div class="card login-card">
+      <h2>登录账户</h2>
+      <p>输入你的卡密，即可查看积分、优惠券并参与抽奖</p>
+      <input id="loginKey" type="text" placeholder="请输入卡密" autocomplete="off" maxlength="32">
+      <button id="loginBtn" onclick="doLogin()">登录</button>
+      <div class="login-hint">卡密即凭证，请勿随意泄露给他人。登录仅用于积分抽奖与续费，不影响设备绑定。</div>
+    </div>
+  </div>
+
+  <!-- 已登录面板 -->
+  <div id="acc-panel" class="hidden">
+
+    <div class="ov-row">
+      <div class="ov-cell">
+        <div class="lb">当前积分</div>
+        <div class="vl green" id="ovPoints">0</div>
+      </div>
+      <div class="ov-cell">
+        <div class="lb">剩余有效期</div>
+        <div class="vl" id="ovRemain">--</div>
+      </div>
+    </div>
+
+    <div class="card key-info" style="margin-top:12px">
+      <div class="row"><b>卡密</b><span id="ciKey">--</span></div>
+      <div class="row"><b>套餐</b><span id="ciType">--</span></div>
+      <div class="row"><b>有效期至</b><span class="v" id="ciExpire">--</span></div>
+      <div class="row"><b>状态</b><span id="ciStatus">--</span></div>
+    </div>
+
+    <div class="renew-bar">
+      <div class="txt">
+        <b>卡密续费</b>
+        <p>续费直接在剩余时间上叠加时长，不影响当前剩余有效期</p>
+      </div>
+      <button onclick="goRenew()">去续费</button>
+    </div>
+
+    <div class="section-label">我的资产（优惠券）</div>
+    <div class="card" id="assetBox"></div>
+
+    <div class="section-label">积分抽奖</div>
+    <div class="lot-grid" id="lotGrid"></div>
+    <div class="tips" style="margin-top:12px">抽奖概率与积分扣除均由服务端执行，前端仅展示动画。抽中时长直接叠加到本卡密剩余时间；搏一搏档 10% 概率获得永久卡。</div>
+
+  </div>
+
+  <!-- 优惠券使用视图 -->
+  <div id="acc-coupon" class="hidden">
+    <div class="card cp-head" id="cpHead"></div>
+    <div class="mode-row">
+      <div class="md on" data-m="renew" onclick="setCpMode('renew')">续费本卡</div>
+      <div class="md" data-m="buy" onclick="setCpMode('buy')">购买新卡</div>
+    </div>
+    <div class="cp-list" id="cpList"></div>
+    <button class="cp-pay" id="cpPayBtn" onclick="goCouponPay()" disabled>请选择套餐</button>
+    <div class="cp-note" id="cpNote"></div>
+  </div>
+</main>
+
+<!-- ========== 结果模态框 ========== -->
+<div class="mask hidden" id="modalMask" onclick="if(event.target===this)hideModal()">
+  <div class="modal">
+    <div class="m-ico green" id="mIco"></div>
+    <h3 id="mTitle"></h3>
+    <div class="m-txt" id="mText"></div>
+    <div class="m-row" id="mRow"></div>
+  </div>
+</div>
+
+<!-- ========== 抽奖动画 ========== -->
+<div class="draw-mask hidden" id="drawMask">
+  <div class="draw-ring"></div>
+  <div class="txt">开奖中...</div>
+  <div class="sub">正在后台计算，请稍候</div>
+</div>
+
 <script>
 // ===== 配置 =====
+const API_BASE = "https://verify.futrue.asia";
+const PAY_BASE = "https://pay.futrue.asia";
 const DOUYIN_COPY = "https://v.kuaishou.com/Jytqxbr8";
 const $ = (id) => document.getElementById(id);
 
-// ---- 入场：logo Q弹动画结束后淡入双按钮（logo 保持显示在首屏）----
-window.addEventListener('load', () => {
-  setTimeout(() => $('hero').classList.add('show-cta'), 960);
-});
+// 套餐基准价（仅用于前端展示；实际支付价由服务端计算）
+const PRODUCTS = {
+  sh10:    { name: "10小时卡",   price: 600 },
+  day:     { name: "天卡",       price: 900 },
+  weekend: { name: "周末卡(48h)", price: 1590 },
+  week:    { name: "周卡",       price: 5200 },
+  month:   { name: "月卡",       price: 12900 },
+  season:  { name: "季卡",       price: 26900 },
+  year:    { name: "年卡",       price: 39900 },
+};
 
-// ---- 查看教程：隐藏黑色首屏，切换到全新画面（顶栏+下载+观看视频）----
-function showMain() {
-  $('hero').style.display = 'none';          // 黑色首屏整个移除，不保留
-  $('topbar').classList.remove('hidden');
-  $('main').classList.remove('hidden');       // 新画面：顶栏 + 下载 + 视频
+// 抽奖档位（展示用；概率与扣分由服务端决定）
+const TIERS = [
+  { cost: 20,   name: "破鞋",   desc: "9.5~9折券 或 10小时卡",   hot: false },
+  { cost: 50,   name: "运动鞋", desc: "9~8.5折券 或 天卡",       hot: false },
+  { cost: 100,  name: "自行车", desc: "8.5~8折券 或 周末卡(48h)", hot: false },
+  { cost: 300,  name: "摩托车", desc: "8~7.5折券 或 周卡",       hot: false },
+  { cost: 500,  name: "跑车",   desc: "7.5~7折券 或 月卡",       hot: true },
+  { cost: 1000, name: "飞机",   desc: "7折券 或 季卡",           hot: true },
+  { cost: 3000, name: "火箭",   desc: "6.5折券 或 年卡",         hot: true },
+  { cost: 3650, name: "搏一搏", desc: "10% 概率永久卡",          hot: false },
+];
+
+let acc = null;          // {token, key, expire, device}
+let accData = null;      // /account/info 缓存
+let drawing = false;
+let cpState = { couponId: null, mode: "renew", productId: null, quoteId: null, finalPrice: 0 };
+
+// ===== 会话与设备指纹 =====
+function getDevice() {
+  let d = localStorage.getItem("yje_dev");
+  if (!d) { d = Math.random().toString(36).slice(2) + Date.now().toString(36); localStorage.setItem("yje_dev", d); }
+  return d;
+}
+function loadAcc() {
+  try { acc = JSON.parse(localStorage.getItem("yje_acc") || "null"); } catch (e) { acc = null; }
+  if (acc && !acc.device) acc.device = getDevice();
+}
+function saveAcc() { if (acc) localStorage.setItem("yje_acc", JSON.stringify(acc)); }
+function logout() {
+  acc = null; accData = null;
+  localStorage.removeItem("yje_acc");
+  showLogin();
+  showToast("已退出登录");
+}
+
+// ===== 带鉴权与自动刷新的 API 调用 =====
+async function api(path, opts = {}) {
+  opts.headers = Object.assign({ "Content-Type": "application/json", "X-Device": getDevice() }, opts.headers || {});
+  if (acc && acc.token) opts.headers["Authorization"] = "Bearer " + acc.token;
+  let r = await fetch(API_BASE + path, opts);
+  if (r.status === 401 && acc && acc.token) {
+    // token 过期：尝试刷新一次
+    try {
+      const rf = await fetch(API_BASE + "/account/refresh", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-Device": getDevice(), "Authorization": "Bearer " + acc.token },
+      });
+      const rd = await rf.json();
+      if (rd.ok) {
+        acc.token = rd.token; acc.expire = rd.expire; saveAcc();
+        opts.headers["Authorization"] = "Bearer " + acc.token;
+        r = await fetch(API_BASE + path, opts);
+      } else {
+        throw new Error("LOGIN_EXPIRED");
+      }
+    } catch (e) {
+      if (e && e.message === "LOGIN_EXPIRED") throw e;
+      throw new Error("网络异常，请稍后再试");
+    }
+  }
+  return r.json();
+}
+
+// ===== 页面切换 =====
+function showHome() {
+  $("hero").style.display = "";
+  $("topbar").classList.add("hidden");
+  $("main").classList.add("hidden");
+  $("account").classList.add("hidden");
   window.scrollTo(0, 0);
 }
-
-// ---- 顶栏锚点跳转（避开固定顶栏）----
+function showMain() {
+  $("hero").style.display = "none";
+  $("topbar").classList.remove("hidden");
+  $("main").classList.remove("hidden");
+  $("account").classList.add("hidden");
+  window.scrollTo(0, 0);
+}
+function showAccount() {
+  $("hero").style.display = "none";
+  $("topbar").classList.add("hidden");
+  $("main").classList.add("hidden");
+  $("account").classList.remove("hidden");
+  window.scrollTo(0, 0);
+  loadAcc();
+  if (acc && acc.token) {
+    $("logoutLink").classList.remove("hidden");
+    refreshAccount().then(showPanel);
+  } else {
+    showLogin();
+  }
+}
 function go(sel) {
   const el = document.querySelector(sel);
-  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
 }
+
+// ===== 登录视图 =====
+function showLogin() {
+  $("acc-login").classList.remove("hidden");
+  $("acc-panel").classList.add("hidden");
+  $("acc-coupon").classList.add("hidden");
+  $("logoutLink").classList.add("hidden");
+}
+function showPanel() {
+  $("acc-login").classList.add("hidden");
+  $("acc-panel").classList.remove("hidden");
+  $("acc-coupon").classList.add("hidden");
+}
+async function doLogin() {
+  const key = $("loginKey").value.trim();
+  if (!key) { showToast("请输入卡密"); return; }
+  const btn = $("loginBtn"); btn.disabled = true; btn.textContent = "登录中...";
+  try {
+    const r = await fetch(API_BASE + "/account/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Device": getDevice() },
+      body: JSON.stringify({ key, device: getDevice() }),
+    });
+    const d = await r.json();
+    if (!d.ok) { showToast(d.msg || "登录失败"); return; }
+    acc = { token: d.token, key: d.key, expire: d.expire, device: getDevice() };
+    saveAcc();
+    $("logoutLink").classList.remove("hidden");
+    await refreshAccount();
+    showPanel();
+    showToast("登录成功");
+  } catch (e) {
+    showToast(e.message || "网络异常，请稍后再试");
+  } finally {
+    btn.disabled = false; btn.textContent = "登录";
+  }
+}
+
+// ===== 账户面板渲染 =====
+async function refreshAccount() {
+  const d = await api("/account/info");
+  if (!d.ok) { if (d.msg) showToast(d.msg); return null; }
+  accData = d;
+  return d;
+}
+function renderPanel() {
+  if (!accData) return;
+  const d = accData;
+  $("ovPoints").innerHTML = d.points + '<em> 积分</em>';
+  // 剩余有效期
+  const remainMs = d.card && d.card.expire ? (parseMs(d.card.expire) - d.serverNow) : 0;
+  $("ovRemain").textContent = remainMs > 0 ? fmtRemain(remainMs) : "已过期";
+  $("ciKey").textContent = d.key;
+  $("ciType").textContent = (d.card && d.card.type) ? d.card.type : "--";
+  $("ciExpire").textContent = (d.card && d.card.expire) ? d.card.expire : "--";
+  $("ciStatus").textContent = (d.card && d.card.enabled === false) ? "已禁用" : (remainMs > 0 ? "有效" : "已过期");
+  renderAssets(d.coupons || []);
+  renderLottery(d.points);
+}
+function fmtRemain(ms) {
+  const d = Math.floor(ms / 86400000), h = Math.floor(ms % 86400000 / 3600000);
+  if (d > 0) return d + " 天 " + h + " 小时";
+  return Math.floor(ms / 3600000) + " 小时";
+}
+function parseMs(s) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2}):(\d{2})$/.exec(String(s));
+  if (!m) return 0;
+  return Date.UTC(+m[1], +m[2] - 1, +m[3], +m[4] - 8, +m[5], +m[6]); // 按 UTC+8 业务时区
+}
+
+// ===== 资产（优惠券） =====
+function renderAssets(coupons) {
+  const box = $("assetBox");
+  if (!coupons.length) { box.innerHTML = '<div class="asset-empty">暂无优惠券，去抽奖试试手气</div>'; return; }
+  box.innerHTML = "";
+  coupons.forEach(c => {
+    const div = document.createElement("div");
+    div.className = "asset-item";
+    div.innerHTML =
+      '<div class="asset-tag"><b>' + c.discountLabel + '</b><i>优惠券</i></div>' +
+      '<div class="asset-info"><b>' + c.tierName + '档 · ' + c.discountLabel + '优惠券</b>' +
+      '<p>有效期至 ' + fmtDate(c.expiresAt) + '</p></div>' +
+      '<button class="asset-use" onclick="openCoupon(\'' + c.couponId + '\')">使用</button>';
+    box.appendChild(div);
+  });
+}
+function fmtDate(ms) {
+  const d = new Date(ms + 8 * 3600 * 1000);
+  const p = n => String(n).padStart(2, "0");
+  return d.getUTCFullYear() + "-" + p(d.getUTCMonth() + 1) + "-" + p(d.getUTCDate());
+}
+
+// ===== 抽奖 =====
+function renderLottery(points) {
+  const grid = $("lotGrid");
+  grid.innerHTML = "";
+  TIERS.forEach(t => {
+    const div = document.createElement("div");
+    div.className = "lot-item" + (points < t.cost ? " dim" : "");
+    div.innerHTML =
+      '<div class="cost">' + t.cost + '<em> 积分</em></div>' +
+      '<div class="nm">' + t.name + (t.hot ? '<i>热门</i>' : '') + '</div>' +
+      '<div class="ds">' + t.desc + '</div>';
+    div.onclick = () => { if (!div.classList.contains("dim")) doDraw(t); };
+    grid.appendChild(div);
+  });
+}
+async function doDraw(tier) {
+  if (drawing) return;
+  drawing = true;
+  const t0 = Date.now();
+  const requestId = (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random()).replace(/-/g, "");
+  $("drawMask").classList.remove("hidden");
+  try {
+    const d = await api("/draw", { method: "POST", body: JSON.stringify({ tier: tier.cost, requestId }) });
+    const wait = Math.max(0, 1500 - (Date.now() - t0));
+    await new Promise(r => setTimeout(r, wait));
+    $("drawMask").classList.add("hidden");
+    if (!d.ok) { showToast(d.msg || "抽奖失败"); return; }
+    showDrawResult(d);
+    await refreshAccount();
+    if (accData) renderPanel();
+  } catch (e) {
+    $("drawMask").classList.add("hidden");
+    showToast(e.message || "网络异常，请稍后再试");
+  } finally {
+    drawing = false;
+  }
+}
+function showDrawResult(d) {
+  const p = d.prize || {};
+  const ico = $("mIco"), title = $("mTitle"), txt = $("mText"), row = $("mRow");
+  row.innerHTML = "";
+  if (p.type === "coupon") {
+    ico.className = "m-ico orange"; ico.textContent = "券";
+    title.textContent = "恭喜抽中优惠券";
+    txt.innerHTML = "<b>" + p.discountLabel + "</b> 优惠券（" + p.tierName + "档）<br>有效期至 " + fmtDate(p.expiresAt) + "，可用于购买或续费";
+    row.innerHTML = '<button class="btn-b" onclick="openCoupon(\'' + p.couponId + '\')">前往使用</button><button class="btn-s" onclick="hideModal()">稍后再说</button>';
+  } else if (p.type === "duration") {
+    ico.className = "m-ico blue"; ico.textContent = "时";
+    title.textContent = "恭喜获得时长";
+    txt.innerHTML = "已获得 <b>" + p.durationLabel + "</b> 卡密时长，已叠加到你的卡密剩余时间<br>新到期时间：<b>" + p.newExpire + "</b>";
+    row.innerHTML = '<button class="btn-p" onclick="hideModal()">好的</button>';
+  } else if (p.type === "permanent") {
+    ico.className = "m-ico green"; ico.textContent = "永";
+    title.textContent = "恭喜获得永久卡";
+    txt.innerHTML = "搏一搏成功！你的卡密已升级为永久卡，有效期至 <b>" + p.newExpire + "</b>";
+    row.innerHTML = '<button class="btn-p" onclick="hideModal()">太棒了</button>';
+  } else {
+    ico.className = "m-ico gray"; ico.textContent = "惜";
+    title.textContent = "很遗憾，未中奖";
+    txt.innerHTML = "本次搏一搏未命中，再接再厉";
+    row.innerHTML = '<button class="btn-p" onclick="hideModal()">好的</button>';
+  }
+  $("modalMask").classList.remove("hidden");
+}
+function hideModal() { $("modalMask").classList.add("hidden"); }
+
+// ===== 优惠券使用 / 续费联动 =====
+function openCoupon(couponId) {
+  // 从资产列表或抽奖结果进入：初始化使用视图
+  cpState = { couponId, mode: "renew", productId: null, quoteId: null, finalPrice: 0 };
+  $("acc-panel").classList.add("hidden");
+  $("acc-coupon").classList.remove("hidden");
+  hideModal();
+  renderCouponHead();
+  renderCpProducts();
+  setCpMode("renew");
+}
+function renderCouponHead() {
+  const head = $("cpHead");
+  const coupon = accData && accData.coupons ? accData.coupons.find(c => c.couponId === cpState.couponId) : null;
+  if (coupon) {
+    head.innerHTML = '<div class="tag">' + coupon.discountLabel + '</div>' +
+      '<div class="txt"><b>' + coupon.tierName + '档 · ' + coupon.discountLabel + '优惠券</b>' +
+      '<p>有效期至 ' + fmtDate(coupon.expiresAt) + '，选择套餐后服务端计算最终支付价</p></div>';
+  } else {
+    head.innerHTML = '<div class="tag">券</div><div class="txt"><b>使用优惠券</b><p>选择套餐后服务端计算最终支付价</p></div>';
+  }
+}
+function setCpMode(m) {
+  cpState.mode = m;
+  document.querySelectorAll(".mode-row .md").forEach(x => x.classList.toggle("on", x.dataset.m === m));
+  renderCpProducts();
+}
+function renderCpProducts() {
+  const list = $("cpList");
+  list.innerHTML = "";
+  Object.entries(PRODUCTS).forEach(([pid, p]) => {
+    const div = document.createElement("div");
+    div.className = "cp-item" + (cpState.productId === pid ? " on" : "");
+    div.innerHTML = '<div class="pnm">' + p.name + '</div><div class="ppr"><i>¥</i>' + (p.price / 100).toFixed(2) + '</div>';
+    div.onclick = async () => {
+      cpState.productId = pid; cpState.quoteId = null; cpState.finalPrice = 0;
+      renderCpProducts();
+      const btn = $("cpPayBtn"); btn.disabled = true; btn.textContent = "计算中...";
+      try {
+        const d = await api("/coupon/quote", {
+          method: "POST",
+          body: JSON.stringify({ couponId: cpState.couponId, productId: pid, mode: cpState.mode }),
+        });
+        if (!d.ok) { showToast(d.msg || "计价失败"); btn.textContent = "请重新选择"; return; }
+        cpState.quoteId = d.quoteId; cpState.finalPrice = d.finalPrice;
+        // 更新该套餐展示折后价
+        div.querySelector(".ppr").innerHTML = '<i>¥</i>' + (d.finalPrice / 100).toFixed(2) +
+          '<del>¥' + (p.price / 100).toFixed(2) + '</del>';
+        btn.disabled = false;
+        btn.textContent = "去支付 ¥" + (d.finalPrice / 100).toFixed(2);
+        $("cpNote").textContent = "折后价 ¥" + (d.finalPrice / 100).toFixed(2) + " + 0.01~0.99 元识别服务费（以支付页为准）";
+      } catch (e) {
+        showToast(e.message || "计价失败，请稍后再试");
+        btn.textContent = "请重新选择";
+      }
+    };
+    div.dataset.pid = pid;
+    list.appendChild(div);
+  });
+  $("cpPayBtn").disabled = true;
+  $("cpPayBtn").textContent = "请选择套餐";
+}
+function goCouponPay() {
+  if (!cpState.quoteId || !cpState.productId || !cpState.couponId) return;
+  const pid = cpState.productId;
+  const discountLabel = "优惠券已生效";
+  const params = new URLSearchParams({
+    coupon: cpState.quoteId,
+    mode: cpState.mode,
+    product: pid,
+    note: discountLabel,
+  });
+  if (cpState.mode === "renew" && acc) params.set("key", acc.key);
+  location.href = PAY_BASE + "/?" + params.toString();
+}
+function goRenew() {
+  if (!acc) return;
+  location.href = PAY_BASE + "/?renew=1&key=" + encodeURIComponent(acc.key);
+}
+
+// ===== 通用 =====
+function showToast(msg) {
+  const old = document.querySelector(".toast");
+  if (old) old.remove();
+  const t = document.createElement("div");
+  t.className = "toast"; t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2200);
+}
+
+// ---- 入场：logo Q弹动画结束后淡入按钮组（logo 保持显示在首屏）----
+window.addEventListener("load", () => {
+  setTimeout(() => $("hero").classList.add("show-cta"), 960);
+});
 
 // ---- 下载：blob + APK(zip) 魔数校验 ----
 async function dl(url, name) {
   try {
     const r = await fetch(url);
-    if (!r.ok) throw new Error('请求失败 ' + r.status);
+    if (!r.ok) throw new Error("请求失败 " + r.status);
     const b = await r.blob();
     const head = await b.slice(0, 2).arrayBuffer();
-    if (new DataView(head).getUint16(0) !== 0x504b) { alert('下载失败：文件校验未通过'); return; }
-    const a = document.createElement('a');
+    if (new DataView(head).getUint16(0) !== 0x504b) { alert("下载失败：文件校验未通过"); return; }
+    const a = document.createElement("a");
     a.href = URL.createObjectURL(b);
-    a.download = name + '.apk';
+    a.download = name + ".apk";
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(a.href), 4000);
   } catch (e) {
-    alert('下载失败：' + e.message);
+    alert("下载失败：" + e.message);
   }
 }
 
 // ---- 复制快手观看链接 ----
 function copyLink(text) {
   const fallback = () => {
-    const ta = document.createElement('textarea');
-    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    const ta = document.createElement("textarea");
+    ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
     document.body.appendChild(ta); ta.select();
     let ok = false;
-    try { ok = document.execCommand('copy'); } catch (_) {}
+    try { ok = document.execCommand("copy"); } catch (_) {}
     ta.remove();
     return ok;
   };
@@ -184,13 +730,16 @@ function copyLink(text) {
   }
   return fallback();
 }
-$('ksBtn').addEventListener('click', () => {
+$("ksBtn").addEventListener("click", () => {
   if (copyLink(DOUYIN_COPY)) {
-    const b = $('ksBtn'), o = b.textContent;
-    b.textContent = '已复制，去快手粘贴观看';
+    const b = $("ksBtn"), o = b.textContent;
+    b.textContent = "已复制，去快手粘贴观看";
     setTimeout(() => b.textContent = o, 2000);
   }
 });
+
+// 登录输入框回车触发
+$("loginKey").addEventListener("keydown", (e) => { if (e.key === "Enter") doLogin(); });
 </script>
 </body>
 </html>
