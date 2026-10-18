@@ -41,7 +41,7 @@ body{font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-s
 @keyframes fadeDown{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:none}}
 
 .wrap{max-width:620px;margin:0 auto;padding:20px 16px 40px}
-.hidden{display:none}
+.hidden{display:none!important}
 
 /* 下载栏 */
 .section-label{font-size:13px;color:var(--sub);font-weight:700;letter-spacing:1px;margin:20px 4px 10px}
@@ -78,6 +78,51 @@ body{font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-s
 .acc-head .ttl{font-size:17px;font-weight:700}
 .acc-head .act{margin-left:auto;font-size:12px;color:var(--sub)}
 .acc-head a{color:var(--sub);cursor:pointer;text-decoration:underline}
+/* 过期卡密提醒 + 底部解释权 */
+.expire-warn{background:#b3261e;color:#fff;padding:11px 12px;border-radius:10px;font-size:14px;font-weight:800;text-align:center;line-height:1.5;margin-top:12px}
+.rights{text-align:center;color:rgba(255,255,255,.55);font-size:11px;padding:18px 0 6px}
+/* ===== 轮盘抽奖 ===== */
+.lottery-entry{display:flex;align-items:center;gap:14px;margin-top:12px;background:linear-gradient(135deg,#ffffff,#effbf5);border:1.5px solid var(--line);border-radius:18px;padding:16px}
+.le-ico{flex-shrink:0;width:62px;height:62px;border-radius:16px;background:conic-gradient(#e4572e 0 25%,#f39c12 0 50%,#27ae60 0 75%,#2e86de 0 100%);position:relative;display:flex;align-items:center;justify-content:center;box-shadow:0 5px 12px rgba(0,0,0,.14)}
+.le-ico::after{content:"";width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 2px 5px rgba(0,0,0,.22)}
+.le-ico::before{content:"";position:absolute;top:-6px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-top:13px solid #e23b3b}
+.le-info{flex:1;min-width:0}
+.le-info .le-title{font-size:16px;font-weight:800}
+.le-info .le-sub{font-size:12px;color:var(--sub);margin-top:3px}
+.le-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.le-tags span{font-size:11px;color:#1fa15a;background:rgba(31,161,90,.1);border:1px solid rgba(31,161,90,.25);border-radius:6px;padding:2px 8px;font-weight:600}
+.le-go{flex-shrink:0;display:inline-flex;align-items:center;gap:8px;padding:12px 16px;border-radius:999px;background:linear-gradient(135deg,#2fbf71,#1fa15a);color:#fff;font-size:14px;font-weight:800;box-shadow:0 6px 14px rgba(31,161,90,.35);cursor:pointer;border:none}
+.le-go .arr{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:#fff;color:#1fa15a;font-size:14px;font-weight:900;line-height:1}
+.wheel-warn{display:flex;align-items:center;justify-content:center;margin:14px 4px 0;padding:12px 14px;border-radius:10px;background:linear-gradient(135deg,#ff5252,#d32f2f);color:#fff;font-size:16px;font-weight:800;letter-spacing:.3px;text-align:center;line-height:1.5;box-shadow:0 3px 10px rgba(211,47,47,.25)}
+.wheel-head{display:flex;align-items:center;gap:12px;padding:16px 4px 2px}
+.wheel-head .back{display:inline-flex;align-items:center;gap:5px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:7px 15px 7px 9px;font-size:13px;color:var(--ink);cursor:pointer;font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.05);transition:background .15s,border-color .15s}
+.wheel-head .back:hover{background:#f4f6f8;border-color:#dfe3ea}
+.wheel-head .back:active{background:#eef0f3}
+.wheel-head .back svg{width:15px;height:15px;stroke:currentColor;stroke-width:2.2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.wheel-head .ttl{font-size:19px;font-weight:800;letter-spacing:.2px}
+.wheel-head .act{margin-left:auto;font-size:14px;color:var(--green);font-weight:800;background:rgba(7,193,96,.09);border:1px solid rgba(7,193,96,.22);padding:5px 14px;border-radius:999px}
+.wheel-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:16px 4px 0}
+.wheel-tab{display:flex;flex-direction:column;align-items:center;gap:3px;padding:13px 6px 11px;border-radius:14px;background:#fff;border:1.5px solid var(--line);cursor:pointer;transition:border-color .15s,background .15s,box-shadow .15s}
+.wheel-tab .nm{font-size:16px;font-weight:800;color:var(--ink)}
+.wheel-tab .cost{font-size:12px;color:var(--sub);font-weight:600}
+.wheel-tab.on{border-color:var(--green);background:rgba(7,193,96,.07);box-shadow:0 5px 14px rgba(7,193,96,.16)}
+.wheel-tab.on .nm{color:var(--green)}
+.wheel-scroll{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin-top:12px}
+.wheel-scroll::-webkit-scrollbar{display:none}
+.wheel-panel{flex:0 0 100%;scroll-snap-align:start;padding:8px 4px}
+.wheel-stage{position:relative;width:min(300px,84vw);height:min(300px,84vw);margin:10px auto 16px}
+.wheel{position:absolute;inset:0;border-radius:50%;overflow:hidden;box-shadow:0 14px 34px rgba(0,0,0,.16);transform:rotate(0deg);transition:transform 4s cubic-bezier(.17,.67,.15,1.22)}
+.wheel-label{position:absolute;left:50%;top:50%;width:84px;text-align:center;font-size:14px;font-weight:800;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.5);transform-origin:0 0;margin:-12px 0 0 -42px;pointer-events:none;letter-spacing:.2px}
+.wheel-pointer{position:absolute;top:-9px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:11px solid transparent;border-right:11px solid transparent;border-top:18px solid #e23b3b;z-index:5;filter:drop-shadow(0 1px 3px rgba(0,0,0,.35))}
+.wheel-center{position:absolute;inset:0;margin:auto;width:64px;height:64px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;z-index:6;box-shadow:0 4px 14px rgba(0,0,0,.22);font-size:13px;font-weight:800;color:var(--ink);text-align:center;line-height:1.25}
+.wheel-spin{display:block;margin:0 auto 16px;border:none;border-radius:999px;padding:14px 34px;font-size:15px;font-weight:700;letter-spacing:.5px;color:#fff;background:linear-gradient(135deg,#07c160,#0fb97a);box-shadow:0 10px 24px rgba(7,193,96,.35);cursor:pointer;transition:transform .15s,box-shadow .15s}
+.wheel-spin:hover{transform:translateY(-1px);box-shadow:0 12px 28px rgba(7,193,96,.42)}
+.wheel-spin:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
+.wheel-odds{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 2px 6px}
+.odd-item{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 6px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.03)}
+.odd-item b{display:block;font-size:15px;color:var(--ink);font-weight:700}
+.odd-item span{font-size:12.5px;color:var(--sub);letter-spacing:.3px}
+.wheel-tip{text-align:center;color:var(--sub);font-size:12px;padding:14px 0 8px;display:none}
 
 /* 登录 */
 .login-card{padding:30px 22px;text-align:center;margin-top:22px}
@@ -111,6 +156,8 @@ body{font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-s
 .renew-bar .txt b{font-size:14px}
 .renew-bar .txt p{font-size:12px;color:var(--sub)}
 .renew-bar button{flex:none;background:var(--green);color:#fff;border:none;border-radius:18px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer}
+.rebind-btn{display:block;width:100%;margin-top:12px;background:#eef1f4;color:#333;border:none;border-radius:18px;padding:12px;font-size:13px;font-weight:700;cursor:pointer}
+.rebind-btn:active{background:#dfe4e9}
 
 /* 资产（优惠券） */
 .asset-item{display:flex;align-items:center;gap:12px;padding:13px 16px;border-bottom:1px solid var(--line)}
@@ -177,6 +224,7 @@ body{font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-s
 
 /* 抽奖动画 */
 .draw-mask{position:fixed;inset:0;z-index:200;background:rgba(13,17,23,.85);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff}
+.draw-mask.hidden{display:none!important}
 .draw-ring{width:120px;height:120px;border-radius:50%;background:conic-gradient(from 0deg,#07c160,#1677ff,#faad14,#07c160);-webkit-mask:radial-gradient(circle,transparent 58%,#000 60%);mask:radial-gradient(circle,transparent 58%,#000 60%);animation:spin 1s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .draw-mask .txt{margin-top:18px;font-size:15px;font-weight:700;letter-spacing:2px}
@@ -216,12 +264,12 @@ body{font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-s
       <div class="dl-item">
         <img class="dl-ico" src="assets/shizuku.png" alt="SHIZUKU">
         <div class="dl-info"><b>SHIZUKU</b><p>提权环境，激活后启动器才能注入文件</p></div>
-        <button class="dl-btn" onclick="dl('https://futrue.asia/download/shizuku.apk','SHIZUKU')">下载</button>
+        <button class="dl-btn" onclick="dlSeven('shizuku.apk','SHIZUKU')">下载</button>
       </div>
       <div class="dl-item">
         <img class="dl-ico" src="assets/yeji.png" alt="yeji">
         <div class="dl-info"><b>野鸡启动器</b><p>主程序，选游戏、开辅助、管卡密</p></div>
-        <button class="dl-btn blue" onclick="dl('https://futrue.asia/download/yeji.apk','启动器')">下载</button>
+        <button class="dl-btn blue" onclick="dlSeven('yeji.apk','启动器')">下载</button>
       </div>
     </div>
     <div class="tips">请优先安装并激活 SHIZUKU，再安装启动器。若 SHIZUKU 已激活，可直接使用启动器。</div>
@@ -263,6 +311,8 @@ body{font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-s
   <!-- 已登录面板 -->
   <div id="acc-panel" class="hidden">
 
+    <div class="expire-warn">请保持卡密在有效期内：过期卡密将在过期第二天 00:00 自动删除，卡密内的积分将清空。</div>
+
     <div class="ov-row">
       <div class="ov-cell">
         <div class="lb">当前积分</div>
@@ -281,6 +331,8 @@ body{font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-s
       <div class="row"><b>状态</b><span id="ciStatus">--</span></div>
     </div>
 
+    <button class="rebind-btn" onclick="doRebind()">换绑设备</button>
+
     <div class="renew-bar">
       <div class="txt">
         <b>卡密续费</b>
@@ -293,8 +345,20 @@ body{font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-s
     <div class="card" id="assetBox"></div>
 
     <div class="section-label">积分抽奖</div>
-    <div class="lot-grid" id="lotGrid"></div>
-    <div class="tips" style="margin-top:12px">抽奖概率与积分扣除均由服务端执行，前端仅展示动画。抽中时长直接叠加到本卡密剩余时间；搏一搏档 10% 概率获得永久卡。</div>
+    <div class="card lottery-entry">
+      <div class="le-ico"></div>
+      <div class="le-info">
+        <div class="le-title">轮盘抽奖</div>
+        <div class="le-sub">95折逐档加深，档位越高折扣越深</div>
+        <div class="le-tags">
+          <span>每档一个转盘</span><span>左右滑动切换</span><span>搏一搏可中永久卡</span>
+        </div>
+      </div>
+      <div class="le-go" onclick="showWheel()"><span>去转盘</span><i class="arr">→</i></div>
+    </div>
+    <div class="tips" style="margin-top:12px">抽奖概率与积分扣除均由服务端执行；转盘格概率为展示值，实际以服务端为准。</div>
+
+    <div class="rights">解释权归 2026 野鸡电竞所有</div>
 
   </div>
 
@@ -309,6 +373,18 @@ body{font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-s
     <button class="cp-pay" id="cpPayBtn" onclick="goCouponPay()" disabled>请选择套餐</button>
     <div class="cp-note" id="cpNote"></div>
   </div>
+</main>
+
+<!-- ========== 积分轮盘抽奖页 ========== -->
+<main class="hidden wrap" id="wheel">
+  <div class="wheel-head">
+    <button class="back" onclick="backFromWheel()"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>返回</button>
+    <div class="ttl">积分抽奖</div>
+    <div class="act" id="wheelPoints"></div>
+  </div>
+  <div class="wheel-warn">使用抽奖的奖品购卡或续卡不会赠送积分！</div>
+  <div class="wheel-tabs" id="wheelTabs"></div>
+  <div class="wheel-scroll" id="wheelScroll"></div>
 </main>
 
 <!-- ========== 结果模态框 ========== -->
@@ -335,28 +411,10 @@ const PAY_BASE = "https://pay.futrue.asia";
 const DOUYIN_COPY = "https://v.kuaishou.com/Jytqxbr8";
 const $ = (id) => document.getElementById(id);
 
-// 套餐基准价（仅用于前端展示；实际支付价由服务端计算）
-const PRODUCTS = {
-  sh10:    { name: "10小时卡",   price: 600 },
-  day:     { name: "天卡",       price: 900 },
-  weekend: { name: "周末卡(48h)", price: 1590 },
-  week:    { name: "周卡",       price: 5200 },
-  month:   { name: "月卡",       price: 12900 },
-  season:  { name: "季卡",       price: 26900 },
-  year:    { name: "年卡",       price: 39900 },
-};
+// 套餐展示价 / 抽奖展示概率由后端 /store_config 下发（前端不再内嵌敏感数据）
+let STORE = { products: {}, tiers: [] };
 
-// 抽奖档位（展示用；概率与扣分由服务端决定）
-const TIERS = [
-  { cost: 20,   name: "破鞋",   desc: "9.5~9折券 或 10小时卡",   hot: false },
-  { cost: 50,   name: "运动鞋", desc: "9~8.5折券 或 天卡",       hot: false },
-  { cost: 100,  name: "自行车", desc: "8.5~8折券 或 周末卡(48h)", hot: false },
-  { cost: 300,  name: "摩托车", desc: "8~7.5折券 或 周卡",       hot: false },
-  { cost: 500,  name: "跑车",   desc: "7.5~7折券 或 月卡",       hot: true },
-  { cost: 1000, name: "飞机",   desc: "7折券 或 季卡",           hot: true },
-  { cost: 3000, name: "火箭",   desc: "6.5折券 或 年卡",         hot: true },
-  { cost: 3650, name: "搏一搏", desc: "10% 概率永久卡",          hot: false },
-];
+// （抽奖档位与展示概率由后端 /store_config 下发，见 STORE.tiers）
 
 let acc = null;          // {token, key, expire, device}
 let accData = null;      // /account/info 缓存
@@ -382,14 +440,27 @@ function logout() {
 }
 
 // ===== 带鉴权与自动刷新的 API 调用 =====
+// 统一请求入口：12s 超时兜底（防止网络挂起时抽奖动画/登录按钮永远卡住）
+function fetchT(url, opts) {
+  const ctl = new AbortController();
+  const t = setTimeout(() => ctl.abort(), 12000);
+  opts.signal = ctl.signal;
+  return fetch(url, opts).finally(() => clearTimeout(t));
+}
+
 async function api(path, opts = {}) {
   opts.headers = Object.assign({ "Content-Type": "application/json", "X-Device": getDevice() }, opts.headers || {});
   if (acc && acc.token) opts.headers["Authorization"] = "Bearer " + acc.token;
-  let r = await fetch(API_BASE + path, opts);
+  let r;
+  try {
+    r = await fetchT(API_BASE + path, opts);
+  } catch (e) {
+    throw new Error("网络异常，请稍后再试");
+  }
   if (r.status === 401 && acc && acc.token) {
     // token 过期：尝试刷新一次
     try {
-      const rf = await fetch(API_BASE + "/account/refresh", {
+      const rf = await fetchT(API_BASE + "/account/refresh", {
         method: "POST",
         headers: { "Content-Type": "application/json", "X-Device": getDevice(), "Authorization": "Bearer " + acc.token },
       });
@@ -397,7 +468,7 @@ async function api(path, opts = {}) {
       if (rd.ok) {
         acc.token = rd.token; acc.expire = rd.expire; saveAcc();
         opts.headers["Authorization"] = "Bearer " + acc.token;
-        r = await fetch(API_BASE + path, opts);
+        try { r = await fetchT(API_BASE + path, opts); } catch (e2) { throw new Error("网络异常，请稍后再试"); }
       } else {
         throw new Error("LOGIN_EXPIRED");
       }
@@ -431,6 +502,7 @@ function showAccount() {
   $("account").classList.remove("hidden");
   window.scrollTo(0, 0);
   loadAcc();
+loadStoreConfig(); // 拉取套餐价与抽奖展示概率（异步，失败时页面内自动重试）
   if (acc && acc.token) {
     $("logoutLink").classList.remove("hidden");
     refreshAccount().then(showPanel);
@@ -441,6 +513,16 @@ function showAccount() {
 function go(sel) {
   const el = document.querySelector(sel);
   if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+// ===== 店铺展示配置（套餐价 + 抽奖展示概率）由后端下发，前端不内嵌 =====
+async function loadStoreConfig() {
+  try {
+    const r = await fetchT(API_BASE + "/store_config", { headers: { "X-Device": getDevice() } });
+    const d = await r.json();
+    if (d && d.ok) { STORE = { products: d.products || {}, tiers: d.tiers || [] }; return true; }
+    return false;
+  } catch (e) { return false; }
 }
 
 // ===== 登录视图 =====
@@ -454,13 +536,14 @@ function showPanel() {
   $("acc-login").classList.add("hidden");
   $("acc-panel").classList.remove("hidden");
   $("acc-coupon").classList.add("hidden");
+  renderPanel();
 }
 async function doLogin() {
   const key = $("loginKey").value.trim();
   if (!key) { showToast("请输入卡密"); return; }
   const btn = $("loginBtn"); btn.disabled = true; btn.textContent = "登录中...";
   try {
-    const r = await fetch(API_BASE + "/account/login", {
+    const r = await fetchT(API_BASE + "/account/login", {
       method: "POST",
       headers: { "Content-Type": "application/json", "X-Device": getDevice() },
       body: JSON.stringify({ key, device: getDevice() }),
@@ -479,6 +562,30 @@ async function doLogin() {
     btn.disabled = false; btn.textContent = "登录";
   }
 }
+async function doRebind() {
+  if (!acc) { showToast("请先登录"); return; }
+  try {
+    const d = await api("/account/rebind", { method: "POST", body: JSON.stringify({}) });
+    if (d.ok) {
+      $("mIco").className = "m-ico green"; $("mIco").textContent = "换";
+      $("mTitle").textContent = "换绑成功";
+      $("mText").textContent = d.msg || "解绑成功！请直接使用第二台设备登录";
+      $("mRow").innerHTML = '<button class="btn-p" onclick="hideModal()">好的</button>';
+      $("modalMask").classList.remove("hidden");
+    } else {
+      let msg = d.msg || "换绑失败，请稍后再试";
+      if (d.code === "E_REBIND_TIME") msg = "换绑失败：卡密剩余有效期不足 5 天，无法换绑。";
+      else if (d.code === "E_REBIND_EXHAUSTED") msg = "换绑失败：换绑次数已用完。";
+      $("mIco").className = "m-ico gray"; $("mIco").textContent = "!";
+      $("mTitle").textContent = "无法换绑";
+      $("mText").textContent = msg;
+      $("mRow").innerHTML = '<button class="btn-p" onclick="hideModal()">知道了</button>';
+      $("modalMask").classList.remove("hidden");
+    }
+  } catch (e) {
+    showToast(e.message || "网络异常，请稍后再试");
+  }
+}
 
 // ===== 账户面板渲染 =====
 async function refreshAccount() {
@@ -491,8 +598,8 @@ function renderPanel() {
   if (!accData) return;
   const d = accData;
   $("ovPoints").innerHTML = d.points + '<em> 积分</em>';
-  // 剩余有效期
-  const remainMs = d.card && d.card.expire ? (parseMs(d.card.expire) - d.serverNow) : 0;
+  // 剩余有效期（info 未回 serverNow，用本地当前时间；parseMs 已按 UTC+8 业务时区折算）
+  const remainMs = d.card && d.card.expire ? (parseMs(d.card.expire) - Date.now()) : 0;
   $("ovRemain").textContent = remainMs > 0 ? fmtRemain(remainMs) : "已过期";
   $("ciKey").textContent = d.key;
   $("ciType").textContent = (d.card && d.card.type) ? d.card.type : "--";
@@ -534,43 +641,130 @@ function fmtDate(ms) {
   return d.getUTCFullYear() + "-" + p(d.getUTCMonth() + 1) + "-" + p(d.getUTCDate());
 }
 
-// ===== 抽奖 =====
+// ===== 抽奖（轮盘） =====
 function renderLottery(points) {
-  const grid = $("lotGrid");
-  grid.innerHTML = "";
-  TIERS.forEach(t => {
-    const div = document.createElement("div");
-    div.className = "lot-item" + (points < t.cost ? " dim" : "");
-    div.innerHTML =
-      '<div class="cost">' + t.cost + '<em> 积分</em></div>' +
-      '<div class="nm">' + t.name + (t.hot ? '<i>热门</i>' : '') + '</div>' +
-      '<div class="ds">' + t.desc + '</div>';
-    div.onclick = () => { if (!div.classList.contains("dim")) doDraw(t); };
-    grid.appendChild(div);
+  const wp = $("wheelPoints");
+  if (wp) wp.textContent = (points === undefined || points === null) ? "0 积分" : (points + " 积分");
+  updateSpinButtons(points);
+}
+function updateSpinButtons(points) {
+  STORE.tiers.forEach(t => {
+    const btn = document.getElementById("spin-" + t.cost);
+    if (btn) btn.disabled = !accData || !accData.ok || (points === undefined) || (points < t.cost);
   });
 }
-async function doDraw(tier) {
+async function showWheel() {
+  if (!acc || !acc.token) { showToast("请先登录"); return; }
+  if (!STORE.tiers.length && !(await loadStoreConfig())) { showToast("店铺配置加载失败，请刷新重试"); return; }
+  $("account").classList.add("hidden");
+  $("wheel").classList.remove("hidden");
+  window.scrollTo(0, 0);
+  renderWheel();
+  if (accData) { $("wheelPoints").textContent = accData.points + " 积分"; updateSpinButtons(accData.points); }
+}
+function backFromWheel() {
+  $("wheel").classList.add("hidden");
+  $("account").classList.remove("hidden");
+  window.scrollTo(0, 0);
+}
+function wheelColors(n, seed) {
+  // 7 段交替色（暖色为主，视觉统一）
+  const pal = ["#e4572e", "#f39c12", "#27ae60", "#2e86de", "#8e44ad", "#e05d5d", "#16a085"];
+  const out = [];
+  for (let i = 0; i < n; i++) out.push(pal[(i + (seed || 0)) % pal.length]);
+  return out;
+}
+function esc(s) {
+  if (s == null) return "";
+  return String(s).replace(/[&<>"']/g, m => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]));
+}
+function renderWheel() {
+  const tabBox = $("wheelTabs"), scroll = $("wheelScroll");
+  tabBox.innerHTML = ""; scroll.innerHTML = "";
+  STORE.tiers.forEach((t, idx) => {
+    const seg = 360 / t.slots.length;
+    const colors = wheelColors(t.slots.length, idx);
+    // tab（卡片网格）
+    const tab = document.createElement("div");
+    tab.className = "wheel-tab" + (idx === 0 ? " on" : "");
+    tab.innerHTML = '<span class="nm">' + esc(t.name) + '</span><span class="cost">' + t.cost + ' 积分</span>';
+    tab.onclick = () => { tabBox.querySelectorAll(".wheel-tab").forEach(x => x.classList.remove("on")); tab.classList.add("on"); goWheel(idx); };
+    tabBox.appendChild(tab);
+    // panel
+    const panel = document.createElement("div");
+    panel.className = "wheel-panel";
+    let grad = "conic-gradient(";
+    t.slots.forEach((s, k) => {
+      const a0 = k * seg, a1 = (k + 1) * seg;
+      grad += colors[k] + " " + a0 + "deg " + a1 + "deg,";
+    });
+    grad = grad.slice(0, -1) + ")";
+    let labels = "";
+    t.slots.forEach((s, k) => {
+      const a = k * seg + seg / 2;
+      labels += '<div class="wheel-label" style="transform:rotate(' + a + 'deg) translateY(-' + (Math.min(300, window.innerWidth * 0.84) / 2 - 46) + 'px) rotate(-' + a + 'deg)">' + esc(s.label) + '</div>';
+    });
+    const odds = t.slots.map(s => '<div class="odd-item"><b>' + esc(s.label) + '</b><span>' + s.prob + '%</span></div>').join("");
+    panel.innerHTML =
+      '<div class="wheel-stage">' +
+        '<div class="wheel" id="wheel-' + t.cost + '" style="background:' + grad + '">' + labels + '</div>' +
+        '<div class="wheel-pointer"></div>' +
+        '<div class="wheel-center">' + t.name + '<br>' + t.cost + '分</div>' +
+      '</div>' +
+      '<button class="wheel-spin" id="spin-' + t.cost + '" onclick="spinWheel(' + t.cost + ')">抽一次（' + t.cost + '积分）</button>' +
+      '<div class="wheel-odds">' + odds + '</div>';
+    scroll.appendChild(panel);
+  });
+  updateSpinButtons(accData ? accData.points : undefined);
+}
+function goWheel(idx) {
+  const scroll = $("wheelScroll");
+  if (scroll) scroll.scrollTo({ left: scroll.clientWidth * idx, behavior: "smooth" });
+}
+function wheelIdxForPrize(tier, prize) {
+  const t = STORE.tiers.find(x => x.cost === tier);
+  if (!t) return 0;
+  if (prize.type === "permanent") return t.slots.findIndex(s => s.type === "permanent");
+  if (prize.type === "none") return t.slots.findIndex(s => s.type === "none");
+  if (prize.type === "duration") return t.slots.findIndex(s => s.type === "duration" && s.durLabel === prize.durationLabel);
+  if (prize.type === "coupon") return t.slots.findIndex(s => s.type === "coupon" && s.discount === prize.discountPercent);
+  return 0;
+}
+const wheelAngle = {}; // cost -> 当前累计角度（正值，取反后作 rotate）
+async function doDraw(cost) {
   if (drawing) return;
   drawing = true;
   const t0 = Date.now();
   const requestId = (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random()).replace(/-/g, "");
-  $("drawMask").classList.remove("hidden");
+  const btn = document.getElementById("spin-" + cost);
+  if (btn) btn.disabled = true;
   try {
-    const d = await api("/draw", { method: "POST", body: JSON.stringify({ tier: tier.cost, requestId }) });
-    const wait = Math.max(0, 1500 - (Date.now() - t0));
-    await new Promise(r => setTimeout(r, wait));
-    $("drawMask").classList.add("hidden");
+    const d = await api("/draw", { method: "POST", body: JSON.stringify({ tier: cost, requestId }) });
     if (!d.ok) { showToast(d.msg || "抽奖失败"); return; }
+    // 转盘转动到中奖格（顶部指针）
+    const el = document.getElementById("wheel-" + cost);
+    if (el) {
+      const t = STORE.tiers.find(x => x.cost === cost);
+      const idx = Math.max(0, wheelIdxForPrize(cost, d.prize || {}));
+      const targetCenter = idx * (360 / t.slots.length) + (360 / t.slots.length) / 2;
+      let X = (wheelAngle[cost] || 0) + 360 * 5;
+      X += ((targetCenter - (X % 360) + 360) % 360);
+      wheelAngle[cost] = X;
+      el.style.transform = "rotate(-" + X + "deg)";
+    }
+    const wait = Math.max(0, 4300 - (Date.now() - t0));
+    await new Promise(r => setTimeout(r, wait));
     showDrawResult(d);
     await refreshAccount();
-    if (accData) renderPanel();
+    if (accData) { renderPanel(); updateSpinButtons(accData.points); }
   } catch (e) {
-    $("drawMask").classList.add("hidden");
     showToast(e.message || "网络异常，请稍后再试");
   } finally {
     drawing = false;
+    if (btn) btn.disabled = !accData || !accData.ok || accData.points === undefined || accData.points < cost;
   }
 }
+function spinWheel(cost) { if (!drawing) doDraw(cost); }
 function showDrawResult(d) {
   const p = d.prize || {};
   const ico = $("mIco"), title = $("mTitle"), txt = $("mText"), row = $("mRow");
@@ -593,7 +787,7 @@ function showDrawResult(d) {
   } else {
     ico.className = "m-ico gray"; ico.textContent = "惜";
     title.textContent = "很遗憾，未中奖";
-    txt.innerHTML = "本次搏一搏未命中，再接再厉";
+    txt.innerHTML = "本次未中奖，再接再厉";
     row.innerHTML = '<button class="btn-p" onclick="hideModal()">好的</button>';
   }
   $("modalMask").classList.remove("hidden");
@@ -601,8 +795,9 @@ function showDrawResult(d) {
 function hideModal() { $("modalMask").classList.add("hidden"); }
 
 // ===== 优惠券使用 / 续费联动 =====
-function openCoupon(couponId) {
+async function openCoupon(couponId) {
   // 从资产列表或抽奖结果进入：初始化使用视图
+  if (!Object.keys(STORE.products).length && !(await loadStoreConfig())) { showToast("店铺配置加载失败，请刷新重试"); return; }
   cpState = { couponId, mode: "renew", productId: null, quoteId: null, finalPrice: 0 };
   $("acc-panel").classList.add("hidden");
   $("acc-coupon").classList.remove("hidden");
@@ -630,7 +825,7 @@ function setCpMode(m) {
 function renderCpProducts() {
   const list = $("cpList");
   list.innerHTML = "";
-  Object.entries(PRODUCTS).forEach(([pid, p]) => {
+  Object.entries(STORE.products).forEach(([pid, p]) => {
     const div = document.createElement("div");
     div.className = "cp-item" + (cpState.productId === pid ? " on" : "");
     div.innerHTML = '<div class="pnm">' + p.name + '</div><div class="ppr"><i>¥</i>' + (p.price / 100).toFixed(2) + '</div>';
@@ -694,6 +889,21 @@ function showToast(msg) {
 window.addEventListener("load", () => {
   setTimeout(() => $("hero").classList.add("show-cta"), 960);
 });
+
+// ---- 下载：走七牛签名 URL（verify worker 跨域取签名地址，浏览器直接导航下载）----
+async function dlSeven(f, name) {
+  try {
+    const r = await fetch("https://verify.futrue.asia/qiniu_url?f=" + encodeURIComponent(f));
+    const d = await r.json();
+    if (!d.ok || !d.url) { alert("获取下载地址失败"); return; }
+    const a = document.createElement("a");
+    a.href = d.url;
+    a.download = name + ".apk";
+    document.body.appendChild(a); a.click(); a.remove();
+  } catch (e) {
+    alert("下载失败：" + e.message);
+  }
+}
 
 // ---- 下载：blob + APK(zip) 魔数校验 ----
 async function dl(url, name) {
