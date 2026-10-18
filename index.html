@@ -156,8 +156,8 @@ body{font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-s
 .renew-bar .txt b{font-size:14px}
 .renew-bar .txt p{font-size:12px;color:var(--sub)}
 .renew-bar button{flex:none;background:var(--green);color:#fff;border:none;border-radius:18px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer}
-.rebind-btn{display:block;width:100%;margin-top:12px;background:#eef1f4;color:#333;border:none;border-radius:18px;padding:12px;font-size:13px;font-weight:700;cursor:pointer}
-.rebind-btn:active{background:#dfe4e9}
+.rebind-btn{display:block;width:100%;margin-top:12px;background:linear-gradient(135deg,#07c160,#0fb97a);color:#fff;border:none;border-radius:18px;padding:12px;font-size:13px;font-weight:700;cursor:pointer}
+.rebind-btn:active{background:#05a853}
 
 /* 资产（优惠券） */
 .asset-item{display:flex;align-items:center;gap:12px;padding:13px 16px;border-bottom:1px solid var(--line)}
@@ -433,6 +433,16 @@ function loadAcc() {
 }
 function saveAcc() { if (acc) localStorage.setItem("yje_acc", JSON.stringify(acc)); }
 function logout() {
+  // 先通知后端释放单设备占用（fire-and-forget：不 await 阻塞 UI，失败忽略）
+  if (acc && acc.token) {
+    try {
+      fetchT(API_BASE + "/account/logout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-Device": acc.device || getDevice(), "Authorization": "Bearer " + acc.token },
+        body: "{}",
+      }).catch(function () {});
+    } catch (e) {}
+  }
   acc = null; accData = null;
   localStorage.removeItem("yje_acc");
   showLogin();
@@ -602,7 +612,7 @@ function renderPanel() {
   const remainMs = d.card && d.card.expire ? (parseMs(d.card.expire) - Date.now()) : 0;
   $("ovRemain").textContent = remainMs > 0 ? fmtRemain(remainMs) : "已过期";
   $("ciKey").textContent = d.key;
-  $("ciType").textContent = (d.card && d.card.type) ? d.card.type : "--";
+  $("ciType").textContent = (d.card && d.card.typeLabel) ? d.card.typeLabel : ((d.card && d.card.type) ? d.card.type : "--");
   $("ciExpire").textContent = (d.card && d.card.expire) ? d.card.expire : "--";
   $("ciStatus").textContent = (d.card && d.card.enabled === false) ? "已禁用" : (remainMs > 0 ? "有效" : "已过期");
   renderAssets(d.coupons || []);
@@ -885,9 +895,55 @@ function showToast(msg) {
   setTimeout(() => t.remove(), 2200);
 }
 
+// ---- APK Tab4 跳转直达：?key=XXX&token=YYY&device=ZZZ 自动完成单设备校验并登录 ----
+// URL 中的 token 仅作来源凭证，忽略不用；登录成功后以后端新签发的 token 为准。
+async function initUrlLogin() {
+  let q;
+  try { q = new URLSearchParams(location.search); } catch (e) { return; }
+  const key = (q.get("key") || "").trim();
+  if (!key) return;
+  let device = (q.get("device") || "").trim();
+  if (device) { localStorage.setItem("yje_dev", device); }      // 同步设备指纹，使后续 X-Device 一致
+  else { device = getDevice(); }                                // device 缺失则兜底随机串
+  // 清理地址栏参数，避免刷新/分享时重复触发
+  try { history.replaceState(null, "", location.pathname + location.hash); } catch (e) {}
+  // 直接进入"我的卡密"页
+  showAccount();
+  try {
+    const r = await fetchT(API_BASE + "/account/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Device": device },
+      body: JSON.stringify({ key, device }),
+    });
+    const d = await r.json();
+    if (!d.ok) {
+      if (d.code === "E_OTHER_DEVICE") {
+        // 该卡密已在其他设备登录：灰色"!"模态提示，停留在登录视图
+        $("mIco").className = "m-ico gray"; $("mIco").textContent = "!";
+        $("mTitle").textContent = "无法登录";
+        $("mText").textContent = d.msg || "该卡密已在其他设备登录";
+        $("mRow").innerHTML = '<button class="btn-p" onclick="hideModal()">知道了</button>';
+        $("modalMask").classList.remove("hidden");
+      } else {
+        showToast(d.msg || "登录失败");
+      }
+      return;
+    }
+    acc = { token: d.token, key: d.key, expire: d.expire, device: device };
+    saveAcc();
+    $("logoutLink").classList.remove("hidden");
+    await refreshAccount();
+    showPanel();
+    showToast("登录成功");
+  } catch (e) {
+    showToast(e.message || "网络异常，请稍后再试");
+  }
+}
+
 // ---- 入场：logo Q弹动画结束后淡入按钮组（logo 保持显示在首屏）----
 window.addEventListener("load", () => {
   setTimeout(() => $("hero").classList.add("show-cta"), 960);
+  initUrlLogin();
 });
 
 // ---- 下载：走七牛签名 URL（verify worker 跨域取签名地址，浏览器直接导航下载）----
