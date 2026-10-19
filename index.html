@@ -115,7 +115,35 @@ body{font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-s
 .wheel-label{position:absolute;left:50%;top:50%;width:84px;text-align:center;font-size:14px;font-weight:800;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.5);transform-origin:0 0;margin:-12px 0 0 -42px;pointer-events:none;letter-spacing:.2px}
 .wheel-pointer{position:absolute;top:-9px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:11px solid transparent;border-right:11px solid transparent;border-top:18px solid #e23b3b;z-index:5;filter:drop-shadow(0 1px 3px rgba(0,0,0,.35))}
 .wheel-center{position:absolute;inset:0;margin:auto;width:64px;height:64px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;z-index:6;box-shadow:0 4px 14px rgba(0,0,0,.22);font-size:13px;font-weight:800;color:var(--ink);text-align:center;line-height:1.25}
-.wheel-spin{display:block;margin:0 auto 16px;border:none;border-radius:999px;padding:14px 34px;font-size:15px;font-weight:700;letter-spacing:.5px;color:#fff;background:linear-gradient(135deg,#07c160,#0fb97a);box-shadow:0 10px 24px rgba(7,193,96,.35);cursor:pointer;transition:transform .15s,box-shadow .15s}
+.wheel-spin-row{display:flex;align-items:center;justify-content:center;gap:10px;margin:0 auto 16px}
+.wheel-count{border:none;border-radius:999px;padding:13px 18px;font-size:15px;font-weight:700;color:#07c160;background:#f0f7f1;border:1px solid rgba(7,193,96,.35);cursor:pointer;outline:none;-webkit-appearance:none;appearance:none}
+.wheel-count:disabled{opacity:.45;cursor:not-allowed}
+/* ===== 连抽卡片模态框（卡片式从上往下蹦出） ===== */
+#batchMask .batch-head{display:flex;align-items:center;gap:10px;width:min(92vw,360px);color:#fff;font-size:15px;font-weight:700;letter-spacing:1px}
+#batchMask .batch-close{margin-left:auto;width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;line-height:1}
+#batchMask .batch-skip{flex:0 0 auto;border:none;border-radius:999px;padding:6px 13px;font-size:12px;font-weight:700;background:rgba(255,255,255,.14);color:#fff;cursor:pointer;outline:none}
+#batchMask .batch-skip:disabled{opacity:.4;cursor:not-allowed}
+.batch-box{width:min(92vw,360px);max-height:62vh;overflow-y:auto;padding:10px;background:rgba(255,255,255,.06);border-radius:16px;margin-top:12px;box-sizing:border-box}
+.batch-cards{display:flex;flex-direction:column;gap:10px}
+.batch-card{position:relative;background:#1b2230;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:12px;min-height:46px}
+.batch-card.gold-card{background:linear-gradient(135deg,#5a4100,#8a6a10 45%,#c9a227);border:1.5px solid #ffd76a;box-shadow:0 0 18px rgba(255,196,60,.45)}
+.batch-card .bc-idx{width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.14);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.batch-card .bc-spin{display:flex;align-items:center;flex:1;min-height:22px}
+.mini-spin{width:20px;height:20px;border-radius:50%;border:2px solid rgba(255,255,255,.22);border-top-color:rgba(255,255,255,.9);animation:spin .6s linear infinite}
+.batch-card .bc-body{flex:1;display:flex;align-items:center;gap:12px}
+.bc-tag{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;flex-shrink:0}
+.bc-tag.orange{background:linear-gradient(135deg,#faad14,#ffc53d)}
+.bc-tag.blue{background:linear-gradient(135deg,#1677ff,#4d94ff)}
+.bc-tag.green{background:linear-gradient(135deg,#07c160,#0fb97a)}
+.bc-tag.gray{background:linear-gradient(135deg,#8c94a3,#aab1bd)}
+.bc-txt{font-size:13px;color:#eef1f6;line-height:1.5;flex:1}
+.bc-txt b{color:#fff}
+.gold-badge{position:absolute;top:-9px;right:12px;background:#ffd76a;color:#3a2a00;font-size:10px;font-weight:800;padding:2px 8px;border-radius:999px;letter-spacing:.5px;box-shadow:0 2px 6px rgba(0,0,0,.3)}
+.batch-foot{width:min(92vw,360px);display:flex;align-items:center;justify-content:space-between;margin-top:14px;color:rgba(255,255,255,.85);font-size:13px}
+.batch-foot .btn-p{flex:0 0 auto;padding:9px 22px;border:none;border-radius:12px;background:var(--green,#07c160);color:#fff;font-size:14px;font-weight:700;cursor:pointer}
+.batch-card.bounce-in{animation:batchPop .24s cubic-bezier(.22,.9,.32,1.18) both}
+@keyframes batchPop{from{opacity:0;transform:translateY(12px) scale(.92)}to{opacity:1;transform:none}}
+.wheel-spin{display:block;border:none;border-radius:999px;padding:14px 34px;font-size:15px;font-weight:700;letter-spacing:.5px;color:#fff;background:linear-gradient(135deg,#07c160,#0fb97a);box-shadow:0 10px 24px rgba(7,193,96,.35);cursor:pointer;transition:transform .15s,box-shadow .15s}
 .wheel-spin:hover{transform:translateY(-1px);box-shadow:0 12px 28px rgba(7,193,96,.42)}
 .wheel-spin:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
 .wheel-odds{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 2px 6px}
@@ -402,6 +430,13 @@ body{font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-s
   <div class="draw-ring"></div>
   <div class="txt">开奖中...</div>
   <div class="sub">正在后台计算，请稍候</div>
+</div>
+
+<!-- ========== 连抽结果模态框（卡片式从上往下蹦出） ========== -->
+<div class="draw-mask hidden" id="batchMask">
+  <div class="batch-head"><button class="batch-skip" id="batchSkipBtn" onclick="skipBatch()">跳过动画</button><span id="batchTitle" style="flex:1;text-align:center">连抽中...</span><span class="batch-close" onclick="hideBatch()">✕</span></div>
+  <div class="batch-box" id="batchBox"><div class="batch-cards" id="batchCards"></div></div>
+  <div class="batch-foot"><span id="batchPoints"></span><button class="btn-p" id="batchDone" style="display:none" onclick="hideBatch()">完成</button></div>
 </div>
 
 <script>
@@ -721,7 +756,10 @@ function renderWheel() {
         '<div class="wheel-pointer"></div>' +
         '<div class="wheel-center">' + t.name + '<br>' + t.cost + '分</div>' +
       '</div>' +
-      '<button class="wheel-spin" id="spin-' + t.cost + '" onclick="spinWheel(' + t.cost + ')">抽一次（' + t.cost + '积分）</button>' +
+      '<div class="wheel-spin-row">' +
+        '<select class="wheel-count" id="cnt-' + t.cost + '">' + [1,2,3,5,10,50,100].map(n => '<option value="' + n + '"' + (n === 1 ? ' selected' : '') + '>' + n + ' 抽</option>').join('') + '</select>' +
+        '<button class="wheel-spin" id="spin-' + t.cost + '" onclick="spinWheel(' + t.cost + ')">抽奖</button>' +
+      '</div>' +
       '<div class="wheel-odds">' + odds + '</div>';
     scroll.appendChild(panel);
   });
@@ -774,8 +812,132 @@ async function doDraw(cost) {
     if (btn) btn.disabled = !accData || !accData.ok || accData.points === undefined || accData.points < cost;
   }
 }
-function spinWheel(cost) { if (!drawing) doDraw(cost); }
-function showDrawResult(d) {
+function spinWheel(cost) {
+  if (drawing) return;
+  const sel = document.getElementById("cnt-" + cost);
+  const n = sel ? Math.max(1, parseInt(sel.value, 10) || 1) : 1;
+  if (n <= 1) { doDraw(cost); return; }
+  doBatchDraw(cost, n);
+}
+// ===== 连抽：一次后端申请 n 次（results 数组，省请求），卡片式从上往下蹦出 =====
+const wait = (ms) => new Promise(r => setTimeout(r, ms));
+let batchGoldIdx = -1;
+let batchSkip = false;
+async function doBatchDraw(cost, n) {
+  if (drawing) return;
+  drawing = true;
+  const btn = document.getElementById("spin-" + cost);
+  const sel = document.getElementById("cnt-" + cost);
+  if (btn) btn.disabled = true;
+  if (sel) sel.disabled = true;
+  const cards = $("batchCards");
+  const title = $("batchTitle");
+  const done = $("batchDone");
+  cards.innerHTML = "";
+  done.style.display = "none";
+  batchSkip = false;
+  const skipBtn = $("batchSkipBtn");
+  if (skipBtn) skipBtn.disabled = false;
+  $("batchPoints").textContent = "";
+  $("batchMask").classList.remove("hidden");
+  title.textContent = n + " 连抽 · 开奖中…";
+  try {
+    // 一次请求，后端返回 n 次结果
+    const requestId = (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random()).replace(/-/g, "");
+    const d = await api("/draw", { method: "POST", body: JSON.stringify({ tier: cost, requestId, count: n }) });
+    if (!d.ok) { showToast(d.msg || "抽奖失败"); hideBatch(); return; }
+    let results = d.results || [];
+    // 价值最高的一张放最后并标记金卡
+    batchGoldIdx = bestIndex(results.map(r => r.prize));
+    if (batchGoldIdx >= 0 && batchGoldIdx < results.length - 1) {
+      const best = results.splice(batchGoldIdx, 1)[0];
+      results.push(best);
+      batchGoldIdx = results.length - 1;
+    }
+    title.textContent = n + " 连抽完成";
+    $("batchPoints").textContent = "消耗 " + d.totalCost + " 积分 · 余额 " + d.balance;
+    // 逐个卡片蹦出：蹦出 → 小灰圈 → 显示结果 → 下一张
+    await revealBatch(results, cost, n);
+    done.style.display = "block";
+    await refreshAccount();
+    if (accData) { renderPanel(); updateSpinButtons(accData.points); }
+  } catch (e) {
+    showToast(e.message || "网络异常，请稍后再试");
+    hideBatch();
+  } finally {
+    drawing = false;
+    if (btn) btn.disabled = !accData || !accData.ok || accData.points === undefined || accData.points < cost;
+    if (sel) sel.disabled = false;
+  }
+}
+/** 价值排序：permanent > coupon(折扣越低越值钱) > duration(时长越长越值钱) > none */
+function valueOf(p) {
+  if (!p) return -999;
+  if (p.type === "permanent") return 1e9;
+  if (p.type === "coupon") return 1000 + (100 - p.discountPercent);
+  if (p.type === "duration") return 500 + (p.durationMs ? p.durationMs / 3600000 : 0);
+  return 0;
+}
+function bestIndex(prizes) {
+  let bi = -1;
+  for (let i = 0; i < prizes.length; i++) if (bi < 0 || valueOf(prizes[i]) > valueOf(prizes[bi])) bi = i;
+  return bi;
+}
+async function revealBatch(results, cost, n) {
+  const cards = $("batchCards");
+  const title = $("batchTitle");
+  for (let i = 0; i < results.length; i++) {
+    if (batchSkip) {
+      // 跳过动画：剩余全部一次性渲染（含结果，无灰圈无动画）
+      let html = "";
+      for (let j = i; j < results.length; j++) {
+        const g = (j === results.length - 1) && batchGoldIdx >= 0;
+        html += '<div class="batch-card' + (g ? " gold-card" : "") + '"><div class="bc-idx">' + (j + 1) + '</div><div class="bc-body">' + batchCardBody(results[j].prize, g) + '</div></div>';
+      }
+      cards.insertAdjacentHTML("beforeend", html);
+      title.textContent = "已抽 " + results.length + " / " + results.length;
+      const box = $("batchBox");
+      if (box) box.scrollTop = box.scrollHeight;
+      return;
+    }
+    const isGold = (i === results.length - 1) && batchGoldIdx >= 0;
+    const card = document.createElement("div");
+    card.className = "batch-card bounce-in" + (isGold ? " gold-card" : "");
+    card.innerHTML = '<div class="bc-idx">' + (i + 1) + '</div><div class="bc-spin"><span class="mini-spin"></span></div><div class="bc-body"></div>';
+    cards.appendChild(card);
+    await wait(240); // 蹦出动画
+    const spinEl = card.querySelector(".bc-spin");
+    const bodyEl = card.querySelector(".bc-body");
+    await wait(230); // 小灰圈加载
+    if (spinEl) spinEl.remove();
+    if (bodyEl) bodyEl.innerHTML = batchCardBody(results[i].prize, isGold);
+    card.classList.add("revealed");
+    title.textContent = "已抽 " + (i + 1) + " / " + results.length;
+    const box = $("batchBox");
+    if (box) box.scrollTop = box.scrollHeight; // 跟随最新卡片
+    await wait(110);
+  }
+}
+function batchCardBody(p, isGold) {
+  const badge = isGold ? '<div class="gold-badge">本抽价值最高</div>' : '';
+  if (p.type === "coupon") {
+    return badge + '<div class="bc-tag orange">券</div><div class="bc-txt"><b>' + p.discountLabel + '</b> 优惠券（' + p.tierName + '档）</div>';
+  }
+  if (p.type === "duration") {
+    return badge + '<div class="bc-tag blue">时</div><div class="bc-txt"><b>' + p.durationLabel + '</b> 卡密时长 · 新到期 ' + p.newExpire + '</div>';
+  }
+  if (p.type === "permanent") {
+    return badge + '<div class="bc-tag green">永</div><div class="bc-txt"><b>永久卡</b> · 已升级，新到期 ' + p.newExpire + '</div>';
+  }
+  return badge + '<div class="bc-tag gray">惜</div><div class="bc-txt">未中奖，再接再厉</div>';
+}
+function skipBatch() {
+  batchSkip = true;
+  const b = $("batchSkipBtn");
+  if (b) b.disabled = true;
+}
+function hideBatch() { $("batchMask").classList.add("hidden"); }
+function showDrawResult(d, remain) {
   const p = d.prize || {};
   const ico = $("mIco"), title = $("mTitle"), txt = $("mText"), row = $("mRow");
   row.innerHTML = "";
@@ -783,21 +945,31 @@ function showDrawResult(d) {
     ico.className = "m-ico orange"; ico.textContent = "券";
     title.textContent = "恭喜抽中优惠券";
     txt.innerHTML = "<b>" + p.discountLabel + "</b> 优惠券（" + p.tierName + "档）<br>有效期至 " + fmtDate(p.expiresAt) + "，可用于购买或续费";
-    row.innerHTML = '<button class="btn-b" onclick="openCoupon(\'' + p.couponId + '\')">前往使用</button><button class="btn-s" onclick="hideModal()">稍后再说</button>';
   } else if (p.type === "duration") {
     ico.className = "m-ico blue"; ico.textContent = "时";
     title.textContent = "恭喜获得时长";
     txt.innerHTML = "已获得 <b>" + p.durationLabel + "</b> 卡密时长，已叠加到你的卡密剩余时间<br>新到期时间：<b>" + p.newExpire + "</b>";
-    row.innerHTML = '<button class="btn-p" onclick="hideModal()">好的</button>';
   } else if (p.type === "permanent") {
     ico.className = "m-ico green"; ico.textContent = "永";
     title.textContent = "恭喜获得永久卡";
     txt.innerHTML = "搏一搏成功！你的卡密已升级为永久卡，有效期至 <b>" + p.newExpire + "</b>";
-    row.innerHTML = '<button class="btn-p" onclick="hideModal()">太棒了</button>';
   } else {
     ico.className = "m-ico gray"; ico.textContent = "惜";
     title.textContent = "很遗憾，未中奖";
     txt.innerHTML = "本次未中奖，再接再厉";
+  }
+  // 按钮：连抽模式（remain>=0）逐个"继续"，最后"完成"；单抽保持原样
+  if (remain !== undefined && remain !== null) {
+    if (remain > 0) {
+      row.innerHTML = '<button class="btn-p" onclick="showNextMultiResult()">继续（还剩 ' + remain + ' 次）</button>';
+    } else {
+      row.innerHTML = '<button class="btn-p" onclick="hideModal()">完成</button>';
+    }
+  } else if (p.type === "coupon") {
+    row.innerHTML = '<button class="btn-b" onclick="openCoupon(\'' + p.couponId + '\')">前往使用</button><button class="btn-s" onclick="hideModal()">稍后再说</button>';
+  } else if (p.type === "permanent") {
+    row.innerHTML = '<button class="btn-p" onclick="hideModal()">太棒了</button>';
+  } else {
     row.innerHTML = '<button class="btn-p" onclick="hideModal()">好的</button>';
   }
   $("modalMask").classList.remove("hidden");
