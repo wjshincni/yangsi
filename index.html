@@ -269,6 +269,7 @@ body{font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-s
   <div class="cta">
     <button class="btn btn-buy" onclick="location.href='https://pay.futrue.asia'">购买卡密</button>
     <button class="btn btn-account" onclick="showAccount()">我的卡密</button>
+    <button class="btn btn-account" onclick="showOrderQuery()">订单查询</button>
     <button class="btn btn-guide" onclick="showMain()">查看教程</button>
   </div>
 </section>
@@ -280,6 +281,7 @@ body{font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-s
   <nav>
     <a onclick="go('#dl')">下载</a>
     <a onclick="go('#video')">教程</a>
+    <a onclick="showOrderQuery()">订单查询</a>
     <a onclick="showAccount()">我的卡密</a>
     <a class="buy" onclick="location.href='https://pay.futrue.asia'">购卡</a>
   </nav>
@@ -422,6 +424,17 @@ body{font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-s
     <h3 id="mTitle"></h3>
     <div class="m-txt" id="mText"></div>
     <div class="m-row" id="mRow"></div>
+  </div>
+</div>
+
+<!-- ========== 订单查询模态框 ========== -->
+<div class="mask hidden" id="orderMask" onclick="if(event.target===this)hideOrderQuery()">
+  <div class="modal">
+    <h3>订单查询</h3>
+    <p style="color:var(--sub);font-size:13px;margin:8px 0 12px">输入支付页的订单号，查询卡密下发状态</p>
+    <input id="orderQueryInput" type="text" placeholder="请输入订单号" autocomplete="off" maxlength="64" style="width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;font-size:15px;text-align:center;outline:none;box-sizing:border-box">
+    <button onclick="doOrderQuery()" style="width:100%;margin-top:12px;padding:12px;border:none;border-radius:12px;background:var(--green);color:#fff;font-size:15px;font-weight:700;cursor:pointer">查询</button>
+    <div id="orderQueryResult" style="margin-top:12px;text-align:left;font-size:13px;line-height:1.7;min-height:0"></div>
   </div>
 </div>
 
@@ -1058,6 +1071,55 @@ function goRenew() {
 }
 
 // ===== 通用 =====
+function showOrderQuery() {
+  $("orderMask").classList.remove("hidden");
+  $("orderQueryInput").value = "";
+  $("orderQueryResult").innerHTML = "";
+  setTimeout(() => { try { $("orderQueryInput").focus(); } catch (_) {} }, 50);
+}
+function hideOrderQuery() { $("orderMask").classList.add("hidden"); }
+async function doOrderQuery() {
+  const oid = $("orderQueryInput").value.trim();
+  if (!oid) { showToast("请输入订单号"); return; }
+  const box = $("orderQueryResult");
+  box.innerHTML = '<div style="color:var(--sub)">查询中...</div>';
+  try {
+    const r = await fetchT(PAY_BASE + "/api/order/" + encodeURIComponent(oid) + "/status", {
+      headers: { "Content-Type": "application/json" },
+    });
+    const d = await r.json().catch(() => ({}));
+    if (d && d.status === "paid") {
+      box.innerHTML = '<div style="color:var(--green);font-weight:800;font-size:15px">已支付 · 卡密已下发</div>'
+        + (d.cardKey ? '<div style="margin-top:6px">卡密：<b style="word-break:break-all">' + d.cardKey + '</b>&nbsp;<button onclick="copyOrderQueryCard(\'' + d.cardKey + '\')" style="border:none;background:#fff;color:var(--green);font-size:12px;font-weight:700;cursor:pointer;padding:3px 10px;border-radius:10px;border:1px solid var(--green);vertical-align:middle">复制</button></div>'
+                      : '<div style="color:var(--sub);margin-top:6px">卡密正在生成中，请稍后再查。</div>');
+    } else if (d && d.status === "cancelled") {
+      box.innerHTML = '<div style="color:var(--red);font-weight:800">订单已超时 / 已取消</div>';
+    } else if (d && (d.status === "pending" || d.status === "created" || d.status === "unpaid" || d.status === "processing")) {
+      box.innerHTML = '<div style="color:var(--warn);font-weight:800">订单未完成支付</div>'
+        + '<div style="color:var(--sub);margin-top:6px">请确认是否已付款；已付款请稍后重查，卡密准备通常 1 分钟内完成。</div>';
+    } else {
+      box.innerHTML = '<div style="color:var(--red);font-weight:800">订单不存在</div>'
+        + '<div style="color:var(--sub);margin-top:6px">请核对订单号是否正确。</div>';
+    }
+  } catch (e) {
+    box.innerHTML = '<div style="color:var(--red);font-weight:800">查询失败</div>'
+      + '<div style="color:var(--sub);margin-top:6px">网络异常，请稍后再试。</div>';
+  }
+}
+function copyOrderQueryCard(card) {
+  if (!card) return;
+  const fallback = () => {
+    const ta = document.createElement("textarea");
+    ta.value = card; ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand("copy"); } catch (_) {}
+    ta.remove();
+  };
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(card).then(() => showToast("已复制卡密")).catch(fallback);
+  } else fallback();
+}
+
 function showToast(msg) {
   const old = document.querySelector(".toast");
   if (old) old.remove();
