@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>科目取色板</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231a1a17'/%3E%3Ccircle cx='10' cy='11' r='4.4' fill='%23f44336'/%3E%3Ccircle cx='21' cy='9' r='4' fill='%23ffb020'/%3E%3Ccircle cx='23' cy='20' r='4.4' fill='%233d9bff'/%3E%3Ccircle cx='11' cy='22' r='4' fill='%232fb86b'/%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#f7f6f2;
+  --surface:#ffffff;
+  --ink:#1a1a17;
+  --muted:#6f6e66;
+  --line:#e8e6de;
+  --accent:#0e7a6b;
+  --accent-ink:#ffffff;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif;
+  background:var(--bg);color:var(--ink);
+  min-height:100vh;
+}
+.wrap{max-width:520px;margin:0 auto;padding:14px 14px 40px}
+
+/* header */
+header{display:flex;align-items:center;justify-content:space-between;padding:6px 2px 12px}
+.brand{display:flex;align-items:center;gap:8px;font-weight:600;font-size:17px;letter-spacing:.2px}
+.brand svg{flex:none}
+.step-chip{
+  font-size:13px;color:var(--muted);
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:999px;padding:5px 12px;white-space:nowrap;
+}
+
+/* progress */
+.progress{display:flex;align-items:center;gap:10px;margin:2px 0 14px}
+.progress .track{flex:1;height:5px;background:var(--line);border-radius:999px;overflow:hidden}
+.progress .fill{height:100%;background:var(--accent);border-radius:999px;transition:width .25s ease}
+.progress .num{font-size:13px;color:var(--muted);width:44px;text-align:right;font-variant-numeric:tabular-nums}
+
+/* subject head */
+.subject-head{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.subject-name{font-size:22px;font-weight:700}
+.edit-btn{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:30px;height:30px;border:1px solid var(--line);border-radius:8px;
+  background:var(--surface);color:var(--muted);cursor:pointer;padding:0;
+}
+.edit-btn:active{background:var(--bg)}
+.edit-input{
+  font-size:16px;width:100%;margin:6px 0 10px;
+  padding:10px 12px;border:1px solid var(--accent);border-radius:10px;background:var(--surface);color:var(--ink);
+}
+.hint{font-size:13px;color:var(--muted);margin:4px 0 10px}
+
+/* palette */
+.palette{
+  display:grid;grid-template-columns:repeat(15,1fr);gap:3px;
+  background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:8px;
+}
+.cell{
+  aspect-ratio:1/1;border:none;border-radius:4px;cursor:pointer;padding:0;position:relative;
+}
+.cell.sel{outline:2.5px solid var(--ink);outline-offset:1px;z-index:1;border-radius:4px}
+.cell:active{transform:scale(.94)}
+
+/* selected panel */
+.selected{
+  margin-top:12px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;
+}
+.selected .label{font-size:12px;color:var(--muted);margin-bottom:10px;letter-spacing:.5px}
+.selected .box{
+  display:flex;align-items:center;gap:14px;
+}
+.selected .swatch{
+  width:88px;height:88px;border-radius:14px;flex:none;
+  border:1px solid rgba(0,0,0,.08);box-shadow:inset 0 0 0 1px rgba(255,255,255,.15);
+  display:flex;align-items:center;justify-content:center;
+}
+.selected .swatch.empty{background:#ecebe4}
+.selected .swatch .empty-txt{color:#8a8a80;font-size:12px}
+.selected .vals{display:flex;flex-direction:column;gap:3px;min-width:0}
+.selected .hex{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums}
+.selected .rgb{font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums}
+.selected .rgb b{color:var(--ink);font-weight:600}
+
+/* controls */
+.controls{display:flex;gap:10px;margin-top:14px}
+.btn{
+  flex:1;border:none;border-radius:12px;padding:14px 0;font-size:16px;cursor:pointer;
+  font-family:inherit;
+}
+.btn.ghost{background:var(--surface);color:var(--ink);border:1px solid var(--line)}
+.btn.ghost:active{background:var(--bg)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);font-weight:600}
+.btn.primary:active{opacity:.85}
+.btn.primary:disabled{opacity:.45}
+.btn.block{width:100%;margin-top:12px}
+
+/* result */
+.result-head{font-size:20px;font-weight:700;margin:8px 2px 4px}
+.result-sub{font-size:13px;color:var(--muted);margin:0 2px 14px}
+.result-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.result-item{
+  display:flex;align-items:center;gap:12px;
+  background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;
+}
+.result-item .chip{width:34px;height:34px;border-radius:9px;flex:none;border:1px solid rgba(0,0,0,.08)}
+.result-item .meta{flex:1;min-width:0}
+.result-item .sname{font-size:15px;font-weight:600}
+.result-item .sval{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.result-item .rbtn{
+  flex:none;display:inline-flex;align-items:center;justify-content:center;
+  border:1px solid var(--line);background:#fff;border-radius:8px;width:30px;height:30px;cursor:pointer;color:var(--muted);
+}
+.result-item .rbtn:active{background:var(--bg)}
+.back-link{
+  display:inline-flex;align-items:center;gap:6px;margin:16px 2px 0;color:var(--accent);
+  background:none;border:none;font-size:14px;cursor:pointer;padding:4px 0;font-family:inherit;
+}
+
+/* toast */
+#toast{
+  position:fixed;left:50%;bottom:34px;transform:translateX(-50%) translateY(20px);
+  background:rgba(26,26,23,.92);color:#fff;font-size:14px;padding:10px 18px;border-radius:999px;
+  opacity:0;pointer-events:none;transition:.25s ease;z-index:50;white-space:nowrap;
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="brand">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <rect x="3" y="3" width="18" height="18" rx="5" fill="#0e7a6b"/>
+        <circle cx="8.5" cy="9" r="2" fill="#fff"/>
+        <circle cx="15.5" cy="8" r="1.7" fill="#ffb020"/>
+        <circle cx="16.5" cy="15" r="2" fill="#3d9bff"/>
+        <circle cx="8.5" cy="16" r="1.7" fill="#2fb86b"/>
+      </svg>
+      <span>科目取色板</span>
+    </div>
+    <div class="step-chip" id="stepChip">第 1 / 10 科</div>
+  </header>
+
+  <!-- ===== 取色视图 ===== -->
+  <section id="stepView">
+    <div class="progress">
+      <div class="track"><div class="fill" id="progressFill" style="width:10%"></div></div>
+      <div class="num" id="progressNum">1 / 10</div>
+    </div>
+
+    <div class="subject-head">
+      <span class="subject-name" id="subjectName">语文</span>
+      <button class="edit-btn" id="editBtn" title="修改科目名" aria-label="修改科目名">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+      </button>
+    </div>
+    <input class="edit-input" id="editInput" hidden maxlength="8">
+
+    <div class="hint">点击下方色块，把选中的颜色单独显示出来；点「下一科」继续。</div>
+
+    <div class="palette" id="palette" aria-label="255色色板"></div>
+
+    <div class="selected" id="selected">
+      <div class="label">已选颜色</div>
+      <div class="box">
+        <div class="swatch empty" id="swatch"><span class="empty-txt">未选择</span></div>
+        <div class="vals">
+          <div class="hex" id="selHex">—</div>
+          <div class="rgb" id="selRgb">R<b>—</b> &nbsp;G<b>—</b> &nbsp;B<b>—</b></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="btn ghost" id="prevBtn">上一科</button>
+      <button class="btn primary" id="nextBtn">确认并下一科</button>
+    </div>
+  </section>
+
+  <!-- ===== 结果视图 ===== -->
+  <section id="resultView" hidden>
+    <div class="result-head">10 门科目取色结果</div>
+    <p class="result-sub">点「复制全部」可把 10 个颜色的 RGB 值一起复制。</p>
+    <ul class="result-list" id="resultList"></ul>
+    <button class="btn primary block" id="copyAllBtn">复制全部 RGB</button>
+    <button class="btn ghost block" id="restartBtn">重新取色</button>
+    <button class="back-link" id="backBtn">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+      返回上一科修改
+    </button>
+  </section>
+
+</div>
+
+<div id="toast"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---------- 数据 ----------
+  var SUBJECTS = ["语文","数学","英语","物理","化学","生物","政治","历史","地理","体育"];
+  var N = SUBJECTS.length;
+  var picks = new Array(N).fill(null); // {r,g,b,hex,index}
+  var step = 0;
+  var sel = null;
+  var palette = [];
+
+  var el = {
+    chip: document.getElementById('stepChip'),
+    fill: document.getElementById('progressFill'),
+    pnum: document.getElementById('progressNum'),
+    sname: document.getElementById('subjectName'),
+    editBtn: document.getElementById('editBtn'),
+    editInput: document.getElementById('editInput'),
+    pal: document.getElementById('palette'),
+    swatch: document.getElementById('swatch'),
+    selHex: document.getElementById('selHex'),
+    selRgb: document.getElementById('selRgb'),
+    stepView: document.getElementById('stepView'),
+    resultView: document.getElementById('resultView'),
+    resultList: document.getElementById('resultList'),
+    prevBtn: document.getElementById('prevBtn'),
+    nextBtn: document.getElementById('nextBtn'),
+    copyAllBtn: document.getElementById('copyAllBtn'),
+    restartBtn: document.getElementById('restartBtn'),
+    backBtn: document.getElementById('backBtn'),
+    toast: document.getElementById('toast')
+  };
+
+  // ---------- 生成 255 色 ----------
+  var SAT = [45, 70, 92];
+  var LIT = [30, 44, 58, 70, 82];
+  var BASE = [];
+  for (var k = 0; k < 255; k++) {
+    var hue = Math.floor(k / 15) * (360 / 17);
+    var sat = SAT[k % 3];
+    var lit = LIT[Math.floor(k / 3) % 5];
+    BASE.push(conv(hue, sat, lit));
+  }
+
+  function conv(h, s, l) {
+    var r, g, b;
+    s /= 100; l /= 100;
+    var c = (1 - Math.abs(2 * l - 1)) * s;
+    var x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+    var m = l - c / 2;
+    if (h < 60) { r = c; g = x; b = 0; }
+    else if (h < 120) { r = x; g = c; b = 0; }
+    else if (h < 180) { r = 0; g = c; b = x; }
+    else if (h < 240) { r = 0; g = x; b = c; }
+    else if (h < 300) { r = x; g = 0; b = c; }
+    else { r = c; g = 0; b = x; }
+    r = Math.round((r + m) * 255); g = Math.round((g + m) * 255); b = Math.round((b + m) * 255);
+    return { r: r, g: g, b: b, hex: hex(r, g, b) };
+  }
+  function hex(r, g, b) {
+    return "#" + [r, g, b].map(function (v) { return ("0" + v.toString(16)).slice(-2); }).join("");
+  }
+
+  function shuffle(arr) {
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+
+  // ---------- 渲染 ----------
+  function renderPalette() {
+    palette = shuffle(BASE);
+    el.pal.innerHTML = "";
+    palette.forEach(function (c, i) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "cell";
+      b.style.background = c.hex;
+      b.dataset.i = i;
+      b.setAttribute("aria-label", c.hex);
+      b.addEventListener("click", function () { select(i); });
+      el.pal.appendChild(b);
+    });
+  }
+
+  function select(i) {
+    sel = { r: palette[i].r, g: palette[i].g, b: palette[i].b, hex: palette[i].hex, index: i };
+    renderSelection();
+    var cells = el.pal.querySelectorAll(".cell");
+    cells.forEach(function (c) { c.classList.remove("sel"); });
+    cells[i].classList.add("sel");
+  }
+
+  function renderSelection() {
+    if (sel) {
+      el.swatch.classList.remove("empty");
+      el.swatch.style.background = sel.hex;
+      el.swatch.innerHTML = "";
+      el.selHex.textContent = sel.hex;
+      el.selRgb.innerHTML = "R<b>" + sel.r + "</b> &nbsp;G<b>" + sel.g + "</b> &nbsp;B<b>" + sel.b + "</b>";
+    } else {
+      el.swatch.classList.add("empty");
+      el.swatch.style.background = "";
+      el.swatch.innerHTML = '<span class="empty-txt">未选择</span>';
+      el.selHex.textContent = "—";
+      el.selRgb.innerHTML = "R<b>—</b> &nbsp;G<b>—</b> &nbsp;B<b>—</b>";
+    }
+  }
+
+  function updateHeader() {
+    el.sname.textContent = SUBJECTS[step];
+    el.chip.textContent = "第 " + (step + 1) + " / " + N + " 科";
+    el.pnum.textContent = (step + 1) + " / " + N;
+    el.fill.style.width = ((step + 1) / N * 100) + "%";
+    el.prevBtn.disabled = (step === 0);
+    var last = (step === N - 1);
+    el.nextBtn.textContent = last ? "完成" : "确认并下一科";
+  }
+
+  // ---------- 科目名编辑 ----------
+  function startEdit() {
+    el.editInput.value = SUBJECTS[step];
+    el.editInput.hidden = false;
+    el.editInput.focus();
+    el.editInput.select();
+  }
+  function commitEdit() {
+    var v = el.editInput.value.trim();
+    if (v && v.length <= 8) SUBJECTS[step] = v;
+    el.editInput.hidden = true;
+    el.sname.textContent = SUBJECTS[step];
+  }
+
+  el.editBtn.addEventListener("click", function () {
+    if (el.editInput.hidden) startEdit(); else commitEdit();
+  });
+  el.editInput.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") { e.preventDefault(); commitEdit(); }
+    if (e.key === "Escape") { el.editInput.hidden = true; }
+  });
+  el.editInput.addEventListener("blur", commitEdit);
+
+  // ---------- 流程 ----------
+  el.nextBtn.addEventListener("click", function () {
+    if (!sel) { toast("请先在色板上选择一个颜色"); return; }
+    picks[step] = sel;
+    if (step === N - 1) { showResult(); return; }
+    step++;
+    sel = null;
+    updateHeader();
+    renderPalette();
+    renderSelection();
+  });
+
+  el.prevBtn.addEventListener("click", function () {
+    if (step === 0) return;
+    step--;
+    sel = null;
+    updateHeader();
+    renderPalette();
+    renderSelection();
+  });
+
+  // ---------- 结果 ----------
+  function showResult() {
+    el.stepView.hidden = true;
+    el.resultView.hidden = false;
+    el.resultList.innerHTML = "";
+    picks.forEach(function (p, i) {
+      var li = document.createElement("li");
+      li.className = "result-item";
+
+      var chip = document.createElement("span");
+      chip.className = "chip"; chip.style.background = p.hex;
+
+      var meta = document.createElement("div");
+      meta.className = "meta";
+      var sn = document.createElement("div");
+      sn.className = "sname"; sn.textContent = SUBJECTS[i];
+      var sv = document.createElement("div");
+      sv.className = "sval";
+      sv.innerHTML = "rgb(" + p.r + ", " + p.g + ", " + p.b + ") · " + p.hex;
+
+      var rb = document.createElement("button");
+      rb.type = "button";
+      rb.className = "rbtn"; rb.title = "复制该颜色";
+      rb.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>';
+      rb.addEventListener("click", function () {
+        doCopy(SUBJECTS[i] + " | " + p.hex + " | rgb(" + p.r + ", " + p.g + ", " + p.b + ")");
+      });
+
+      li.appendChild(chip); li.appendChild(meta); li.appendChild(rb);
+      meta.appendChild(sn); meta.appendChild(sv);
+      el.resultList.appendChild(li);
+    });
+  }
+
+  el.copyAllBtn.addEventListener("click", function () {
+    var lines = picks.map(function (p, i) {
+      return SUBJECTS[i] + " | " + p.hex + " | rgb(" + p.r + ", " + p.g + ", " + p.b + ")";
+    });
+    doCopy(lines.join("\n"));
+  });
+
+  el.restartBtn.addEventListener("click", function () {
+    picks = new Array(N).fill(null);
+    step = 0; sel = null;
+    el.resultView.hidden = true;
+    el.stepView.hidden = false;
+    updateHeader();
+    renderPalette();
+    renderSelection();
+  });
+
+  el.backBtn.addEventListener("click", function () {
+    var lastIdx = N - 1;
+    el.resultView.hidden = true;
+    el.stepView.hidden = false;
+    step = lastIdx; sel = null;
+    updateHeader();
+    renderPalette();
+    renderSelection();
+  });
+
+  // ---------- 复制 ----------
+  function doCopy(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(function () { toast("已复制"); },
+        function () { fallbackCopy(text); });
+    } else {
+      fallbackCopy(text);
+    }
+  }
+  function fallbackCopy(text) {
+    var ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed"; ta.style.left = "-9999px";
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand("copy"); toast("已复制"); }
+    catch (e) { toast("复制失败，请手动复制"); }
+    document.body.removeChild(ta);
+  }
+
+  var toastTimer = null;
+  function toast(msg) {
+    el.toast.textContent = msg;
+    el.toast.classList.add("show");
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { el.toast.classList.remove("show"); }, 1600);
+  }
+
+  // ---------- 启动 ----------
+  updateHeader();
+  renderPalette();
+  renderSelection();
+})();
+</script>
+</body>
+</html>
