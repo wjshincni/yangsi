@@ -1,0 +1,204 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>拿捏</title>
+<link rel="stylesheet" href="css/lanrenzhijia.css">
+<style>
+/* ===== 从台球游戏提取的统一按钮/弹窗样式（完全一致） ===== */
+.top-btn-group {
+    position: absolute;
+    top: 12px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    z-index: 100;
+    pointer-events: none; /* 让容器不阻挡点击，内部按钮可点 */
+}
+.top-btn-group > * {
+    pointer-events: auto;
+}
+.common-btn {
+    padding: 8px 20px;
+    font-size: 36px;
+    border: none;
+    border-radius: 40px;
+    background: linear-gradient(135deg, #6e8efb, #a777e3);
+    color: #fff;
+    cursor: pointer;
+    font-weight: 500;
+    box-shadow: 0 2px 10px rgba(110, 142, 251, 0.3);
+    transition: transform 0.2s;
+    min-height: 44px;
+}
+.common-btn:hover {
+    transform: scale(1.02);
+}
+.common-btn.detail-btn {
+    background: linear-gradient(135deg, #f093fb, #f5576c);
+}
+.music-btn {
+    width: 100px;
+    height: 100px;
+    border: none;
+    border-radius: 40px;
+    padding: 4px;
+    cursor: pointer;
+    background: linear-gradient(135deg, #6e8efb, #a777e3);
+    box-shadow: 0 2px 10px rgba(110, 142, 251, 0.3);
+    transition: transform 0.2s;
+}
+.music-btn:hover {
+    transform: scale(1.02);
+}
+.music-btn img {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+.detail-modal {
+    display: none;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(4px);
+    z-index: 999;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+.detail-modal.active {
+    display: flex;
+}
+.detail-box {
+    max-width: 420px;
+    width: 100%;
+    background: #fff;
+    border-radius: 28px;
+    padding: 24px 28px 20px;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+    animation: modalIn 0.3s ease;
+    text-align: left;
+}
+@keyframes modalIn {
+    from { transform: scale(0.9); opacity:0; }
+    to { transform:1; opacity:1; }
+}
+#detailTitle {
+    font-size: 4rem;
+    font-weight: 600;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #eee;
+}
+.detailContent {
+    font-size: 3rem;
+    line-height: 1.8;
+    color: #333;
+}
+#closeDetailBtn {
+    margin-top: 20px;
+    padding: 16px 48px;
+    border: none;
+    border-radius: 40px;
+    background: linear-gradient(135deg, #6e8efb, #a777e3);
+    color: #fff;
+    cursor: pointer;
+    font-size: 2rem;
+}
+</style>
+</head>
+<body>
+
+<!-- ===== 新增按钮组（靠上居中，覆盖在canvas之上） ===== -->
+<div class="top-btn-group">
+    <button id="backBtn" class="common-btn">返回购买</button>
+    <button id="detailBtn" class="common-btn detail-btn">详情</button>
+    <button id="musicToggle" class="music-btn">
+        <img src="../index/music_on.png" alt="音乐开关" id="musicIcon">
+    </button>
+</div>
+
+<!-- ===== 详情弹窗 ===== -->
+<div class="detail-modal" id="detailModal">
+    <div class="detail-box">
+        <h1 id="detailTitle">黑人抬棺</h1>
+        <div class="detailContent">你可以修改的部分：图片、下落的速度、黑人的移速</div>
+        <button id="closeDetailBtn">继续游戏</button>
+    </div>
+</div>
+
+<!-- 画布、贴图最先加载渲染 -->
+<canvas id="screen"></canvas>
+<div id="textures">
+    <img src="images/caisse_bois_frag3.jpg" alt="我好帅">
+    <img src="images/caisse_explosive_f2.jpg" alt="我好帅">
+    <img src="images/caisse_export.jpg" alt="我好帅">
+    <img src="images/caisse_metal_02.jpg" alt="我好帅">
+    <img src="images/caisse_bois_frag3.jpg" alt="我好帅">
+    <img src="images/caisse_jurancon_face1.jpg" alt="我好帅">
+    <img src="images/caisse_jurancon_face2.jpg" alt="我好帅">
+    <img src="images/miam-fruit2.jpg" alt="我好帅">
+    <img src="images/caisse_orange_face1.jpg" alt="我好帅">
+</div>
+<img id="blade" class="textures" src="images/caisse_coke_f2.jpg" alt="我好帅">
+
+<script src="js/lanrenzhijia.js"></script>
+<script src="js/lanrenzhijia2.js"></script>
+
+<!-- ===== 新增独立脚本（不修改原有JS） ===== -->
+<script>
+(function() {
+    // ---------- 音乐控制 ----------
+    let musicOn = true;
+    const musicToggle = document.getElementById('musicToggle');
+    const musicIcon = document.getElementById('musicIcon');
+
+    // 音频，可在此控制
+    const bgm = new Audio('images/bg.mp3'); bgm.loop = true;
+    let bgmUnlocked = false;
+    document.addEventListener('click', () => { if (!bgmUnlocked) { bgmUnlocked = true; if (musicOn) bgm.play(); } }, { once: true });
+
+    musicToggle.addEventListener('click', function(e) {
+        e.stopPropagation();
+        musicOn = !musicOn;
+        if (musicOn) {
+            musicIcon.src = '../index/music_on.png';
+            if (bgm) { bgm.volume = 1; if (bgmUnlocked) bgm.play(); }
+        } else {
+            musicIcon.src = '../index/music_off.png';
+            if (bgm) { bgm.volume = 0; bgm.pause(); }
+        }
+    });
+
+    // ---------- 返回 ----------
+    document.getElementById('backBtn').addEventListener('click', function() {
+        window.location.href = '../buy.html';
+    });
+
+    // ---------- 详情弹窗 ----------
+    const detailModal = document.getElementById('detailModal');
+    const detailBtn = document.getElementById('detailBtn');
+    const closeDetailBtn = document.getElementById('closeDetailBtn');
+
+    window.open = detailModal.style.display = 'flex';
+    detailBtn.addEventListener('click', function() {
+        detailModal.style.display = 'flex';
+    });
+    closeDetailBtn.addEventListener('click', function() {
+        detailModal.style.display = 'none';
+    });
+    detailModal.addEventListener('click', function(e) {
+        if (e.target === detailModal) detailModal.style.display = 'none';
+    });
+})();
+</script>
+
+</body>
+</html>
