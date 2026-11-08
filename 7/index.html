@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>A Surprise</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100%;
+            background-color: #0a0000;
+            overflow: hidden;
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif, '微软雅黑';
+        }
+
+        /* ===== 开始遮罩 ===== */
+        #begin {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(20, 10, 10, 0.92);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+        }
+
+        #begin .content {
+            text-align: center;
+            color: #fff;
+            padding: 30px;
+        }
+
+        #begin span {
+            font-size: 28px;
+            color: #ff6b6b;
+            display: block;
+            margin-bottom: 30px;
+            text-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
+            letter-spacing: 2px;
+        }
+
+        .btn-start {
+            background: #2d1b1b;
+            color: #ffb3b3;
+            border: 2px solid #ff4d4d;
+            padding: 14px 44px;
+            font-size: 22px;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.2);
+        }
+        .btn-start:hover {
+            background: #4d0000;
+            color: #fff;
+            border-color: #ff0000;
+            box-shadow: 0 0 60px rgba(255, 0, 0, 0.6);
+            transform: scale(1.05);
+        }
+
+        /* ===== 返回按钮 ===== */
+        .btn-back {
+            position: fixed;
+            top: 18px;
+            left: 18px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #e0d0d0;
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.25s;
+            text-decoration: none;
+            z-index: 200;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+            letter-spacing: 0.5px;
+        }
+        .btn-back:hover {
+            background: rgba(40, 20, 20, 0.8);
+            border-color: rgba(255, 100, 100, 0.4);
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(255, 0, 0, 0.2);
+        }
+
+        /* ===== 闪烁图片容器 ===== */
+        .flicker-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            /* 让点击穿透，返回按钮仍可点 */;
+        }
+
+        .flicker-img {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 92vw;
+            max-height: 92vh;
+            width: auto;
+            height: auto;
+            opacity: 0;
+            transition: opacity 0.05s ease;
+            /* 极快切换，制造闪烁 */
+            display: block;
+            pointer-events: none;
+            border-radius: 8px;
+            box-shadow: 0 0 80px rgba(255, 0, 0, 0.3);
+        }
+
+        /* 活跃状态（可见） */
+        .flicker-img.active {
+            opacity: 1;
+        }
+
+        /* ===== 响应式 ===== */
+        @media (max-width: 600px) {
+            #begin span {
+                font-size: 20px;
+                padding: 0 16px;
+            }
+            .btn-start {
+                font-size: 18px;
+                padding: 12px 32px;
+            }
+            .btn-back {
+                font-size: 14px;
+                padding: 8px 18px;
+                top: 12px;
+                left: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 返回按钮（始终可见） -->
+    <button class="btn-back" id="backBtn">受不了了</button>
+
+    <!-- ===== 开始遮罩 ===== -->
+    <div id="begin">
+        <div class="content">
+            <span>👻准备好…</span>
+            <button class="btn-start" id="startBtn">点我</button>
+        </div>
+    </div>
+
+    <!-- ===== 闪烁图片容器 ===== -->
+    <div class="flicker-container" id="flickerContainer">
+        <!-- 图片由 JS 动态生成 -->
+    </div>
+
+    <!-- 背景音乐（自动播放可能会被拦截，但点击开始后通常能播放） -->
+    <audio src="res/m.mp3" loop autoplay preload="auto" hidden></audio>
+
+    <script>
+        (function() {
+            // ============================================================
+            // 1. 图片资源列表
+            // ============================================================
+            const imageSources = [
+                "res/1.png",
+                "res/2.png",
+                "res/3.png",
+                "res/4.png",
+                "res/5.png",
+                "res/6.png",
+                "res/7.png",
+                "res/8.png"
+            ];
+
+            // ============================================================
+            // 2. 音效资源列表（请确保这些文件存在于 res/ 目录）
+            // ============================================================
+            const soundSources = [
+                "res/s1.mp3",
+                "res/s2.mp3",
+                "res/s3.mp3",
+                "res/s4.mp3",
+            ];
+
+            // ============================================================
+            // 3. DOM 引用
+            // ============================================================
+            const beginDiv = document.getElementById('begin');
+            const startBtn = document.getElementById('startBtn');
+            const backBtn = document.getElementById('backBtn');
+            const container = document.getElementById('flickerContainer');
+
+            // 存储所有图片元素
+            let imgElements = [];
+            let isFlickering = false;
+            let currentTimeout = null; // 用于清除定时器
+
+            // ============================================================
+            // 4. 创建图片元素并添加到容器
+            // ============================================================
+            function createImages() {
+                imageSources.forEach(src => {
+                    const img = document.createElement('img');
+                    img.src = src;
+                    img.className = 'flicker-img';
+                    img.alt = 'scary';
+                    container.appendChild(img);
+                    imgElements.push(img);
+                });
+            }
+            createImages();
+
+            // ============================================================
+            // 5. 音效播放函数（随机选取一个并播放）
+            // ============================================================
+            function playRandomSound() {
+                if (soundSources.length === 0) return;
+                const randomIndex = Math.floor(Math.random() * soundSources.length);
+                const soundSrc = soundSources[randomIndex];
+                try {
+                    const audio = new Audio(soundSrc);
+                    audio.volume = 0.8; // 适当音量
+                    audio.play().catch(err => {
+                        // 忽略自动播放错误（用户交互后一般不会）
+                    });
+                } catch (e) {
+                    // 静默处理
+                }
+            }
+
+            // ============================================================
+            // 6. 闪烁逻辑（包含音效）
+            // ============================================================
+            function startFlicker() {
+                if (isFlickering) return;
+                isFlickering = true;
+
+                // 先全部隐藏
+                imgElements.forEach(img => img.classList.remove('active'));
+
+                // 随机间隔（200ms ~ 2000ms）
+                function getRandomInterval() {
+                    return Math.floor(Math.random() * 1800) + 200;
+                }
+
+                function flickerStep() {
+                    if (!isFlickering) return;
+
+                    // 随机选一张图片
+                    const randomIndex = Math.floor(Math.random() * imgElements.length);
+                    const selectedImg = imgElements[randomIndex];
+
+                    // 隐藏所有图片
+                    imgElements.forEach(img => img.classList.remove('active'));
+
+                    // 显示选中的图片
+                    selectedImg.classList.add('active');
+
+                    // 播放随机音效（与图片显示同步）
+                    playRandomSound();
+
+                    // 随机决定这次显示多久（500ms ~ 3000ms）
+                    const displayDuration = Math.floor(Math.random() * 2500) + 500;
+
+                    // 设置定时器隐藏它，然后再启动下一步
+                    currentTimeout = setTimeout(() => {
+                        selectedImg.classList.remove('active');
+
+                        // 再随机等待一段时间后执行下一步（200ms ~ 2000ms）
+                        const nextInterval = getRandomInterval();
+                        currentTimeout = setTimeout(() => {
+                            flickerStep();
+                        }, nextInterval);
+                    }, displayDuration);
+                }
+
+                // 启动第一次闪烁（先等待随机时间）
+                const firstDelay = getRandomInterval();
+                currentTimeout = setTimeout(() => {
+                    flickerStep();
+                }, firstDelay);
+            }
+
+            function stopFlicker() {
+                isFlickering = false;
+                if (currentTimeout) {
+                    clearTimeout(currentTimeout);
+                    currentTimeout = null;
+                }
+                // 隐藏所有图片
+                imgElements.forEach(img => img.classList.remove('active'));
+            }
+
+            // ============================================================
+            // 7. 事件绑定
+            // ============================================================
+
+            // ---- 开始按钮 ----
+            startBtn.addEventListener('click', function() {
+                // 隐藏遮罩
+                beginDiv.style.display = 'none';
+                // 启动闪烁
+                startFlicker();
+            });
+
+            // ---- 返回按钮 ----
+            backBtn.addEventListener('click', function() {
+                window.location.href = '../buy.html';
+            });
+
+            // ---- 页面卸载时清理 ----
+            window.addEventListener('beforeunload', function() {
+                stopFlicker();
+            });
+
+        })();
+    </script>
+
+</body>
+</html>
