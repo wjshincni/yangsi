@@ -1,0 +1,264 @@
+*{
+    font-family: gamefont,ttx;
+}
+
+div{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#supportBy{
+    position: absolute;
+    right: 0;
+    top: 0;
+    font-family: gamefont,ttx;
+    color: grey;
+    animation: fadeIn 5s infinite;
+    font-size: 2rem;
+    cursor: pointer;
+    text-align: right;
+}
+
+#question{
+    position: absolute;
+    left: 3%;
+    top: 3%;
+    color: cadetblue;
+    font-size: 5em;
+}
+
+#img{
+    position: absolute;
+    left: 10%;
+    top: 50%;
+    transform: translate(-10%,-50%);
+    width: 400px;
+    height: 400px;
+    background-color: white;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    border-radius: 20px;
+}
+
+#content{
+    overflow: scroll;
+    position: absolute;
+    right: 10%;
+    top: 25%;
+    transform: translate(10%,-25%);
+    width: 50%;
+    height: 50%;
+    background-color: lightgrey;
+    font-size: 400%;
+    opacity: 0.8;
+    border-radius: 20px;
+    transition: .2s;
+}
+
+#content:hover{
+    top: 23%;
+    opacity: 1;
+}
+
+#answer{
+    position: absolute;
+    right: 10%;
+    bottom: 15%;
+    transform: translate(10%,20%);
+    width: 50%;
+    height: 15%;
+    color: #333;
+    background-color: lightblue;
+    font-size: 8vh;
+    border-radius: 20px;
+    transition: .2s;
+    opacity: 0.8;
+}
+
+#answer:hover{
+    opacity: 1;
+}
+
+#answer .radio{
+    width: 6vh;
+    height: 6vh;
+}
+
+#answer .radio:hover{
+    transform: translateY(-10%);
+}
+
+#core{
+    position: absolute;
+    left: 5%;
+    bottom: 5%;
+    transform: translate(-5%,5%);
+    width: 10%;
+    height: 8%;
+    color: black;
+    border-radius: 20px;
+    font-size: 5vh;
+}
+
+#count{
+    position: absolute;
+    left: 50%;
+    top: 0;
+    transform: translate(-50%,0);
+    width: 5%;
+    height: 5%;
+    background-color: red;
+    color: white;
+    font-size: 150%;
+    border-radius: 0 0px 10px 10px;
+}
+
+#warn{
+    position: absolute;
+    left: 20%;
+    bottom: 15%;
+    transform: translate(-20%,15%);
+    width: 15%;
+    height: 5%;
+    text-align: center;
+    color: darkred;
+    font-size: 2rem;
+}
+
+#operate{
+    position: absolute;
+    left: 20%;
+    bottom: 5%;
+    transform: translate(-20%,5%);
+    width: 15%;
+    height: 8%;
+    background-color: whitesmoke;
+    border-radius: 20px;
+}
+
+#operate>div{
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    background-position: center;
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    margin: 5% 5% 5% 0;
+    transition: .2s;
+}
+
+#operate>div:hover{
+    margin-top: 3%;
+}
+
+#operate>#upQ{
+    background: url(../resources/icons/upOne.png);
+}
+
+#operate>#downQ{
+    background: url(../resources/icons/upOne.png);
+    rotate: 180deg;
+}
+
+#operate>#done{
+    background: url(../resources/icons/finish.png);
+}
+
+#conclude{
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 50%;
+    height: 60%;
+    transform: translate(-50%,-50%);
+    background-color: wheat;
+    border-radius: 20px;
+    transition: .2s;
+    opacity: 0.85;
+    box-shadow: 1em 1em 5em 1em #333;
+}
+
+#conclude *{
+    transition: .2s;
+    display: block;
+}
+
+#conclude:hover{
+    top: 48%;
+    opacity: 1;
+}
+
+#conclude #uName{
+    text-align: center;
+    position: absolute;
+    top: 10%;
+    left: 50%;
+    transform: translate(-50%,-10%);
+    font-size: 2rem;
+    background: linear-gradient(45deg,lightpink,lightblue);
+    outline: none;
+    border: none;
+    width: 60%;
+    border-radius: 10px;
+}
+
+#conclude #uMark{
+    position: absolute;
+    top: 25%;
+    left: 50%;
+    transform: translate(-50%,-20%);
+    font-size: 4rem;
+    color: cadetblue;
+}
+
+#conclude #uPie{
+    position: absolute;
+    top: 60%;
+    left: 50%;
+    height: 15rem;
+    width: 30rem;
+    transform: translate(-50%,-60%);
+}
+
+#conclude #restart{
+    position: absolute;
+    bottom: 1%;
+    left: 150px;
+    transform: translate(calc( - (50% - 75px)),20%);
+    background: url(../resources/icons/restart.png);
+    width: 50px;
+    height: 50px;
+}
+
+#conclude #resume{
+    position: absolute;
+    left: 50px;
+    bottom: 1%;
+    background: url(../resources/icons/home_small.png);
+    width: 50px;
+    height: 50px;
+}
+
+#conclude #resume:hover{
+    bottom: 2%;
+}
+
+#conclude #restart:hover{
+    bottom: 2%;
+}
+
+#conclude #upLoad{
+    background: url(../resources/icons/upload.png);
+    position: absolute;
+    left: 50%;
+    top: 85%;
+    transform: translate(-50%,-85%);
+    width: 75px;
+    height: 75px;
+}
+
+#conclude #upLoad:hover{
+    top: 83%;
+}

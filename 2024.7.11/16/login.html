@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>---登录界面---</title>
+    <link rel="icon" href="resources/icons/user.png">
+    <link rel="stylesheet" href="css/login.css">
+    <!--imports-->
+    <script src="js/jq.min.js"></script>
+</head>
+<body>
+    <!-- ===== 新增返回按钮 ===== -->
+    <a href="../buy.html" style="position:fixed; top:10px; left:10px; z-index:9999; background:#fff; padding:6px 12px; border-radius:4px; text-decoration:none; color:#333; font-weight:bold; box-shadow:0 2px 6px rgba(0,0,0,0.2);">← 返回</a>
+
+    <!---主体--->
+    <div class="container rightPanel">
+        <!----登录--->
+        <div class="containerForm container_signup">
+            <form action="#" class="form" id="form1">
+                <h1>注册</h1>
+                <input type="text" placeholder="新建一个用户名"/>
+                <input type="password" placeholder="新建您的密码（至少6位）"/>
+                <span class="notice" id="noticeReg"></span>
+                <button class="btn" id="regIn">完成</button>
+            </form>
+        </div>
+
+        <!---注册--->
+        <div class="containerForm container_signin">
+            <form action="#" class="form" id="form2">
+                <h1>登录</h1>
+                <input type="text" placeholder="用户名"/>
+                <input type="password" placeholder="密码"/>
+                <span class="notice" id="noticeLogin"></span>
+                <button class="btn" id="logIn">登录</button>
+            </form>
+        </div>
+
+        <!---切换--->
+        <div class="containerOverlay">
+            <div class="overlay">
+                <div class="overlayPanel overlay_left">
+                    <button class="btn" id="gotoSignIn">已有账号？前往登录</button>
+                    <!---返回--->
+                    <button class="btn" onclick="window.open('client.html','_self')">暂不注册</button>
+                </div>
+                <div class="overlayPanel overlay_right">
+                    <button class="btn" id="gotoSignUp">没有账号？前往注册</button>
+                    <!---返回--->
+                    <button class="btn" onclick="window.open('client.html','_self')">暂不登录</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="js/login.js"></script>
+</body>
+</html>

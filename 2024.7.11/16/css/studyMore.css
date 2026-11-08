@@ -1,0 +1,95 @@
+*{
+    font-family: gamefont,ttx;
+}
+
+html,body{
+    background: wheat !important;
+}
+
+.isOn{
+    color: cadetblue;
+}
+
+#mainContainer{
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%,-50%);
+    width: 85vw;
+    height: 85vh;
+    background: white;
+    opacity: 0.8;
+    transition: ease-in-out .3s;
+    border-radius: 20px;
+}
+
+#mainContainer:hover{
+    opacity: 0.95;
+}
+
+#preContainer{
+    position: absolute;
+    left: 10%;
+    top: 50%;
+    transform: translate(-10%,-50%);
+    width: calc(20% - 2rem);
+    height: 80%;
+    opacity: 0.9;
+    transition: .2s;
+    border-radius: 10px;
+    background: lightblue;
+    overflow: scroll;
+    padding-left: 2rem;
+}
+
+#preContainer:hover{
+    opacity: 1;
+}
+
+#preContainer>.preBody{
+    font-size: 3rem;
+}
+
+#preContainer>.preSelect{
+    text-indent: 2rem;
+    font-size: 2rem;
+    cursor: pointer;
+}
+
+#preContainer>.preSelect:hover{
+    color: orange;
+}
+
+#preContainer>.preBody>.openSelect{
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 50px;
+    height: 50px;
+    display: block;
+    background: url(../resources/icons/open.png);
+    cursor: pointer;
+}
+
+#preContainer>.preBody>.openSelect:hover{
+    background: url(../resources/icons/open_hover.png);
+}
+
+#contentContainer{
+    position: absolute;
+    right: 15%;
+    top: 50%;
+    transform: translate(15%,-50%);
+    width: 60%;
+    height: 80%;
+    opacity: 0.9;
+    transition: .2s;
+    border-radius: 20px;
+    background: lightblue;
+    overflow: scroll;
+}
+
+#contentContainer:hover{
+    opacity: 1;
+}
+

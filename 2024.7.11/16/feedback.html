@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="icon" href="resources/icons/feedback.png">
+        <title>申诉/反馈</title>
+        <script src="js/jq.min.js"></script>
+        <link rel="stylesheet" href="css/feedback.css">
+    </head>
+    <body>
+        <!-- ===== 新增返回按钮 ===== -->
+        <a href="../buy.html" style="position:fixed; top:10px; left:10px; z-index:9999; background:#fff; padding:6px 12px; border-radius:4px; text-decoration:none; color:#333; font-weight:bold; box-shadow:0 2px 6px rgba(0,0,0,0.2);">← 返回</a>
+
+        <div class="container box1">
+            <span>
+                <b><big><em>作品名：尊古韵 悟精髓 扬中外</em></big></b><br><br>
+                <b><big>ttx</big></b><br>
+                wx：XueMingTangTaiZong<br><br>
+                phone：我不知道<br><br>
+                github：<a href="https://github.com/wjshincni">https://github.com/wjshincni</a><br><br>
+                <br>
+                <b><big>妈妈：</big></b><br>
+                wx：<br>
+            </span>
+        </div>
+        <div class="container box2">
+            <h1>申诉/反馈</h1> 
+            <h2 onclick="window.open('client.html','_self')">返回主页</h2>
+            <hr>
+            <input type="text" id="name" placeholder="账号名 如:威龙">
+            <br>
+            <input type="text" id="prob" placeholder="你遇到的问题详情">
+            <br>
+            <button onclick="send()">提交问题</button>
+        </div>
+    </body>
+    <script src="js/feedback.js"></script>
+</html>

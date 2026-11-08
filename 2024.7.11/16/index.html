@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supported by who supported this</title>
+    <link rel="icon" href="resources/icons/indexPage.png">
+    <link rel="stylesheet" href="css/sets.css">
+    <link rel="stylesheet" href="css/index.css">
+    <script src="js/echarts.js"></script>
+</head>
+<body>
+    <!-- ===== 新增返回按钮 ===== -->
+    <a href="../buy.html" style="position:fixed; top:10px; left:10px; z-index:9999; background:#fff; padding:6px 12px; border-radius:4px; text-decoration:none; color:#333; font-weight:bold; box-shadow:0 2px 6px rgba(0,0,0,0.2);">← 返回</a>
+
+    <!---starting--->
+    <div id="HEAD">
+        <div id="getInPage">尊古韵 悟精髓 扬中外</div>
+        <div id="ttx" onclick="window.open('login.html','_self')">杨高科技节活动作品 Supported by who supported this<br><b>点<mark>我</mark>跳过引导立即前往主页</b></div>
+        <input id="next" type="image" src="resources/index/next.gif" onclick="startThen()">
+    </div>
+    <!---questions--->
+    <div id="Q1" class="hide" style="display: none;">
+        <span class="d3f">您是否初步了解中医药？</span>
+        <button id="Q1B1" onclick="continueThen1()">是</button>
+        <button id="Q1B2" onclick="continueThen1()">否</button>
+    </div>
+    <!---pies--->
+    <div id="data" class="hide" style="display: none">
+        <div id="pie"></div>
+        <span id="piespan">在<u>全中国</u>范围内，有<big><i>88%</i></big>的人都<b>认可中医药</b>。</span>
+    </div>
+    <script src="js/index.js"></script>
+</body>
+</html>

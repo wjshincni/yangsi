@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中草药考试</title>
+    <link rel="icon" href="resources/icons/exam.png">
+    <link rel="stylesheet" href="css/exam.css">
+    <link rel="stylesheet" href="css/sets.css">
+    <script src="js/echarts.js"></script>
+    <script src="js/jq.min.js"></script>
+</head>
+<body>
+    <!-- ===== 新增返回按钮 ===== -->
+    <a href="../buy.html" style="position:fixed; top:10px; left:10px; z-index:9999; background:#fff; padding:6px 12px; border-radius:4px; text-decoration:none; color:#333; font-weight:bold; box-shadow:0 2px 6px rgba(0,0,0,0.2);">← 返回</a>
+
+    <!---Supported By--->
+    <div id="supportBy" onclick="window.open('client.html','_self')">Supported by who supported this <br>(点击退出)</div>
+    <!---问题--->
+    <div id="question"></div>
+    <!---图片（切记用background-image！！！）--->
+    <div id="img"></div>
+    <!---内容--->
+    <div id="content"></div>
+    <!---答题区--->
+    <div id="answer">
+        <input type="radio" name="choices" class="radio" id="choiceA">A &emsp;
+        <input type="radio" name="choices" class="radio" id="choiceB">B &emsp;
+        <input type="radio" name="choices" class="radio" id="choiceC">C &emsp;
+        <input type="radio" name="choices" class="radio" id="choiceD">D
+    </div>
+    <!---难度--->
+    <div id="core"></div>
+    <!---题数--->
+    <div id="count"></div>
+    <!---上/下一题 & 完成测试--->
+    <div id="warn"></div>
+    <div id="operate">
+        <div id="upQ" class="icons"></div>
+        <div id="downQ" class="icons"></div>
+        <div id="done" class="icons"></div>
+    </div>
+    <!---总分--->
+    <div id="conclude">
+        <input id="uName" placeholder="你的名字">
+        <span id="uMark"></span>
+        <canvas id="uPie"></canvas>
+        <div id="restart" onclick="window.open('exam.html','_self')"></div>
+        <div id="resume" onclick="window.open('client.html','_self')"></div>
+        <div id="upLoad" onclick="sendMark()"></div>
+    </div>
+    <script src="js/exam.js"></script>
+</body>
+</html>
