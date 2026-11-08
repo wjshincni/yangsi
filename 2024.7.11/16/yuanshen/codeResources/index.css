@@ -1,0 +1,82 @@
+/*界面*/
+*{
+	padding: 0;
+	margin: 0;
+}
+
+html,body{
+	overflow: hidden;
+	background-color: black;
+	transition: 2s;
+}
+
+@font-face {
+	font-family: Genshin;
+	src: url(zh-cn.ttf);
+}
+
+.hidden{transition: ease-in-out 3s;opacity: 0;} 
+/*多个元素隐藏（！！！占空间！！！）*/
+
+/*优化代码*/
+#startBtn,#Genshin,#mihoyo,#intoDoor,#bottomContent{
+	position: absolute;
+	z-index: 2;
+	transition: ease-in-out 3s;
+}
+
+/*单独设置每个元素*/
+#startBtn{
+	width: 495px;
+	height: 495px;
+	background-image: url(../images/YuanSheng.png);
+	/*
+	margin: 0 auto;
+	position: relative;
+	*/
+	left: calc(50% - 247.5px);
+	top: calc(50% - 247.5px);
+	cursor: grab;
+}
+#startBtn:hover{
+	transition: 10s;
+	background-image: url(../images/YuanShen.png);
+	transform: rotate(3600deg);
+}
+
+#mihoyo{
+	width: 657px;
+	height: 234px;
+	background-image: url(../images/mihoyo.png);
+	top: calc(50% - 117px);
+	left: calc(50% - 328.5px);
+}
+
+#Genshin{
+	width: 354px;
+	height: 276px;
+	background-image: url(../images/Genshin.png);
+	/*
+	margin: 0 auto;
+	position: relative;
+	*/
+	top: calc(50% - 138px);
+	left: calc(50% - 177px);
+}
+
+#bottomContent{
+	position: absolute;
+	bottom: 0;
+	margin-bottom: 10px;
+	width: 100%;
+	font-family: Genshin;
+	font-size: 28px;
+	text-align: center;
+	color: gray;
+}
+
+#intoDoor{
+	width: 100%;
+	height: 100%;
+	object-fit: fill;
+}
