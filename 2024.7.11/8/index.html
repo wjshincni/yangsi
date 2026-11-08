@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>正版呱呱乐 你值得拥有</title>
+    <style>
+        /* 全局重置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: beige;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            font-family: "仿宋", "PingFang SC", serif;
+            overflow: hidden;
+        }
+        /* 画布容器：固定最小尺寸，防止塌陷 */
+        .canvas-wrapper {
+            position: relative;
+            max-width: calc(100vw - 40px);
+            max-height: calc(100vh - 80px);
+            min-width: 300px;
+            min-height: 300px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #f0f0f0;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        /* 两个canvas完全铺满容器 */
+        #c1, #c2 {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        #c1 {
+            z-index: 2;
+            border: 2px solid #888;
+            border-radius: 10px;
+            pointer-events: auto;
+        }
+        #c2 {
+            z-index: 1;
+            border: none;
+            pointer-events: none;
+        }
+        /* 返回按钮 - 固定在左上角 */
+        .btn-back {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-size: 18px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.25s;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+            z-index: 9999;
+            letter-spacing: 0.5px;
+            font-family: 'Segoe UI', 'PingFang SC', sans-serif;
+        }
+        .btn-back:hover {
+            background: rgba(40, 20, 20, 0.8);
+            border-color: rgba(255, 200, 200, 0.4);
+            transform: translateY(-2px);
+        }
+        /* 手机端按钮缩小 */
+        @media (max-width: 600px) {
+            .btn-back {
+                font-size: 14px;
+                padding: 6px 16px;
+                top: 12px;
+                left: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 返回按钮 -->
+    <button class="btn-back" id="backBtn">← 返回</button>
+    <!-- 画布容器 -->
+    <div class="canvas-wrapper" id="wrapper">
+        <canvas id="c1"></canvas>
+        <canvas id="c2"></canvas>
+    </div>
+    <script>
+        (function() {
+            // 1. 获取DOM
+            const wrapper = document.getElementById('wrapper');
+            const c1 = document.getElementById('c1');
+            const c2 = document.getElementById('c2');
+            const ctx1 = c1.getContext('2d');
+            const ctx2 = c2.getContext('2d');
+            let canvasW = 400;
+            let canvasH = 400;
+
+            // 初始化默认画布尺寸（防止图片加载失败容器塌陷）
+            function resetCanvasSize(w, h) {
+                canvasW = w;
+                canvasH = h;
+                c1.width = canvasW;
+                c1.height = canvasH;
+                c2.width = canvasW;
+                c2.height = canvasH;
+                wrapper.style.aspectRatio = `${canvasW}/${canvasH}`;
+            }
+            // 默认400*400兜底尺寸
+            resetCanvasSize(400, 400);
+
+            // 2. 加载底层刮奖图片，增加路径容错
+            const img = new Image();
+            img.src = 'pic.png';
+
+            // 图片加载成功
+            img.onload = function() {
+                const naturalWidth = img.naturalWidth;
+                const naturalHeight = img.naturalHeight;
+                resetCanvasSize(naturalWidth, naturalHeight);
+                // 绘制底层原图
+                ctx2.drawImage(img, 0, 0, naturalWidth, naturalHeight);
+                drawMaskLayer();
+                initInteraction();
+            };
+
+            // 图片加载失败修复：绘制替代图案，不会空白
+            img.onerror = function() {
+                // 底层绘制替代背景
+                ctx2.fillStyle = '#36b37e';
+                ctx2.fillRect(0, 0, canvasW, canvasH);
+                ctx2.fillStyle = '#fff';
+                ctx2.font = '40px 仿宋';
+                ctx2.textAlign = 'center';
+                ctx2.textBaseline = 'middle';
+                ctx2.fillText('恭喜你中奖了！', canvasW/2, canvasH/2 - 40);
+                ctx2.font = '24px 仿宋';
+                ctx2.fillText('图片缺失', canvasW/2, canvasH/2 + 20);
+                // 绘制上层刮涂层
+                drawMaskLayer();
+                initInteraction();
+            };
+
+            // 绘制灰色刮开涂层+文字
+            function drawMaskLayer() {
+                ctx1.fillStyle = 'lightgray';
+                ctx1.fillRect(0, 0, canvasW, canvasH);
+                let fontSize = Math.min(canvasW, canvasH) / 12;
+                fontSize = Math.max(30, Math.min(80, fontSize));
+                ctx1.font = `normal ${fontSize}px 仿宋, PingFang SC, serif`;
+                ctx1.textAlign = 'center';
+                ctx1.textBaseline = 'middle';
+                ctx1.strokeStyle = 'slateblue';
+                ctx1.lineWidth = 4;
+                const centerX = canvasW / 2;
+                const centerY = canvasH / 2;
+                const lineHeight = fontSize * 1.6;
+                const yOffset = -lineHeight * 1.2;
+                ctx1.strokeText('你可以在此加入你的图片', centerX, centerY + yOffset);
+                ctx1.strokeText('售价0.9r', centerX, centerY + yOffset + lineHeight);
+            }
+
+            // 3. 修正坐标换算，解决刮擦失效
+            let isDragging = false;
+            function getCanvasCoords(e) {
+                const rect = c1.getBoundingClientRect();
+                const scaleX = c1.width / rect.width;
+                const scaleY = c1.height / rect.height;
+                let clientX, clientY;
+                if (e.touches) {
+                    clientX = e.touches[0].clientX;
+                    clientY = e.touches[0].clientY;
+                } else {
+                    clientX = e.clientX;
+                    clientY = e.clientY;
+                }
+                return {
+                    x: (clientX - rect.left) * scaleX,
+                    y: (clientY - rect.top) * scaleY
+                };
+            }
+            // 刮擦清除涂层
+            function eraseAt(x, y) {
+                const brush = 50;
+                if (x < brush/2 || y < brush/2 || x > canvasW - brush/2 || y > canvasH - brush/2) return;
+                ctx1.clearRect(x - brush/2, y - brush/2, brush, brush);
+            }
+
+            // 绑定鼠标+触摸交互
+            function initInteraction() {
+                // 鼠标
+                c1.onmousedown = ev => {
+                    isDragging = true;
+                    const pos = getCanvasCoords(ev);
+                    eraseAt(pos.x, pos.y);
+                };
+                c1.onmousemove = ev => {
+                    if (!isDragging) return;
+                    const pos = getCanvasCoords(ev);
+                    eraseAt(pos.x, pos.y);
+                };
+                document.onmouseup = () => isDragging = false;
+                c1.onmouseleave = () => isDragging = false;
+
+                // 触摸
+                c1.addEventListener('touchstart', e => {
+                    e.preventDefault();
+                    isDragging = true;
+                    const pos = getCanvasCoords(e);
+                    eraseAt(pos.x, pos.y);
+                }, { passive: false });
+                c1.addEventListener('touchmove', e => {
+                    e.preventDefault();
+                    if (!isDragging) return;
+                    const pos = getCanvasCoords(e);
+                    eraseAt(pos.x, pos.y);
+                }, { passive: false });
+                c1.addEventListener('touchend', () => isDragging = false, { passive: false });
+                c1.addEventListener('touchcancel', () => isDragging = false, { passive: false });
+            }
+
+            // 4. 返回按钮跳转
+            document.getElementById('backBtn').addEventListener('click', () => {
+                window.location.href = '../buy.html';
+            });
+        })();
+    </script>
+</body>
+</html>

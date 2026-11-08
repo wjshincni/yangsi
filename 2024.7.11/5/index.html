@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>BangBang Ball</title>
+    <style>
+        * { padding: 0; margin: 0; box-sizing: border-box; }
+        body { background: #111; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; }
+        canvas { display: block; background-color: #000; margin: 0 auto; max-width: 100%; height: auto; }
+
+        /* 顶部按钮组 */
+        .top-btn-group {
+            position: absolute;
+            top: 12px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            z-index: 999999;
+            pointer-events: none;
+        }
+        .top-btn-group > * { pointer-events: auto; }
+        .common-btn {
+            padding: 8px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 40px;
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            color: #fff;
+            cursor: pointer;
+            font-weight: 500;
+            box-shadow: 0 2px 10px rgba(110, 142, 251, 0.3);
+            transition: transform 0.2s;
+            min-height: 44px;
+        }
+        .common-btn:hover { transform: scale(1.02); }
+        .common-btn.detail-btn { background: linear-gradient(135deg, #f093fb, #f5576c); }
+        .music-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 40px;
+            padding: 4px;
+            cursor: pointer;
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            box-shadow: 0 2px 10px rgba(110, 142, 251, 0.3);
+            transition: transform 0.2s;
+        }
+        .music-btn:hover { transform: scale(1.02); }
+        .music-btn img { width: 100%; height: 100%; display: block; }
+
+        /* 详情弹窗 */
+        .detail-modal {
+            display: none;
+            position: fixed;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            z-index: 99999999;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .detail-modal.active { display: flex; }
+        .detail-box {
+            max-width: 420px;
+            width: 100%;
+            background: #fff;
+            border-radius: 28px;
+            padding: 24px 28px 20px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+            animation: modalIn 0.3s ease;
+            text-align: left;
+        }
+        @keyframes modalIn {
+            from { transform: scale(0.9); opacity:0; }
+            to { transform:1; opacity:1; }
+        }
+        #detailTitle {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #eee;
+        }
+        .detailContent {
+            font-size: 1rem;
+            line-height: 1.8;
+            text-indent: 2em;
+            color: #333;
+        }
+        #closeDetailBtn {
+            margin-top: 20px;
+            padding: 8px 24px;
+            border: none;
+            border-radius: 40px;
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            color: #fff;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        /* 手机触摸按键 */
+        .touch-controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 660px;
+            padding: 12px 20px;
+            background: rgba(0,0,0,0.6);
+            border-radius: 0 0 12px 12px;
+            margin-top: -4px;
+            gap: 10px;
+        }
+        .touch-row {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            width: 100%;
+            flex-wrap: wrap;
+        }
+        .player-group {
+            display: flex;
+            gap: 20px;
+            flex: 1;
+            justify-content: center;
+        }
+        .touch-btn {
+            padding: 12px 24px;
+            font-size: 20px;
+            font-weight: bold;
+            border: none;
+            border-radius: 16px;
+            background: rgba(255,255,255,0.15);
+            color: #fff;
+            backdrop-filter: blur(4px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            touch-action: none;
+            user-select: none;
+            cursor: pointer;
+            min-width: 70px;
+            transition: background 0.1s;
+            text-align: center;
+        }
+        .touch-btn:active, .touch-btn.active {
+            background: rgba(255,255,255,0.35);
+        }
+        .touch-btn.label {
+            background: transparent;
+            box-shadow: none;
+            cursor: default;
+            font-size: 16px;
+            color: #aaa;
+            min-width: auto;
+            padding: 12px 8px;
+        }
+        .player-label {
+            color: #8af;
+            font-weight: bold;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+        }
+        .cloud-btn {
+            background: rgba(255,200,200,0.2);
+            border-color: rgba(255,200,200,0.3);
+            font-size: 18px;
+            min-width: 60px;
+        }
+        .cloud-btn:active, .cloud-btn.active {
+            background: rgba(255,200,200,0.4);
+        }
+        @media (max-width: 500px) {
+            .touch-btn { padding: 10px 16px; font-size: 18px; min-width: 60px; }
+            .player-group { gap: 12px; }
+            .cloud-btn { font-size: 16px; min-width: 50px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 顶部按钮组 -->
+    <div class="top-btn-group">
+        <button id="backBtn" class="common-btn">返回</button>
+        <button id="detailBtn" class="common-btn detail-btn" >详情</button>
+        <button id="musicToggle" class="music-btn">
+            <img src="../index/music_on.png" alt="音乐开关" id="musicIcon">
+        </button>
+    </div>
+
+    <!-- 详情弹窗 -->
+    <div class="detail-modal" id="detailModal">
+        <div class="detail-box">
+            <h1 id="detailTitle">BangBang Ball</h1>
+            <div class="detailContent">
+                双人乒乓球对战游戏<br>
+                玩家A：按 <b>S</b>（上移）和 <b>X</b>（下移），<b>Q</b> 释放云朵<br>
+                玩家B：按 <b>H</b>（上移）和 <b>B</b>（下移），<b>P</b> 释放云朵<br>
+
+                你可以修改的部分：击球音效、球拍插图、你和好友的技能大小、好友的按钮失灵
+            </div>
+            <button id="closeDetailBtn">关闭</button>
+        </div>
+    </div>
+
+    <!-- 游戏画布 -->
+    <canvas id="gameCanvas" width="660" height="960"></canvas>
+
+    <!-- 手机触摸按键 -->
+    <div class="touch-controls" id="touchControls">
+        <!-- 第一行：移动按键 -->
+        <div class="touch-row">
+            <div class="player-group">
+                <span class="player-label">A</span>
+                <button class="touch-btn" data-key="s">▲</button>
+                <button class="touch-btn" data-key="x">▼</button>
+            </div>
+            <div class="player-group">
+                <span class="player-label">B</span>
+                <button class="touch-btn" data-key="h">▲</button>
+                <button class="touch-btn" data-key="b">▼</button>
+            </div>
+        </div>
+        <!-- 第二行：释放云朵按键 -->
+        <div class="touch-row">
+            <button class="touch-btn cloud-btn" id="cloudA">射</button>
+            <button class="touch-btn cloud-btn" id="cloudB">射</button>
+        </div>
+    </div>
+
+    <!-- 音频资源 -->
+    <audio id="bgMusic" src="sounds/backgroundmusic.mp3" loop style="display:none;"></audio>
+    <audio id="springSound" src="sounds/workup.wav" preload="auto"></audio>
+    <audio id="summerSound" src="sounds/wajueji.wav" preload="auto"></audio>
+
+    <script>
+        // ============================================================
+        // 1. 导航及音乐控制
+        // ============================================================
+        (function() {
+
+            const mediaElements = document.querySelectorAll('audio');
+            const musicToggle = document.getElementById('musicToggle');
+            const musicIcon = document.getElementById('musicIcon');
+            let musicOn = true;
+            musicToggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                musicOn = !musicOn;
+                mediaElements.forEach(el => el.muted = !musicOn);
+                musicIcon.src = musicOn ? '../index/music_on.png' : '../index/music_off.png';
+            });
+
+            document.getElementById('backBtn').addEventListener('click', function() {
+                window.location.href = '../buy.html';
+            });
+
+            const detailModal = document.getElementById('detailModal');
+            const detailBtn = document.getElementById('detailBtn');
+            const closeDetailBtn = document.getElementById('closeDetailBtn');
+            detailBtn.addEventListener('click', () => detailModal.style.display = 'flex');
+            closeDetailBtn.addEventListener('click', () => detailModal.style.display = 'none');
+            detailModal.addEventListener('click', (e) => {
+                if (e.target === detailModal) detailModal.style.display = 'none';
+            });
+        })();
+
+        // ============================================================
+        // 2. 游戏主逻辑 + 云朵系统（前景遮挡 + 发射云朵）
+        // ============================================================
+        alert(
+            "电脑端：S/X 上下，A 释放云朵；H/B 上下，J 释放云朵"
+        );
+
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const springSound = document.getElementById('springSound');
+        const summerSound = document.getElementById('summerSound');
+
+        // 游戏参数
+        let paddleHeight = 100;         // 初始长度，之后每局可能变化
+        const paddleWidth = 20;
+        let paddleA_Y = (canvas.height - paddleHeight) / 3;
+        let paddleB_Y = (canvas.height - paddleHeight) / 3;
+        const starRadius = 15;
+        let ballX = canvas.width / 2;
+        let ballY = canvas.height / 2;
+        let ballSpeedX = 5;
+        let ballSpeedY = 3;
+        let scoreA = 0;
+        let scoreB = 0;
+        let keys = {};
+
+        // ----- 发射云朵相关 -----
+        let flyingClouds = [];
+        let lastCloudTimeA = 0;
+        let lastCloudTimeB = 0;
+        const CLOUD_COOLDOWN = 300; // 0.3秒
+
+        // 释放云朵函数
+        function releaseCloud(player) {
+            const now = Date.now();
+            let paddleY, fromX, direction, lastTime;
+            if (player === 'A') {
+                if (now - lastCloudTimeA < CLOUD_COOLDOWN) return;
+                lastCloudTimeA = now;
+                paddleY = paddleA_Y + paddleHeight / 2;
+                fromX = paddleWidth;
+                direction = 1; // 向右
+            } else if (player === 'B') {
+                if (now - lastCloudTimeB < CLOUD_COOLDOWN) return;
+                lastCloudTimeB = now;
+                paddleY = paddleB_Y + paddleHeight / 2;
+                fromX = canvas.width - paddleWidth;
+                direction = -1; // 向左
+            } else return;
+
+            const radius = 90 + Math.random() * 10; // 20~70
+            const opacity = 1;
+            const speed = 7 + Math.random() * 3; // 3~6
+            const phase = Math.random() * Math.PI * 2;
+            flyingClouds.push({
+                x: fromX,
+                y: paddleY,
+                radius: radius,
+                opacity: opacity,
+                phase: phase,
+                dx: direction * speed,
+                dy: (Math.random() - 0.5) * 0.5, // 轻微垂直漂移
+                speed: speed
+            });
+        }
+
+        // 更新发射云朵位置
+        function updateFlyingClouds() {
+            for (let i = flyingClouds.length - 1; i >= 0; i--) {
+                const c = flyingClouds[i];
+                c.x += c.dx;
+                c.y += c.dy;
+                // 越界移除
+                if (c.x < -c.radius || c.x > canvas.width + c.radius ||
+                    c.y < -c.radius || c.y > canvas.height + c.radius) {
+                    flyingClouds.splice(i, 1);
+                }
+            }
+        }
+
+        // ----- 静态前景云朵（装饰） -----
+        let clouds = [];
+
+        function initClouds() {
+            const count = 40;
+            const margin = 40;
+            for (let i = 0; i < count; i++) {
+                const radius = 30 + Math.random() * 70;
+                const x = margin + Math.random() * (canvas.width - 2 * margin);
+                const y = margin + Math.random() * (canvas.height - 2 * margin);
+                const speedX = Math.random() * 0.3;
+                const speedY = Math.random() * 0.2;
+                const opacity = 0.7 + Math.random() * 0.3;
+                const baseY = y;
+                const phase = Math.random() * Math.PI * 2;
+                clouds.push({
+                    x, y, radius, speedX, speedY, opacity,
+                    baseY, phase,
+                    floatAmp: 0.5 + Math.random() * 1.5
+                });
+            }
+        }
+        initClouds();
+
+        function updateClouds() {
+            const time = Date.now() / 1000;
+            for (let c of clouds) {
+                c.x += c.speedX;
+                c.y += c.speedY + Math.sin(time * 0.5 + c.phase) * c.floatAmp * 0.05;
+                if (c.x < -c.radius) c.x = canvas.width + c.radius;
+                if (c.x > canvas.width + c.radius) c.x = -c.radius;
+                if (c.y < -c.radius) c.y = canvas.height + c.radius;
+                if (c.y > canvas.height + c.radius) c.y = -c.radius;
+            }
+        }
+
+        // 绘制单朵云（通用）
+        function drawCloudObject(x, y, radius, opacity, phase) {
+            const grad = ctx.createRadialGradient(x, y, 0, x, y, radius);
+            grad.addColorStop(0, `rgba(255, 255, 255, ${opacity})`);
+            grad.addColorStop(0.6, `rgba(230, 240, 255, ${opacity * 0.7})`);
+            grad.addColorStop(1, `rgba(200, 220, 255, 0)`);
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 小凸起
+            const subCount = 3;
+            for (let i = 0; i < subCount; i++) {
+                const angle = i * (Math.PI * 2 / subCount) + phase;
+                const dist = radius * 0.5;
+                const sx = x + Math.cos(angle) * dist;
+                const sy = y + Math.sin(angle) * dist * 0.6;
+                const sr = radius * 0.4;
+                const grad2 = ctx.createRadialGradient(sx, sy, 0, sx, sy, sr);
+                grad2.addColorStop(0, `rgba(255, 255, 255, ${opacity * 0.6})`);
+                grad2.addColorStop(1, `rgba(255, 255, 255, 0)`);
+                ctx.fillStyle = grad2;
+                ctx.beginPath();
+                ctx.arc(sx, sy, sr, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        // ----- 游戏绘制函数 -----
+        function drawPaddle(x, y, height) {
+            ctx.fillStyle = 'cadetblue';
+            ctx.fillRect(x, y, paddleWidth, height);
+        }
+
+        function drawStar(x, y, radius, color) {
+            const angle = Math.PI / 5;
+            ctx.save();
+            ctx.beginPath();
+            ctx.translate(x, y);
+            ctx.rotate(Math.PI / 2);
+            ctx.fillStyle = color;
+            for (let i = 0; i < 10; i++) {
+                ctx.lineTo(0, 0 - (i % 2 === 0 ? radius : radius / 2));
+                ctx.rotate(angle);
+            }
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
+        }
+
+        function drawBall(x, y) {
+            drawStar(x, y, starRadius, 'orange');
+        }
+
+        function drawScore() {
+            ctx.fillStyle = 'lightpink';
+            ctx.font = '30px Comic Sans MS';
+            ctx.fillText(scoreA, canvas.width / 4, 50);
+            ctx.fillText(scoreB, canvas.width * 3 / 4, 50);
+        }
+
+        // ----- 游戏更新逻辑 -----
+        function update() {
+            ballX += ballSpeedX;
+            ballY += ballSpeedY;
+
+            if (keys['s']) paddleA_Y -= 15;
+            if (keys['x']) paddleA_Y += 15;
+            if (keys['h']) paddleB_Y -= 15;
+            if (keys['b']) paddleB_Y += 15;
+
+            // 边界限制（球拍高度动态）
+            if (paddleA_Y < 0) paddleA_Y = 0;
+            else if (paddleA_Y + paddleHeight > canvas.height) paddleA_Y = canvas.height - paddleHeight;
+            if (paddleB_Y < 0) paddleB_Y = 0;
+            else if (paddleB_Y + paddleHeight > canvas.height) paddleB_Y = canvas.height - paddleHeight;
+
+            // 墙壁反弹（上下）
+            if (ballY < 0 || ballY + starRadius * 2 > canvas.height) {
+                ballSpeedY = -ballSpeedY;
+            }
+
+            // 球拍碰撞（并触发球拍长度随机变化）
+            if (ballX < paddleWidth && ballY + starRadius * 2 > paddleA_Y && ballY < paddleA_Y + paddleHeight) {
+                ballSpeedX = -ballSpeedX;
+                summerSound.play();
+                // 变化球拍A的长度
+                paddleHeight = 50 + Math.random() * 100; // 50~150
+                // 调整位置防止超出
+                if (paddleA_Y + paddleHeight > canvas.height) paddleA_Y = canvas.height - paddleHeight;
+                if (paddleA_Y < 0) paddleA_Y = 0;
+                if (paddleB_Y + paddleHeight > canvas.height) paddleB_Y = canvas.height - paddleHeight;
+                if (paddleB_Y < 0) paddleB_Y = 0;
+            } else if (ballX + starRadius * 2 > canvas.width - paddleWidth && ballY + starRadius * 2 > paddleB_Y && ballY < paddleB_Y + paddleHeight) {
+                ballSpeedX = -ballSpeedX;
+                summerSound.play();
+                // 变化球拍B的长度（同样变化全局paddleHeight，因为两个球拍同时变化）
+                // 为了公平，我们让两个球拍同时变化为同一个随机值，但也可以各自独立，这里选择同步变化
+                paddleHeight = 50 + Math.random() * 100;
+                if (paddleA_Y + paddleHeight > canvas.height) paddleA_Y = canvas.height - paddleHeight;
+                if (paddleA_Y < 0) paddleA_Y = 0;
+                if (paddleB_Y + paddleHeight > canvas.height) paddleB_Y = canvas.height - paddleHeight;
+                if (paddleB_Y < 0) paddleB_Y = 0;
+            }
+
+            // 计分
+            if (ballX < 0) {
+                scoreB++;
+                springSound.play();
+                resetBall();
+            } else if (ballX + starRadius * 2 > canvas.width) {
+                scoreA++;
+                springSound.play();
+                resetBall();
+            }
+        }
+
+        function resetBall() {
+            ballX = canvas.width / 2;
+            ballY = canvas.height / 2;
+            ballSpeedX = -ballSpeedX;
+        }
+
+        // ----- 主循环 -----
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 1. 更新游戏逻辑（移动、碰撞等）
+            update();
+
+            // 2. 更新发射云朵
+            updateFlyingClouds();
+
+            // 3. 绘制游戏元素（球拍、星星、分数）
+            drawPaddle(0, paddleA_Y, paddleHeight);
+            drawPaddle(canvas.width - paddleWidth, paddleB_Y, paddleHeight);
+            drawBall(ballX, ballY);
+            drawScore();
+
+            // 4. 绘制静态云朵（前景遮挡）
+            updateClouds();
+            for (let c of clouds) {
+                drawCloudObject(c.x, c.y, c.radius, c.opacity, c.phase);
+            }
+
+            // 5. 绘制发射云朵（最前面）
+            for (let c of flyingClouds) {
+                drawCloudObject(c.x, c.y, c.radius, c.opacity, c.phase);
+            }
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        // ----- 键盘事件 -----
+        document.addEventListener('keydown', (e) => {
+            const key = e.key.toLowerCase();
+            keys[key] = true;
+            // 释放云朵
+            if (key === 'a') releaseCloud('A');
+            if (key === 'j') releaseCloud('B');
+        });
+        document.addEventListener('keyup', (e) => {
+            keys[e.key.toLowerCase()] = false;
+        });
+
+        // ============================================================
+        // 3. 手机触摸按键
+        // ============================================================
+        // 移动按键
+        const moveBtns = document.querySelectorAll('.touch-btn[data-key]');
+        moveBtns.forEach(btn => {
+            const key = btn.getAttribute('data-key');
+            btn.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                keys[key] = true;
+                this.classList.add('active');
+            });
+            btn.addEventListener('touchend', function(e) {
+                e.preventDefault();
+                keys[key] = false;
+                this.classList.remove('active');
+            });
+            btn.addEventListener('touchcancel', function(e) {
+                e.preventDefault();
+                keys[key] = false;
+                this.classList.remove('active');
+            });
+            btn.addEventListener('mousedown', function(e) {
+                e.preventDefault();
+                keys[key] = true;
+                this.classList.add('active');
+            });
+            btn.addEventListener('mouseup', function(e) {
+                e.preventDefault();
+                keys[key] = false;
+                this.classList.remove('active');
+            });
+            btn.addEventListener('mouseleave', function(e) {
+                keys[key] = false;
+                this.classList.remove('active');
+            });
+        });
+
+        // 释放云朵按钮
+        document.getElementById('cloudA').addEventListener('click', function(e) {
+            e.preventDefault();
+            releaseCloud('A');
+        });
+        document.getElementById('cloudB').addEventListener('click', function(e) {
+            e.preventDefault();
+            releaseCloud('B');
+        });
+
+        // ============================================================
+        // 4. 启动游戏 & 背景音乐解锁
+        // ============================================================
+        const bgMusic = document.getElementById('bgMusic');
+        document.addEventListener('click', function unlockAudio() {
+            if (bgMusic.paused) {
+                bgMusic.play().catch(() => {});
+            }
+        }, { once: true });
+
+        gameLoop();
+    </script>
+</body>
+</html>

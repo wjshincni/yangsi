@@ -1,0 +1,123 @@
+/* ====================== 你原始完整台球CSS 一字未改 ====================== */
+* {margin:0; padding:0}
+body {background:url(res/bg.png); text-align:center}
+h1 {font-size:12px; color:gray; font-weight:normal; line-height:200%}
+h1 .sub {vertical-align:super; color:red; font-size:9px; }
+.info {position:absolute; right:0}
+#table {position:relative; width:800px; margin:20px auto 10px; height:544px; background:url(res/table.jpg) no-repeat}
+.ball {position:absolute; width:30px; height:30px}
+#dotWrap {position:absolute; z-index:2; left:32px; top:32px; width:736px; height:480px}
+.guide {z-index:3; background-image:url(res/dashed_ball.png); _background:none; _filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled='true', sizingMethod='scale', src="res/dashed_ball.png"); background-repeat:no-repeat}
+.target {left:500px; top:250px; background-image:url(res/yellow_ball.png); _background:none; _filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled='true', sizingMethod='scale', src="res/yellow_ball.png"); background-repeat:no-repeat}
+.cue {background-image:url(res/white_ball.png); _background:none; _filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled='true', sizingMethod='scale', src="res/white_ball.png"); background-repeat:no-repeat}
+.bot {position:relative; width:800px; margin:10px auto 10px; height:70px}
+.ctrl {position:absolute; top:0; right:0; width:200px; height:80px; background:url(res/bg_controler.png) no-repeat}
+#force {position:absolute; left:0; top:18px; width:75px; height:20px; background:url(res/force_conver.png) no-repeat}
+#shootPos {position:absolute; top:0; right:14px; width:52px; height:52px}
+#dot {position:absolute; top:22px; left:22px; width:8px; height:8px; background:url(res/bule_dot.png); font-size:1px}
+#scoreBoard {position:absolute; z-index:3; top:230px; left:346px; font-size:50px; color:azure; filter:alpha(opacity=0); -moz-opacity:0; opacity:0}
+#tips {padding:50px 0 0 15px; text-align:center; color:red; font-size:45px}
+
+/* ====================== 统一后按钮/弹窗样式（和index_m完全同步） ====================== */
+.top-btn-group {
+    width:800px;
+    margin:10px auto 0;
+    text-align:left;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.common-btn {
+    padding: 8px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 40px;
+    background: linear-gradient(135deg, #6e8efb, #a777e3);
+    color: #fff;
+    cursor: pointer;
+    font-weight: 500;
+    box-shadow: 0 2px 10px rgba(110, 142, 251, 0.3);
+    transition: transform 0.2s;
+    min-height: 44px;
+    margin-right:0;
+}
+.common-btn:hover {
+    transform: scale(1.02);
+}
+.common-btn.detail-btn {
+    background: linear-gradient(135deg, #f093fb, #f5576c);
+}
+.music-btn {
+    width:36px;
+    height:36px;
+    border:none;
+    border-radius:40px;
+    padding:4px;
+    cursor:pointer;
+    vertical-align:middle;
+    background: linear-gradient(135deg, #6e8efb, #a777e3);
+    box-shadow: 0 2px 10px rgba(110, 142, 251, 0.3);
+    transition: transform 0.2s;
+}
+.music-btn:hover {
+    transform: scale(1.02);
+}
+.music-btn img {
+    width:100%;
+    height:100%;
+    display:block;
+}
+/* 弹窗统一样式 */
+.detail-modal {
+    display:none;
+    position:fixed;
+    left:0;
+    top:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.5);
+    backdrop-filter: blur(4px);
+    z-index:999;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+.detail-modal.active {
+    display: flex;
+}
+.detail-box {
+    max-width: 420px;
+    width: 100%;
+    background:#fff;
+    border-radius: 28px;
+    padding: 24px 28px 20px;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+    animation: modalIn 0.3s ease;
+}
+@keyframes modalIn {
+    from { transform: scale(0.9); opacity:0; }
+    to { transform:1; opacity:1; }
+}
+#detailTitle {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #eee;
+}
+.detailContent {
+    font-size:1rem;
+    line-height:1.8;
+    text-indent:2em;
+    color:#333;
+}
+#closeDetailBtn {
+    margin-top:20px;
+    padding: 8px 24px;
+    border: none;
+    border-radius: 40px;
+    background: linear-gradient(135deg, #6e8efb, #a777e3);
+    color: #fff;
+    cursor:pointer;
+    font-weight: 500;
+}

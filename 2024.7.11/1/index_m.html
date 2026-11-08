@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
+    <title>项目展示</title>
+    <style>
+        /* 简单重置与主题变量（复用主页面配色） */
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #f4f5f7;
+            color: #222;
+            transition: background 0.4s, color 0.4s;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        /* 顶部按钮组 */
+        .top-btn-group {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            gap: 12px;
+            justify-content: flex-start;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .common-btn {
+            padding: 8px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 40px;
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            color: #fff;
+            cursor: pointer;
+            font-weight: 500;
+            box-shadow: 0 2px 10px rgba(110, 142, 251, 0.3);
+            transition: transform 0.2s;
+            min-height: 44px;
+        }
+        .common-btn:hover {
+            transform: scale(1.02);
+        }
+        .common-btn.detail-btn {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+        }
+        /* 视频容器 */
+        .video-container {
+            width: 100%;
+            max-width: 800px;
+            aspect-ratio: 16 / 9;
+            background: #000;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+        }
+        .video-container video {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        /* 详情弹窗 */
+        .detail-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            z-index: 999;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .detail-modal.active { display: flex; }
+        .detail-box {
+            background: #fff;
+            border-radius: 28px;
+            max-width: 420px;
+            width: 100%;
+            padding: 24px 28px 20px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+            animation: modalIn 0.3s ease;
+        }
+        @keyframes modalIn {
+            from { transform: scale(0.9); opacity:0; }
+            to { transform:1; opacity:1; }
+        }
+        .detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.3rem;
+            font-weight: 600;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 12px;
+            margin-bottom: 16px;
+        }
+        .detail-close {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            color: #999;
+            cursor: pointer;
+        }
+        .detail-body {
+            font-size: 1rem;
+            line-height: 1.8;
+            color: #333;
+            text-indent: 2em;
+        }
+        .detail-footer {
+            margin-top: 20px;
+            text-align: right;
+        }
+        .detail-footer button {
+            padding: 8px 24px;
+            border: none;
+            border-radius: 40px;
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            color: #fff;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        /* 移动端适配 */
+        @media (max-width: 600px) {
+            .common-btn { font-size: 14px; padding: 6px 14px; min-height: 36px; }
+            .top-btn-group { gap: 8px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部按钮 -->
+    <div class="top-btn-group">
+        <button class="common-btn" id="backBtn">← 返回</button>
+        <button class="common-btn detail-btn" id="detailBtn">📄 详情</button>
+    </div>
+
+    <!-- 视频展示 -->
+    <div class="video-container">
+        <!-- 替换 src 为你的视频文件地址（支持网络或本地） -->
+        <video controls autoplay muted>
+            <source src="display.mp4" type="video/mp4">
+            您的浏览器不支持视频播放。
+        </video>
+    </div>
+
+    <!-- 详情弹窗 -->
+    <div class="detail-modal" id="detailModal">
+        <div class="detail-box">
+            <div class="detail-header">
+                <span>📖 项目详情</span>
+                <button class="detail-close" id="detailCloseBtn">&times;</button>
+            </div>
+            <div class="detail-body" id="detailContent">
+                <strong>桌球游戏</strong><br>
+                价格：￥4.9<br><br>
+                你可以更改的内容：图片、音频、背景球桌、下方提示文字<br><br>
+            </div>
+            <div class="detail-footer">
+                <button id="detailCloseBtn2">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // 返回按钮
+            document.getElementById('backBtn').addEventListener('click', function() {
+                window.location.href = '../index.html';
+            });
+
+            // 详情弹窗控制
+            const detailModal = document.getElementById('detailModal');
+            const detailCloseBtn = document.getElementById('detailCloseBtn');
+            const detailCloseBtn2 = document.getElementById('detailCloseBtn2');
+            const detailBtn = document.getElementById('detailBtn');
+
+            function openDetail() {
+                detailModal.classList.add('active');
+            }
+            function closeDetail() {
+                detailModal.classList.remove('active');
+            }
+
+            detailBtn.addEventListener('click', openDetail);
+            detailCloseBtn.addEventListener('click', closeDetail);
+            detailCloseBtn2.addEventListener('click', closeDetail);
+            detailModal.addEventListener('click', function(e) {
+                if (e.target === detailModal) closeDetail();
+            });
+
+            // ESC 关闭
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') closeDetail();
+            });
+        })();
+    </script>
+</body>
+</html>

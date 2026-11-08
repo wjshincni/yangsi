@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>0101 0101</title>
+<link href="index.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+    <!-- 新增顶部按钮，放在最上方 -->
+    <div class="top-btn-group">
+        <button id="backBtn" class="common-btn">返回</button>
+        <button id="detailBtn" class="common-btn">详情</button>
+        <button id="musicToggle" class="music-btn">
+            <img src="../index/music_on.png" alt="音乐开关" id="musicIcon">
+        </button>
+    </div>
+
+    <!-- 详情弹窗 -->
+    <div class="detail-modal" id="detailModal">
+        <div class="detail-box">
+            <h1 id="detailTitle"></h1>
+            <div class="detailContent"></div>
+            <button id="closeDetailBtn">关闭</button>
+        </div>
+    </div>
+
+    <!-- 你原本完整游戏DOM，完全没改 -->
+    <div id="table">
+        <div id="scoreBoard"></div>
+    </div>
+    <div class="bot">
+        <div id="tips"></div>
+        <div class = "ctrl">
+            <div id="force"></div>
+            <div id="shootPos"> 
+                <div id="dot"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 音频 -->
+    <audio id="audio1" src="res/music1.mp3" preload="auto" loop>
+    <audio id="audio2" src="res/music2.mp3" preload="auto">
+    <audio id="audio3" src="res/music3.mp3" preload="auto">
+
+<script type="text/javascript" src="index.js"></script>
+</body>
+</html>

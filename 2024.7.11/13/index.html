@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>够直不够硬</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; user-select:none; -webkit-tap-highlight-color:transparent; }
+        body { overflow:hidden; background:#1a1a2e; font-family:'Segoe UI',system-ui,sans-serif; touch-action:none; position:fixed; width:100%; height:100%; top:0; left:0; }
+        #canvas { display:block; background:#ecf0f1; touch-action:none; position:absolute; top:0; left:0; }
+        #topBar { position:fixed; top:0; left:0; right:0; z-index:1000; padding:8px 12px; display:flex; align-items:center; gap:10px; background:rgba(0,0,0,0.45); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); border-bottom:1px solid rgba(255,255,255,0.08); flex-wrap:nowrap; min-height:52px; }
+        #backBtn { flex-shrink:0; height:36px; border-radius:20px; background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.18); color:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:background 0.2s; touch-action:manipulation; padding:0 16px; font-size:14px; font-weight:600; letter-spacing:0.5px; }
+        #backBtn:active { background:rgba(255,255,255,0.25); }
+        #barsWrap { flex:1; min-width:0; display:flex; flex-direction:column; gap:4px; }
+        .bar-row { display:flex; align-items:center; gap:6px; height:18px; }
+        .bar-label { color:rgba(255,255,255,0.7); font-size:11px; font-weight:600; width:26px; flex-shrink:0; text-align:right; }
+        .bar-track { flex:1; min-width:0; height:100%; border-radius:20px; background:rgba(255,255,255,0.12); overflow:hidden; position:relative; box-shadow:inset 0 1px 3px rgba(0,0,0,0.2); }
+        .bar-fill { height:100%; border-radius:20px; width:0%; transition:width 0.15s ease-out; position:relative; }
+        .bar-fill.hp-fill { background:linear-gradient(90deg,#e74c3c,#ff6b6b); box-shadow:0 0 12px rgba(231,76,60,0.4); }
+        .bar-fill.exp-fill { background:linear-gradient(90deg,#1abc9c,#2ecc71); box-shadow:0 0 12px rgba(26,188,156,0.4); }
+        .bar-value { position:absolute; right:6px; top:50%; transform:translateY(-50%); font-size:10px; font-weight:700; color:#fff; text-shadow:0 1px 4px rgba(0,0,0,0.5); letter-spacing:0.3px; line-height:1; }
+        #aiBtnWrap { flex-shrink:0; position:relative; width:40px; height:40px; margin-left:2px; }
+        #aiBtn { width:100%; height:100%; border-radius:50%; border:2px solid rgba(255,255,255,0.2); background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.3); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.3s; touch-action:manipulation; position:relative; box-shadow:0 2px 8px rgba(0,0,0,0.2); font-size:14px; font-weight:800; letter-spacing:0.5px; }
+        #aiBtn .ai-text { font-size:14px; font-weight:800; }
+        #aiBtn.active { border-color:#2ecc71; background:rgba(46,204,113,0.2); color:#2ecc71; box-shadow:0 0 20px rgba(46,204,113,0.25); }
+        #aiBtn .cover { position:absolute; inset:-2px; border-radius:50%; background:rgba(100,100,120,0.55); backdrop-filter:blur(2px); -webkit-backdrop-filter:blur(2px); display:flex; align-items:center; justify-content:center; font-size:10px; color:rgba(255,255,255,0.5); font-weight:600; transition:opacity 0.4s,transform 0.3s; pointer-events:none; border:2px solid rgba(255,255,255,0.05); }
+        #aiBtn .cover.hidden { opacity:0; transform:scale(0.85); pointer-events:none; }
+        #aiBtn .cover span { background:rgba(0,0,0,0.3); padding:1px 6px; border-radius:8px; font-size:9px; }
+        #aiTimer { position:absolute; bottom:-6px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.7); color:#2ecc71; font-size:9px; font-weight:700; padding:1px 6px; border-radius:10px; white-space:nowrap; display:none; }
+        #aiStatus { position:fixed; top:60px; right:12px; z-index:1001; background:rgba(0,0,0,0.6); backdrop-filter:blur(4px); padding:6px 14px; border-radius:20px; border:1px solid rgba(46,204,113,0.3); color:#2ecc71; font-size:14px; font-weight:700; display:none; pointer-events:none; }
+        #aiStatus .label { color:rgba(255,255,255,0.6); font-weight:400; margin-right:4px; }
+        #bottomInfo { position:fixed; bottom:12px; left:0; right:0; z-index:1000; display:flex; justify-content:center; gap:12px; padding:0 16px; pointer-events:none; flex-wrap:wrap; }
+        #bottomInfo .info-item { color:rgba(255,255,255,0.7); font-size:14px; font-weight:600; background:rgba(0,0,0,0.35); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px); padding:6px 16px; border-radius:20px; border:1px solid rgba(255,255,255,0.06); pointer-events:auto; }
+        #bottomInfo .info-item .num { color:#fff; font-weight:700; margin-left:4px; }
+        #bottomInfo .info-item .num.score-num { color:#f1c40f; }
+        #bottomInfo .info-item .num.level-num { color:#9b59b6; }
+        #detailBtn { color:rgba(255,255,255,0.7); font-size:14px; font-weight:600; background:rgba(0,0,0,0.35); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px); padding:6px 16px; border-radius:20px; border:1px solid rgba(255,255,255,0.06); pointer-events:auto; cursor:pointer; transition:background 0.2s; touch-action:manipulation; }
+        #detailBtn:active { background:rgba(255,255,255,0.15); }
+        #toast { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%) scale(0.8); z-index:9999; color:#fff; font-size:28px; font-weight:800; text-align:center; pointer-events:none; opacity:0; transition:all 0.35s cubic-bezier(0.34,1.56,0.64,1); text-shadow:0 4px 30px rgba(0,0,0,0.6); background:rgba(0,0,0,0.5); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); padding:18px 36px; border-radius:24px; border:1px solid rgba(255,255,255,0.08); }
+        #toast.show { opacity:1; transform:translate(-50%,-50%) scale(1); }
+        #toast .sub { font-size:14px; font-weight:400; opacity:0.7; margin-top:4px; }
+        #modalOverlay {
+            position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
+            z-index:99999; display:flex; align-items:center; justify-content:center; visibility:hidden; opacity:0; transition:opacity 0.3s, visibility 0.3s;
+        }
+        #modalOverlay.active { visibility:visible; opacity:1; }
+        #modalBox {
+            background:#1e1e2f; color:#fff; max-width:90%; width:420px; border-radius:24px; padding:30px 28px 24px;
+            box-shadow:0 20px 60px rgba(0,0,0,0.7); border:1px solid rgba(255,255,255,0.06); transform:scale(0.9); transition:transform 0.3s ease;
+        }
+        #modalOverlay.active #modalBox { transform:scale(1); }
+        #modalTitle { font-size:24px; font-weight:800; margin-bottom:10px; letter-spacing:0.3px; color:#f1c40f; }
+        #modalMsg { font-size:16px; line-height:1.6; color:rgba(255,255,255,0.85); margin-bottom:24px; white-space:pre-wrap; word-break:break-word; }
+        #modalBtnWrap { text-align:center; margin-top:12px; display:flex; flex-wrap:wrap; justify-content:center; gap:10px; }
+        #modalBtnWrap button {
+            padding:10px 28px; border:none; border-radius:50px; color:#fff; font-size:16px; font-weight:700; cursor:pointer;
+            transition:background 0.2s; touch-action:manipulation;
+            background:linear-gradient(135deg,#6c5ce7,#a29bfe); box-shadow:0 4px 15px rgba(108,92,231,0.4);
+        }
+        #modalBtnWrap button:active { transform:scale(0.96); }
+        #modalBtnWrap button.diff-easy { background:linear-gradient(135deg,#2ecc71,#27ae60); }
+        #modalBtnWrap button.diff-normal { background:linear-gradient(135deg,#f39c12,#e67e22); }
+        #modalBtnWrap button.diff-hard { background:linear-gradient(135deg,#e74c3c,#c0392b); }
+        #modalBtnWrap button.diff-easy:active { background:#1e8449; }
+        #modalBtnWrap button.diff-normal:active { background:#ca6f1e; }
+        #modalBtnWrap button.diff-hard:active { background:#922b21; }
+        #joystick {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(4px);
+            border: 2px solid rgba(255,255,255,0.2);
+            display: none;
+            touch-action: none;
+            z-index: 1002;
+            box-shadow: 0 0 30px rgba(0,0,0,0.3);
+        }
+        #joystick .knob {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(46,204,113,0.6);
+            border: 2px solid rgba(46,204,113,0.8);
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            transition: background 0.2s;
+        }
+        #joystick.active .knob { background: rgba(46,204,113,0.9); }
+        @media (max-width:480px) {
+            #topBar { padding:4px 8px; min-height:44px; gap:6px; }
+            #backBtn { height:32px; font-size:12px; padding:0 12px; }
+            .bar-row { height:14px; gap:4px; }
+            .bar-label { font-size:9px; width:20px; }
+            .bar-value { font-size:8px; right:4px; }
+            #aiBtnWrap { width:32px; height:32px; }
+            #aiBtn .ai-text { font-size:11px; }
+            #aiBtn .cover { font-size:8px; }
+            #bottomInfo .info-item { font-size:11px; padding:4px 12px; }
+            #detailBtn { font-size:11px; padding:4px 12px; }
+            #toast { font-size:20px; padding:14px 24px; }
+            #toast .sub { font-size:12px; }
+            #aiStatus { font-size:12px; top:52px; right:8px; padding:4px 10px; }
+            #modalBox { padding:24px 20px; width:95%; }
+            #modalTitle { font-size:20px; }
+            #modalMsg { font-size:14px; }
+            #modalBtnWrap button { font-size:14px; padding:8px 20px; }
+            #joystick { width:100px; height:100px; bottom:90px; }
+            #joystick .knob { width:40px; height:40px; }
+        }
+        @media (max-width:380px) {
+            #topBar { padding:2px 4px; min-height:38px; gap:4px; }
+            .bar-row { height:12px; }
+            .bar-label { font-size:8px; width:16px; }
+            #aiBtnWrap { width:28px; height:28px; }
+            #aiBtn .ai-text { font-size:10px; }
+            #aiStatus { font-size:10px; top:46px; right:6px; padding:2px 8px; }
+            #backBtn { height:28px; font-size:10px; padding:0 10px; }
+            #bottomInfo .info-item { font-size:10px; padding:2px 8px; }
+            #detailBtn { font-size:10px; padding:2px 8px; }
+            #joystick { width:80px; height:80px; bottom:80px; }
+            #joystick .knob { width:32px; height:32px; }
+        }
+        @media (orientation:landscape) and (max-height:500px) {
+            #topBar { min-height:36px; padding:2px 8px; }
+            .bar-row { height:12px; }
+            #aiBtnWrap { width:28px; height:28px; }
+            #bottomInfo { bottom:6px; }
+            #bottomInfo .info-item { font-size:10px; padding:2px 10px; }
+            #detailBtn { font-size:10px; padding:2px 10px; }
+            #aiStatus { top:44px; font-size:10px; padding:2px 8px; }
+            #joystick { width:80px; height:80px; bottom:75px; }
+            #joystick .knob { width:32px; height:32px; }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <div id="topBar">
+        <button id="backBtn">返回</button>
+        <div id="barsWrap">
+            <div class="bar-row">
+                <span class="bar-label">HP</span>
+                <div class="bar-track"><div class="bar-fill hp-fill" id="hpFill" style="width:100%"><span class="bar-value" id="hpText">50</span></div></div>
+            </div>
+            <div class="bar-row">
+                <span class="bar-label">EXP</span>
+                <div class="bar-track"><div class="bar-fill exp-fill" id="expFill" style="width:0%"><span class="bar-value" id="expText">0/50</span></div></div>
+            </div>
+        </div>
+        <div id="aiBtnWrap">
+            <button id="aiBtn" aria-label="AI辅助">
+                <span class="ai-text">AI</span>
+                <div class="cover" id="aiCover"><span>AI</span></div>
+                <span id="aiTimer">15s</span>
+            </button>
+        </div>
+    </div>
+    <div id="aiStatus"><span class="label">AI</span><span id="aiTimeLeft">0s</span></div>
+    <div id="bottomInfo">
+        <span class="info-item">分数 <span class="num score-num" id="scoreDisplay">0</span></span>
+        <span class="info-item">等级 <span class="num level-num" id="levelDisplay">1</span></span>
+        <span id="detailBtn">详情</span>
+    </div>
+    <div id="toast"><span id="toastMain">升级！</span><div class="sub" id="toastSub">HP上限 +5</div></div>
+    <div id="joystick"><div class="knob"></div></div>
+    <div id="modalOverlay">
+        <div id="modalBox">
+            <div id="modalTitle">详情</div>
+            <div id="modalMsg"></div>
+            <div id="modalBtnWrap"></div>
+        </div>
+    </div>
+    <audio src="sounds/shot.mp3" id="shotSound" preload="auto" hidden></audio>
+    <audio src="sounds/aimed.mp3" id="aimedSound" preload="auto" hidden></audio>
+    <audio src="sounds/levelup.mp3" id="levelupSound" preload="auto" hidden></audio>
+    <audio src="sounds/boom.mp3" id="boomSound" preload="auto" hidden></audio>
+    <audio src="sounds/pass.mp3" id="passSound" preload="auto" hidden></audio>
+    <audio src="sounds/start.mp3" id="startSound" preload="auto" hidden></audio>
+    <audio src="sounds/lose.mp3" id="loseSound" preload="auto" hidden></audio>
+    <audio src="sounds/hp.mp3" id="hpSound" preload="auto" hidden></audio>
+
+    <script>
+        "use strict";
+
+        // ===== 预设详情内容 =====
+        const DETAIL_CONTENT = '你可以修改的内容：箭头贴图，所有音效，游戏难度，AI的逆天程度';
+
+        // ===== 音效引用 =====
+        const shotSound = document.getElementById('shotSound');
+        const aimedSound = document.getElementById('aimedSound');
+        const levelupSound = document.getElementById('levelupSound');
+        const boomSound = document.getElementById('boomSound');
+        const passSound = document.getElementById('passSound');
+        const startSound = document.getElementById('startSound');
+        const loseSound = document.getElementById('loseSound');
+        const hpSound = document.getElementById('hpSound');
+        const audioElements = [shotSound, aimedSound, levelupSound, boomSound, passSound, startSound, loseSound, hpSound];
+
+        // ===== 游戏暂停标志 =====
+        let gamePaused = false;
+        let gameLoopStarted = false;
+
+        // ===== 模态框系统 =====
+        const modalOverlay = document.getElementById('modalOverlay');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalMsg = document.getElementById('modalMsg');
+        const modalBtnWrap = document.getElementById('modalBtnWrap');
+
+        function showModal(title, msg, buttons) {
+            modalTitle.textContent = title || '提示';
+            modalMsg.textContent = msg || '';
+            modalBtnWrap.innerHTML = '';
+            gamePaused = true;
+            function closeModal() {
+                modalOverlay.classList.remove('active');
+                gamePaused = false;
+            }
+            if (buttons && buttons.length) {
+                buttons.forEach((btn) => {
+                    const b = document.createElement('button');
+                    b.textContent = btn.label;
+                    if (btn.class) b.className = btn.class;
+                    b.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        if (btn.callback) btn.callback();
+                        closeModal();
+                    });
+                    b.addEventListener('touchend', function(e) {
+                        e.preventDefault();
+                        if (btn.callback) btn.callback();
+                        closeModal();
+                    });
+                    modalBtnWrap.appendChild(b);
+                });
+            } else {
+                const b = document.createElement('button');
+                b.textContent = '确定';
+                b.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    closeModal();
+                });
+                b.addEventListener('touchend', function(e) {
+                    e.preventDefault();
+                    closeModal();
+                });
+                modalBtnWrap.appendChild(b);
+            }
+            modalOverlay.classList.add('active');
+        }
+
+        function confirmModal(title, msg, onConfirm, onCancel) {
+            showModal(title, msg, [
+                { label: '确定', callback: onConfirm },
+                { label: '取消', callback: onCancel || function(){} }
+            ]);
+        }
+
+        // ===== 音频预加载（超时机制） =====
+        let audioLoaded = false;
+
+        function preloadAudio(callback) {
+            if (audioLoaded) { callback(); return; }
+            let loaded = 0;
+            const total = audioElements.length;
+            let completed = false;
+
+            function checkLoaded() {
+                if (completed) return;
+                loaded++;
+                const progress = Math.round((loaded / total) * 100);
+                modalMsg.textContent = `正在加载音效... ${progress}%`;
+                if (loaded >= total) {
+                    completed = true;
+                    audioLoaded = true;
+                    modalOverlay.classList.remove('active');
+                    gamePaused = false;
+                    callback();
+                }
+            }
+
+            const timeoutIds = [];
+            audioElements.forEach((audio, index) => {
+                const timeoutId = setTimeout(() => {
+                    if (!audio._loaded) {
+                        audio._loaded = true;
+                        checkLoaded();
+                    }
+                }, 5000);
+                timeoutIds.push(timeoutId);
+                audio.addEventListener('canplaythrough', function handler() {
+                    audio.removeEventListener('canplaythrough', handler);
+                    if (!audio._loaded) {
+                        audio._loaded = true;
+                        clearTimeout(timeoutIds[index]);
+                        checkLoaded();
+                    }
+                });
+                audio.addEventListener('error', function handler() {
+                    audio.removeEventListener('error', handler);
+                    if (!audio._loaded) {
+                        audio._loaded = true;
+                        clearTimeout(timeoutIds[index]);
+                        checkLoaded();
+                    }
+                });
+                if (audio.readyState >= 4) {
+                    audio._loaded = true;
+                    clearTimeout(timeoutIds[index]);
+                    checkLoaded();
+                } else {
+                    audio.load();
+                }
+            });
+
+            const totalTimeout = setTimeout(() => {
+                if (!completed) {
+                    completed = true;
+                    audioLoaded = true;
+                    modalOverlay.classList.remove('active');
+                    gamePaused = false;
+                    callback();
+                }
+            }, 10000);
+
+            modalTitle.textContent = '加载中';
+            modalMsg.textContent = '正在加载音效... 0%';
+            modalBtnWrap.innerHTML = '';
+            modalOverlay.classList.add('active');
+            gamePaused = true;
+        }
+
+        // ===== 舞台 =====
+        const stage = { w: 1920, h: 1080 };
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = stage.w;
+        canvas.height = stage.h;
+
+        let scale = 1, loffset = 0, toffset = 0;
+        let portrait = true;
+
+        // ===== 难度设置 =====
+        let difficulty = 'normal';
+        let baseSpeed = 10;
+        let enemySpeedBase = 3;
+        let speedMultiplier = 1;
+
+        // ===== 游戏状态 =====
+        let hp = 50, hpMax = 50;
+        let exp = 0;
+        let EXP_MAX = 50;
+        let level = 1, score = 0;
+        let speed = 10;
+        let needAI = false;
+        let aiReady = false;
+        let aiTimer = 0;
+        let aiTimerInterval = null;
+        let loseTime = 0;
+
+        let hpFullTimer = 0;
+        const HP_FULL_REQUIRE = 10;
+        let lastHpFull = false;
+        let levelUpCooldown = 0;
+
+        let countdown = 5;
+        let countdownActive = true;
+        let countdownInterval = null;
+
+        let autoHealTimer = 0;
+        const AUTO_HEAL_INTERVAL = 3;
+        const AUTO_HEAL_AMOUNT = 1;
+        const KILL_HEAL_AMOUNT = 1;
+
+        let aiUnlockNotified = false;
+
+        // ===== 挑战模式 =====
+        let challengeActive = false;
+        let challengeTime = 0;
+        let challengeKillTarget = 0;
+        let challengeKillCount = 0;
+        let challengeTimerInterval = null;
+        let challengeFinished = false;
+        let levelLocked = false;
+        let originalEnemySpeedBase = enemySpeedBase;
+        let originalSpeedMultiplier = 1;
+
+        // ===== 摇杆相关 =====
+        let isMobile = false;
+        let joystickAngle = null;
+        const joystickElem = document.getElementById('joystick');
+        const knobElem = joystickElem.querySelector('.knob');
+        let joystickActive = false;
+        let joystickCenterX = 0, joystickCenterY = 0;
+        const joystickRadius = 50;
+
+        function detectMobile() {
+            return 'ontouchstart' in window || navigator.maxTouchPoints > 0 || /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+        }
+
+        function setupJoystick() {
+            if (!isMobile) return;
+            joystickElem.style.display = 'block';
+            const rect = joystickElem.getBoundingClientRect();
+            joystickCenterX = rect.left + rect.width/2;
+            joystickCenterY = rect.top + rect.height/2;
+
+            function handleJoystickMove(clientX, clientY) {
+                const dx = clientX - joystickCenterX;
+                const dy = clientY - joystickCenterY;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                const maxDist = joystickRadius;
+                let clampedX = dx, clampedY = dy;
+                if (dist > maxDist) {
+                    clampedX = (dx / dist) * maxDist;
+                    clampedY = (dy / dist) * maxDist;
+                }
+                knobElem.style.transform = `translate(calc(-50% + ${clampedX}px), calc(-50% + ${clampedY}px))`;
+                if (dist > 10) {
+                    joystickAngle = Math.atan2(dy, dx);
+                    joystickActive = true;
+                }
+            }
+
+            joystickElem.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                const touch = e.touches[0];
+                const rect = joystickElem.getBoundingClientRect();
+                joystickCenterX = rect.left + rect.width/2;
+                joystickCenterY = rect.top + rect.height/2;
+                handleJoystickMove(touch.clientX, touch.clientY);
+                joystickElem.classList.add('active');
+            }, {passive: false});
+
+            joystickElem.addEventListener('touchmove', function(e) {
+                e.preventDefault();
+                const touch = e.touches[0];
+                handleJoystickMove(touch.clientX, touch.clientY);
+            }, {passive: false});
+
+            joystickElem.addEventListener('touchend', function(e) {
+                e.preventDefault();
+                joystickActive = false;
+                joystickAngle = null;
+                knobElem.style.transform = 'translate(-50%, -50%)';
+                joystickElem.classList.remove('active');
+            }, {passive: false});
+
+            window.addEventListener('resize', function() {
+                const rect = joystickElem.getBoundingClientRect();
+                joystickCenterX = rect.left + rect.width/2;
+                joystickCenterY = rect.top + rect.height/2;
+            });
+        }
+
+        function playSound(audioElem) {
+            if (!audioElem) return;
+            try {
+                audioElem.currentTime = 0;
+                audioElem.play().catch(()=>{});
+            } catch(e) {}
+        }
+
+        // ===== 绘图函数 =====
+        function drawArrow(fromx, fromy, tox, toy, lw, hlen, color) {
+            const dx = tox - fromx, dy = toy - fromy;
+            const angle = Math.atan2(dy, dx);
+            ctx.fillStyle = color;
+            ctx.strokeStyle = color;
+            ctx.lineCap = 'round';
+            ctx.lineWidth = lw;
+            ctx.beginPath();
+            ctx.moveTo(fromx, fromy);
+            ctx.lineTo(tox, toy);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(tox, toy);
+            ctx.lineTo(tox - hlen * Math.cos(angle - Math.PI / 6), toy - hlen * Math.sin(angle - Math.PI / 6));
+            ctx.lineTo(tox - hlen * Math.cos(angle) / 2, toy - hlen * Math.sin(angle) / 2);
+            ctx.lineTo(tox - hlen * Math.cos(angle + Math.PI / 6), toy - hlen * Math.sin(angle + Math.PI / 6));
+            ctx.closePath();
+            ctx.stroke();
+            ctx.fill();
+        }
+
+        const colors = ['#1abc9c','#1abc9c','#3498db','#9b59b6','#34495e','#16a085','#27ae60','#2980b9','#8e44ad','#2c3e50','#f1c40f','#e67e22','#e74c3c','#95a5a6','#f39c12','#d35400','#c0392b','#bdc3c7','#7f8c8d'];
+
+        // 生成背景纹理
+        ctx.clearRect(0,0,stage.w,stage.h);
+        for(let i=0;i<200;i++){ const a=Math.random()*Math.PI*2,l=Math.random()*250+50,mx=360+Math.sin(a)*l,my=360-Math.cos(a)*l; drawArrow(mx,my,mx+l/6*Math.sin(a),my-l/6*Math.cos(a),l/30,l/30,'#c0392b'); }
+        const explodeImg = new Image(); explodeImg.src = canvas.toDataURL('image/png');
+
+        ctx.clearRect(0,0,stage.w,stage.h);
+        for(let i=0;i<200;i++){ const a=Math.random()*Math.PI-Math.PI/2,l=Math.random()*480+50,mx=stage.w/2+Math.sin(a)*l,my=stage.h-Math.cos(a)*l; drawArrow(mx,my,mx+l/6*Math.sin(a),my-l/6*Math.cos(a),l/30,l/30,'#2c3e50'); }
+        const explodeBImg = new Image(); explodeBImg.src = canvas.toDataURL('image/png');
+
+        ctx.clearRect(0,0,stage.w,stage.h);
+        ctx.fillStyle='rgba(236,240,241,1)'; ctx.fillRect(0,0,stage.w,stage.h);
+        for(let i=0;i<200;i++){ const a=Math.random()*Math.PI/Math.PI*180,l=Math.random()*250+50,mx=Math.random()*stage.w,my=Math.random()*stage.h; drawArrow(mx,my,mx+l/6*Math.sin(a),my-l/6*Math.cos(a),l/30,l/30,colors[Math.floor(Math.random()*colors.length)]); }
+        ctx.fillStyle='rgba(236,240,241,0.9)'; ctx.fillRect(0,0,stage.w,stage.h);
+        const backImg = new Image(); backImg.src = canvas.toDataURL('image/png');
+
+        // ===== 游戏对象 =====
+        let angle = 0;
+        let btm = 0;
+        const bullets = [], enemies = [], explosions = [];
+        let cold = [], eturn = 0;
+        let shake = false, shaket = 0;
+        let ai = false;
+
+        function Random(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+
+        function Bullet(){
+            this.x = stage.w/2 + Math.cos(angle)*150;
+            this.y = stage.h + Math.sin(angle)*150;
+            this.r = angle;
+        }
+        function Enemy(){
+            this.r = Math.random()*Math.PI/(2.5/2)-Math.PI/2.5;
+            this.dis = Math.random()*1920+1080;
+            this.x = stage.w/2 - Math.sin(this.r)*this.dis;
+            this.y = stage.h - Math.cos(this.r)*this.dis;
+            this.speed = enemySpeedBase * (difficulty === 'easy' ? 0.8 : difficulty === 'hard' ? 1.4 : 1.0);
+        }
+        function Explosion(x,y,ty){ this.x=x; this.y=y; this.t=30; this.ty=ty; }
+
+        function initEnemies(){
+            enemies.length = 0;
+            for(let i=0;i<10;i++){ const e=new Enemy(); e.x+=Math.sin(e.r)*300; e.y+=Math.cos(e.r)*300; enemies.push(e); }
+        }
+        initEnemies();
+
+        // ===== 指针（鼠标/触摸） =====
+        const pointer = { x:0, y:0 };
+        let mxpos=0, mypos=0;
+        function motchstart(e){ mxpos=(e.pageX-loffset)*scale; mypos=(e.pageY-toffset)*scale; }
+        function motchmove(e){
+            mxpos=(e.pageX-loffset)*scale; mypos=(e.pageY-toffset)*scale;
+            pointer.x=mxpos; pointer.y=mypos;
+            if (!joystickActive) {
+                ai = false;
+            }
+        }
+        window.addEventListener('mousedown',e=>motchstart(e));
+        window.addEventListener('mousemove',e=>motchmove(e));
+        window.addEventListener('touchstart',e=>{ e.preventDefault(); motchstart(e.touches[0]); },{passive:false});
+        window.addEventListener('touchmove',e=>{ e.preventDefault(); motchmove(e.touches[0]); },{passive:false});
+
+        // ===== UI 更新 =====
+        function updateUI(){
+            const hpPct = Math.max(0, Math.min(100, (hp/hpMax)*100));
+            document.getElementById('hpFill').style.width = hpPct+'%';
+            document.getElementById('hpText').textContent = Math.round(hp);
+            const expPct = Math.min(100, (exp/EXP_MAX)*100);
+            document.getElementById('expFill').style.width = expPct+'%';
+            document.getElementById('expText').textContent = Math.round(exp)+'/'+Math.round(EXP_MAX);
+            document.getElementById('scoreDisplay').textContent = score;
+            document.getElementById('levelDisplay').textContent = level;
+
+            const cover = document.getElementById('aiCover');
+            const btn = document.getElementById('aiBtn');
+            const timerEl = document.getElementById('aiTimer');
+            if(exp >= 50 && !challengeActive){
+                cover.classList.add('hidden');
+                aiReady = true;
+                btn.classList.add('active');
+                if(!aiUnlockNotified){
+                    aiUnlockNotified = true;
+                    showToast('AI 已解锁', '消耗 50 EXP 可激活 15 秒', 2000);
+                }
+            } else {
+                cover.classList.remove('hidden');
+                aiReady = false;
+                btn.classList.remove('active');
+                aiUnlockNotified = false;
+            }
+            if(aiTimer > 0){
+                timerEl.style.display = 'block';
+                timerEl.textContent = Math.ceil(aiTimer)+'s';
+            } else {
+                timerEl.style.display = 'none';
+            }
+            const aiStatus = document.getElementById('aiStatus');
+            const aiTimeLeft = document.getElementById('aiTimeLeft');
+            if(aiTimer > 0){
+                aiStatus.style.display = 'block';
+                aiTimeLeft.textContent = Math.ceil(aiTimer)+'s';
+            } else {
+                aiStatus.style.display = 'none';
+            }
+
+            if(needAI && aiTimer>0 && !challengeActive){
+                btn.style.borderColor = '#2ecc71';
+                btn.style.background = 'rgba(46,204,113,0.25)';
+            } else if(aiReady && !challengeActive){
+                btn.style.borderColor = 'rgba(46,204,113,0.5)';
+                btn.style.background = 'rgba(46,204,113,0.08)';
+            } else {
+                btn.style.borderColor = 'rgba(255,255,255,0.2)';
+                btn.style.background = 'rgba(255,255,255,0.06)';
+            }
+        }
+
+        let toastTimer = null;
+        function showToast(main, sub, duration){
+            const el = document.getElementById('toast');
+            document.getElementById('toastMain').textContent = main;
+            document.getElementById('toastSub').textContent = sub||'';
+            el.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(()=>el.classList.remove('show'), duration||1800);
+        }
+
+        // ===== AI计时器 =====
+        function startAITimer(seconds){
+            if(challengeActive) return;
+            if(aiTimer > 0){
+                aiTimer += seconds;
+                needAI = true;
+                ai = true;
+                if(!aiTimerInterval){
+                    aiTimerInterval = setInterval(()=>{
+                        if (gamePaused) return;
+                        aiTimer -= 0.5;
+                        if(aiTimer <= 0){
+                            aiTimer = 0;
+                            needAI = false;
+                            ai = false;
+                            clearInterval(aiTimerInterval);
+                            aiTimerInterval = null;
+                            showToast('AI 已结束', '手动瞄准模式', 1200);
+                        }
+                        updateUI();
+                    }, 500);
+                }
+                updateUI();
+                return;
+            }
+            aiTimer = seconds;
+            needAI = true;
+            ai = true;
+            if(aiTimerInterval) clearInterval(aiTimerInterval);
+            aiTimerInterval = setInterval(()=>{
+                if (gamePaused) return;
+                aiTimer -= 0.5;
+                if(aiTimer <= 0){
+                    aiTimer = 0;
+                    needAI = false;
+                    ai = false;
+                    clearInterval(aiTimerInterval);
+                    aiTimerInterval = null;
+                    showToast('AI 已结束', '手动瞄准模式', 1200);
+                }
+                updateUI();
+            }, 500);
+            updateUI();
+        }
+
+        function heal(amount){
+            if(challengeActive) return;
+            hp = Math.min(hpMax, hp + amount);
+            updateUI();
+        }
+
+        // ===== 重置游戏 =====
+        function resetGameFull() {
+            if (challengeTimerInterval) { clearInterval(challengeTimerInterval); challengeTimerInterval = null; }
+            challengeActive = false; challengeFinished = false; levelLocked = false;
+            hp = 50; hpMax = 50;
+            exp = 0; EXP_MAX = 50;
+            level = 1; score = 0;
+            speed = baseSpeed;
+            needAI = false; aiReady = false; aiTimer = 0; ai = false;
+            if (aiTimerInterval) { clearInterval(aiTimerInterval); aiTimerInterval = null; }
+            hpFullTimer = 0; lastHpFull = false; levelUpCooldown = 0;
+            autoHealTimer = 0;
+            aiUnlockNotified = false;
+            loseTime = 0;
+            bullets.length = 0;
+            explosions.length = 0;
+            initEnemies();
+            countdownActive = false;
+            if (countdownInterval) { clearInterval(countdownInterval); countdownInterval = null; }
+            setTimeout(() => {
+                showDifficultyModal();
+            }, 150);
+        }
+
+        // ===== 开始挑战 =====
+        function startChallenge() {
+            challengeActive = true;
+            challengeFinished = false;
+            challengeTime = exp;
+            if (challengeTime < 1) challengeTime = 1;
+            challengeKillTarget = 2 * exp;
+            challengeKillCount = 0;
+            if (aiTimerInterval) { clearInterval(aiTimerInterval); aiTimerInterval = null; }
+            needAI = false; ai = false; aiTimer = 0;
+            originalEnemySpeedBase = enemySpeedBase;
+            originalSpeedMultiplier = speedMultiplier;
+            speedMultiplier = 0.5;
+            enemySpeedBase = originalEnemySpeedBase * 1.25;
+            enemies.forEach(e => { e.speed = enemySpeedBase; });
+            if (challengeTimerInterval) clearInterval(challengeTimerInterval);
+            challengeTimerInterval = setInterval(() => {
+                if (gamePaused) return;
+                challengeTime -= 0.5;
+                if (challengeTime <= 0) {
+                    challengeTime = 0;
+                    clearInterval(challengeTimerInterval);
+                    challengeTimerInterval = null;
+                    speedMultiplier = 1;
+                    enemySpeedBase = originalEnemySpeedBase;
+                    enemies.forEach(e => { e.speed = enemySpeedBase; });
+                    showToast('加速结束', '速度已恢复正常', 1500);
+                }
+                updateUI();
+            }, 500);
+            playSound(passSound);
+            showToast('最终试炼', '倒计时 '+Math.ceil(challengeTime)+'s 目标击杀 '+challengeKillTarget, 3000);
+            updateUI();
+        }
+
+        function challengeWin() {
+            if (challengeFinished) return;
+            challengeFinished = true;
+            challengeActive = false;
+            if (challengeTimerInterval) { clearInterval(challengeTimerInterval); challengeTimerInterval = null; }
+            speedMultiplier = 1;
+            enemySpeedBase = originalEnemySpeedBase;
+            enemies.forEach(e => { e.speed = enemySpeedBase; });
+            playSound(passSound);
+            showModal('大获全胜！', '你完成了最终试炼！\n得分：'+score+'  等级：'+level, [
+                { label: '重新开始', callback: ()=>{ resetGameFull(); } }
+            ]);
+        }
+
+        // ===== 游戏核心循环 =====
+        function enginestep(deltaTime){
+            if (gamePaused) {
+                ctx.drawImage(backImg, 0, 0);
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillStyle = 'rgba(255,255,255,0.3)';
+                ctx.font = '60px sans-serif';
+                ctx.fillText('⏸ 暂停', stage.w/2, stage.h/2);
+                return;
+            }
+
+            ctx.drawImage(backImg, 0, 0);
+
+            if(countdownActive){
+                const remaining = countdown;
+                if(remaining > 0){
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    let alpha = 0.4;
+                    if(remaining <= 3) alpha = 1.0;
+                    ctx.globalAlpha = alpha;
+                    ctx.fillStyle = '#2c3e50';
+                    ctx.font = 'bold 200px "Segoe UI", sans-serif';
+                    ctx.shadowColor = 'rgba(0,0,0,0.3)';
+                    ctx.shadowBlur = 30;
+                    ctx.fillText(remaining, stage.w/2, stage.h/2 - 40);
+                    ctx.shadowBlur = 0;
+                    ctx.globalAlpha = 1;
+                    ctx.font = '40px sans-serif';
+                    ctx.fillStyle = 'rgba(44,62,80,0.5)';
+                    ctx.fillText('准备', stage.w/2, stage.h/2 + 120);
+                }
+                return;
+            }
+
+            if(challengeActive && !challengeFinished){
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'top';
+                ctx.fillStyle = 'rgba(255,255,255,0.7)';
+                ctx.font = 'bold 36px sans-serif';
+                ctx.fillText('最终试炼', stage.w/2, 20);
+                ctx.font = '28px sans-serif';
+                ctx.fillStyle = '#f1c40f';
+                ctx.fillText('剩余 '+Math.ceil(challengeTime)+'s', stage.w/2, 70);
+                ctx.fillStyle = '#e74c3c';
+                ctx.fillText('击杀 '+challengeKillCount+' / '+challengeKillTarget, stage.w/2, 110);
+                ctx.fillStyle = 'rgba(255,255,255,0.3)';
+                ctx.font = '20px sans-serif';
+                ctx.fillText('AI禁用 · 回血禁用', stage.w/2, 155);
+            }
+
+            if(!challengeActive && deltaTime){
+                autoHealTimer += deltaTime;
+                if(autoHealTimer >= AUTO_HEAL_INTERVAL){
+                    autoHealTimer = 0;
+                    heal(AUTO_HEAL_AMOUNT);
+                }
+            }
+
+            btm++;
+            let currentSpeed = speed;
+            if(challengeActive) currentSpeed = speed * speedMultiplier;
+            if(btm > currentSpeed){ 
+                btm=0; 
+                bullets.push(new Bullet()); 
+                score++;
+                playSound(shotSound);
+            }
+
+            for(let i=0;i<bullets.length;i++){
+                const b = bullets[i];
+                b.x += Math.cos(b.r)*20;
+                b.y += Math.sin(b.r)*20;
+                drawArrow(b.x - Math.cos(b.r)*50, b.y - Math.sin(b.r)*50, b.x, b.y, 8, 8, '#2980b9');
+                if(b.x<-100 || b.x>stage.w+100 || b.y<-100 || b.y>stage.h+100){ bullets.splice(i,1); i--; }
+            }
+
+            for(let i=0;i<enemies.length;i++){
+                const e = enemies[i];
+                let enemySpeed = e.speed || enemySpeedBase;
+                if(challengeActive) enemySpeed *= 1.25;
+                e.x += Math.sin(e.r) * enemySpeed;
+                e.y += Math.cos(e.r) * enemySpeed;
+                drawArrow(e.x - Math.sin(e.r)*100, e.y - Math.cos(e.r)*100, e.x, e.y, 15, 15, '#c0392b');
+
+                if(e.y > stage.h){
+                    enemies[i] = new Enemy();
+                    explosions.push(new Explosion(stage.w/2, stage.h, 2));
+                    shake = true; shaket = 0;
+                    const dmg = Random(10,30);
+                    hp = Math.max(0, hp - dmg);
+                    if(hp > 0) playSound(hpSound);
+                    updateUI();
+                    continue;
+                }
+
+                for(let b=0;b<bullets.length;b++){
+                    const dx = e.x - bullets[b].x;
+                    const dy = e.y - bullets[b].y;
+                    if(dx*dx + dy*dy < 20*20){
+                        explosions.push(new Explosion(e.x, e.y, 1));
+                        exp = Math.min(EXP_MAX, exp + 1);
+                        if(!challengeActive) heal(KILL_HEAL_AMOUNT);
+                        if(challengeActive && !challengeFinished){
+                            challengeKillCount++;
+                            if(challengeKillCount >= challengeKillTarget){
+                                challengeWin();
+                            }
+                        }
+                        playSound(aimedSound);
+                        enemies[i] = new Enemy();
+                        bullets.splice(b,1);
+                        updateUI();
+                        break;
+                    }
+                }
+            }
+
+            // 炮塔角度
+            let targetAngle = angle;
+            if (challengeActive) {
+                if (joystickActive && joystickAngle !== null) {
+                    targetAngle = joystickAngle;
+                } else {
+                    const dx = pointer.x - stage.w/2;
+                    const dy = pointer.y - stage.h;
+                    if (Math.abs(dx) > 1 || Math.abs(dy) > 1) {
+                        targetAngle = Math.atan2(dy, dx);
+                    }
+                }
+            } else if (needAI && aiTimer > 0) {
+                if (enemies.length > 0) {
+                    let minDis = Infinity, idx=0;
+                    for(let l=0;l<enemies.length;l++){
+                        const dx = enemies[l].x - stage.w/2;
+                        const dy = enemies[l].y - stage.h;
+                        const dis = dx*dx + dy*dy;
+                        if(dis < minDis){ minDis=dis; idx=l; }
+                    }
+                    const target = enemies[idx];
+                    if(target){
+                        const dx = target.x - stage.w/2;
+                        const dy = target.y - stage.h;
+                        targetAngle = Math.atan2(dy, dx);
+                    }
+                }
+            } else {
+                if (joystickActive && joystickAngle !== null) {
+                    targetAngle = joystickAngle;
+                } else {
+                    const dx = pointer.x - stage.w/2;
+                    const dy = pointer.y - stage.h;
+                    if (Math.abs(dx) > 1 || Math.abs(dy) > 1) {
+                        targetAngle = Math.atan2(dy, dx);
+                    }
+                }
+            }
+            angle = targetAngle;
+
+            const endX = stage.w/2 + Math.cos(angle)*150;
+            const endY = stage.h + Math.sin(angle)*150;
+            drawArrow(stage.w/2, stage.h, endX, endY, 30, 20, '#2c3e50');
+
+            for(let e=0;e<explosions.length;e++){
+                const ex = explosions[e];
+                const img = ex.ty===1 ? explodeImg : explodeBImg;
+                ctx.globalAlpha = 1 - (ex.t/stage.h);
+                if(ex.ty===1){
+                    ctx.drawImage(img, ex.x - ex.t/2, ex.y - ex.t/2, ex.t*stage.w/stage.h, ex.t);
+                } else {
+                    ctx.drawImage(img, ex.x - ex.t*stage.w/stage.h/2, stage.h - ex.t, ex.t*stage.w/stage.h, ex.t);
+                }
+                ctx.globalAlpha = 1;
+                ex.t += 20;
+                if(ex.t > stage.h){ explosions.splice(e,1); e--; }
+            }
+
+            ctx.beginPath();
+            ctx.arc(pointer.x, pointer.y, 15, 0, Math.PI*2);
+            ctx.closePath();
+            ctx.fillStyle = 'rgba(46,204,113,0.6)';
+            ctx.fill();
+
+            if(shake){
+                shaket++;
+                if(shaket > 50){
+                    shake = false;
+                    shaket = 0;
+                    if(hp <= 0) lose();
+                    updateUI();
+                } else {
+                    if(shaket === 1) playSound(boomSound);
+                }
+            }
+
+            if(!challengeActive && !challengeFinished && !levelLocked && levelUpCooldown <= 0){
+                if(hp >= hpMax && hp > 0){
+                    if(!lastHpFull){
+                        lastHpFull = true;
+                        hpFullTimer = 0;
+                    } else {
+                        hpFullTimer += deltaTime || 1/60;
+                    }
+                    if(hpFullTimer < HP_FULL_REQUIRE){
+                        const remaining = Math.ceil(HP_FULL_REQUIRE - hpFullTimer);
+                        if(remaining > 0){
+                            ctx.textAlign = 'center';
+                            ctx.textBaseline = 'middle';
+                            let alpha = 0.4;
+                            if(remaining <= 3) alpha = 1.0;
+                            ctx.globalAlpha = alpha;
+                            ctx.fillStyle = '#2c3e50';
+                            ctx.font = 'bold 150px "Segoe UI", sans-serif';
+                            ctx.shadowColor = 'rgba(0,0,0,0.3)';
+                            ctx.shadowBlur = 30;
+                            ctx.fillText(remaining, stage.w/2, stage.h/2 - 20);
+                            ctx.shadowBlur = 0;
+                            ctx.globalAlpha = 1;
+                            ctx.font = '40px sans-serif';
+                            ctx.fillStyle = 'rgba(44,62,80,0.5)';
+                            ctx.fillText('升级倒计时', stage.w/2, stage.h/2 + 100);
+                        }
+                    } else {
+                        if(levelUpCooldown <= 0){
+                            if(level + 1 >= 30){
+                                levelLocked = true;
+                                playSound(passSound);
+                                showModal('你已通关！', '是否进行最终试炼？\n试炼中AI禁用，回血禁用，\n你将拥有 '+exp+' 秒时间击杀 '+(2*exp)+' 个敌人。\n倒计时结束仅恢复速度，继续战斗直至胜利或死亡。', [
+                                    { label: '挑战！', callback: ()=>{ startChallenge(); } },
+                                    { label: '放弃', callback: ()=>{ 
+                                        showToast('已放弃最终试炼', '等级锁定30', 2000);
+                                    } }
+                                ]);
+                            } else {
+                                EXP_MAX += 5;
+                                level++;
+                                hpMax += 5;
+                                hp = hpMax;
+                                hpFullTimer = 0;
+                                levelUpCooldown = 1.5;
+                                showToast('等级 '+level, 'HP上限+5 · EXP上限+5', 2000);
+                                playSound(levelupSound);
+                                updateUI();
+                            }
+                        }
+                    }
+                } else {
+                    lastHpFull = false;
+                    hpFullTimer = 0;
+                }
+            }
+            if(levelUpCooldown > 0) levelUpCooldown -= (deltaTime || 1/60);
+
+            let diffSpeed = baseSpeed;
+            if(difficulty === 'easy') diffSpeed = baseSpeed * 0.7;
+            else if(difficulty === 'hard') diffSpeed = baseSpeed * 1.3;
+            speed = Math.min(60, Math.max(2, diffSpeed + level * 1.5));
+
+            updateUI();
+
+            ctx.fillStyle = 'rgba(255,255,255,0.25)';
+            ctx.font = '24px monospace';
+            ctx.textAlign = 'left';
+            ctx.fillText('FPS:'+Math.round(smoothfps), 16, stage.h-16);
+        }
+
+        // ===== FPS =====
+        let lastCalledTime=0, fpcount=0, fpall=0, timebomb=0, smoothfps=60;
+        function fpscounter(){
+            timebomb++;
+            if(!lastCalledTime){ lastCalledTime=Date.now(); return; }
+            const delta=(Date.now()-lastCalledTime)/1000;
+            lastCalledTime=Date.now();
+            const fps=1/delta;
+            fpcount++; fpall+=fps;
+            if(timebomb>30){ smoothfps=fpall/fpcount; fpcount=0; fpall=0; timebomb=0; }
+            return delta;
+        }
+
+        function animated(){
+            requestAnimationFrame(animated);
+            const delta = fpscounter();
+
+            let shakeX = 0, shakeY = 0;
+            if(shake){
+                shakeX = (Math.random()-0.5)*60;
+                shakeY = (Math.random()-0.5)*60;
+            }
+
+            ctx.save();
+            ctx.translate(shakeX, shakeY);
+            ctx.clearRect(0, 0, stage.w, stage.h);
+            enginestep(delta);
+            ctx.restore();
+        }
+
+        // ===== 窗口自适应 =====
+        function _pexresize(){
+            const cw = window.innerWidth, ch = window.innerHeight;
+            if(cw <= ch * stage.w/stage.h){
+                portrait = true;
+                scale = stage.w/cw;
+                loffset = 0;
+                toffset = Math.floor(ch - (cw*stage.h/stage.w))/2;
+                canvas.style.width = cw+'px';
+                canvas.style.height = Math.floor(cw*stage.h/stage.w)+'px';
+                canvas.style.marginLeft = loffset+'px';
+                canvas.style.marginTop = toffset+'px';
+            } else {
+                scale = stage.h/ch;
+                portrait = false;
+                loffset = Math.floor(cw - (ch*stage.w/stage.h))/2;
+                toffset = 0;
+                canvas.style.height = ch+'px';
+                canvas.style.width = Math.floor(ch*stage.w/stage.h)+'px';
+                canvas.style.marginLeft = loffset+'px';
+                canvas.style.marginTop = toffset+'px';
+            }
+            if (isMobile && joystickElem.style.display !== 'none') {
+                const rect = joystickElem.getBoundingClientRect();
+                joystickCenterX = rect.left + rect.width/2;
+                joystickCenterY = rect.top + rect.height/2;
+            }
+        }
+        window.addEventListener('resize', _pexresize);
+
+        // ===== 游戏结束 =====
+        function lose(){
+            playSound(loseSound);
+            showModal('游戏结束', '分数：'+score+'  等级：'+level, [
+                { label: '重新开始', callback: ()=>{ resetGameFull(); } }
+            ]);
+        }
+
+        // ===== AI 按钮 =====
+        const aiBtn = document.getElementById('aiBtn');
+        function handleAI(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            if(challengeActive){
+                showToast('挑战模式不可用AI', '', 1200);
+                return;
+            }
+            if(!aiReady){
+                showToast('EXP不足', '需要 50 EXP 才能使用AI', 1200);
+                return;
+            }
+            exp = Math.max(0, exp - 50);
+            updateUI();
+            showToast('AI +15秒', '消耗 50 EXP', 1200);
+            startAITimer(15);
+        }
+        aiBtn.addEventListener('click', handleAI);
+        aiBtn.addEventListener('touchend', handleAI);
+
+        // ===== 返回按钮 =====
+        const backBtn = document.getElementById('backBtn');
+        function handleBack(e) {
+            e.preventDefault();
+            if(challengeActive){
+                showToast('挑战中不可退出', '', 1200);
+                return;
+            }
+            confirmModal('返回', '确定退出游戏吗？', function(){
+                if(document.referrer && document.referrer.length>0) history.back();
+                else window.location.href = '../buy.html';
+            }, function(){});
+        }
+        backBtn.addEventListener('click', handleBack);
+        backBtn.addEventListener('touchend', handleBack);
+
+        // ===== 详情按钮 =====
+        document.getElementById('detailBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            showModal('详情', DETAIL_CONTENT, [ { label: '好的' } ]);
+        });
+        document.getElementById('detailBtn').addEventListener('touchend', function(e) {
+            e.preventDefault();
+            showModal('详情', DETAIL_CONTENT, [ { label: '好的' } ]);
+        });
+
+        // ===== 难度选择 =====
+        function showDifficultyModal() {
+            showModal('选择难度', '简单：射速快，敌人慢\n普通：平衡\n困难：射速慢，敌人快', [
+                { label: '简单', class: 'diff-easy', callback: ()=>{ 
+                    difficulty = 'easy'; 
+                    baseSpeed = 8;
+                    enemySpeedBase = 2.5;
+                    startGameAfterDifficulty();
+                } },
+                { label: '普通', class: 'diff-normal', callback: ()=>{ 
+                    difficulty = 'normal'; 
+                    baseSpeed = 10;
+                    enemySpeedBase = 3;
+                    startGameAfterDifficulty();
+                } },
+                { label: '困难', class: 'diff-hard', callback: ()=>{ 
+                    difficulty = 'hard'; 
+                    baseSpeed = 14;
+                    enemySpeedBase = 4;
+                    startGameAfterDifficulty();
+                } }
+            ]);
+        }
+
+        function startGameAfterDifficulty() {
+            if (!gameLoopStarted) {
+                gameLoop();
+                gameLoopStarted = true;
+            }
+            _pexresize();
+            updateUI();
+            startCountdown();
+            showToast('准备', '5秒倒计时', 1200);
+            playSound(startSound);
+        }
+
+        // ===== 启动 =====
+        function gameLoop(){
+            _pexresize();
+            animated();
+            updateUI();
+        }
+
+        function startCountdown(){
+            countdown = 5;
+            countdownActive = true;
+            if (countdownInterval) { clearInterval(countdownInterval); countdownInterval = null; }
+            countdownInterval = setInterval(()=>{
+                if (gamePaused) return;
+                countdown--;
+                if(countdown <= 0){
+                    clearInterval(countdownInterval);
+                    countdownInterval = null;
+                    countdownActive = false;
+                    showToast('开始！', '加油！', 1500);
+                }
+            }, 1000);
+        }
+
+        // ===== 初始化 =====
+        isMobile = detectMobile();
+        if (isMobile) {
+            setupJoystick();
+        }
+
+        preloadAudio(function() {
+            showDifficultyModal();
+        });
+
+        document.addEventListener('visibilitychange', ()=>{});
+
+        console.log('够直不够硬 v3.8');
+    </script>
+</body>
+</html>

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>高考倒计时</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+        html,
+        body {
+            height: 100%;
+            background-color: black;
+            transition: 2s;
+        }
+        body {
+            text-align: center;
+        }
+        *::selection {
+            appearance: none;
+        }
+
+        /* ---- 返回按钮 ---- */
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 999;
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 30px;
+            text-decoration: none;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: background 0.4s, color 0.4s, transform 0.3s, box-shadow 0.4s;
+            cursor: pointer;
+            user-select: none;
+            line-height: 1.4;
+        }
+        .back-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+        .back-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* ---- 主题切换按钮 ---- */
+        #btn {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto;
+            position: relative;
+            top: 10px;
+            background-image: url(day.png);
+            background-size: cover;
+            background-position: center;
+            border-radius: 100%;
+            transition: 1s;
+            border: none;
+            cursor: pointer;
+        }
+        #btn:hover {
+            transform: rotate(720deg);
+            box-shadow: 0 0 10px gold;
+        }
+
+        /* ---- 倒计时主区域 ---- */
+        #fixed {
+            position: relative;
+            top: 15%;
+            color: white;
+            margin: 0 auto;
+            font-size: 7rem;
+            font-weight: 900;
+            transition: 2s;
+            line-height: 1.4;
+        }
+        #timeCount {
+            transition: 2s;
+            display: inline-block;
+        }
+
+        /* ---- 响应式 ---- */
+        @media (max-width: 768px) {
+            #fixed {
+                font-size: 3.2rem;
+                top: 12%;
+            }
+            #btn {
+                width: 64px;
+                height: 64px;
+                top: 6px;
+            }
+            .back-btn {
+                top: 14px;
+                left: 14px;
+                padding: 8px 16px;
+                font-size: 15px;
+            }
+        }
+        @media (max-width: 480px) {
+            #fixed {
+                font-size: 2.2rem;
+                top: 10%;
+            }
+            #btn {
+                width: 54px;
+                height: 54px;
+                top: 4px;
+            }
+            .back-btn {
+                top: 10px;
+                left: 10px;
+                padding: 6px 14px;
+                font-size: 13px;
+                border-radius: 24px;
+            }
+        }
+    </style>
+    <script>
+        // 页面加载时判断是否为手机
+        var isPhone = false;
+        (function() {
+            var pageW = screen.width;
+            var pageH = screen.height;
+            if (pageW < pageH) {
+                isPhone = true;
+            }
+        })();
+
+        function changeTheme() {
+            var bg = document.getElementById('bg'),
+                span = document.getElementById('fixed'),
+                btn = document.getElementById('btn'),
+                backBtn = document.getElementById('backBtn');
+
+            if (bg.style.backgroundColor == "black") {
+                // 切换到白天
+                btn.style.backgroundImage = "url(night.png)";
+                bg.style.backgroundColor = "white";
+                backBtn.style.color = "#222";
+                backBtn.style.background = "rgba(255,255,255,0.7)";
+                backBtn.style.borderColor = "rgba(0,0,0,0.12)";
+                setTimeout(function() {
+                    span.style.color = "black";
+                }, 2000);
+            } else {
+                // 切换到黑夜
+                btn.style.backgroundImage = "url(day.png)";
+                bg.style.backgroundColor = "black";
+                backBtn.style.color = "#fff";
+                backBtn.style.background = "rgba(0,0,0,0.5)";
+                backBtn.style.borderColor = "rgba(255,255,255,0.15)";
+                setTimeout(function() {
+                    span.style.color = "white";
+                }, 2000);
+            }
+        }
+
+        function countdown(endTime) {
+            var countDownDate = new Date(endTime).getTime();
+            var now = new Date().getTime();
+            var distance = countDownDate - now;
+
+            if (distance < 0 && distance > -172800000) {
+                // 考试开始后 2 天内
+                document.getElementById('timeCount').innerHTML = "高考已开始<br加油！";
+                return;
+            } else if (distance >= 0) {
+                var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                var extraSeconds = Math.floor((distance % 1000) / 100);
+
+                if (isPhone) {
+                    document.getElementById('timeCount').innerHTML = days + "天<br>" + hours + "小时<br>" + minutes + "分钟<br>" + seconds + "秒<br>" + extraSeconds + '"';
+                } else {
+                    document.getElementById('timeCount').innerHTML = days + "天" + hours + "小时" + minutes + "分钟" + seconds + "秒" + extraSeconds + '"';
+                }
+            } else {
+                // 考试结束超过 2 天
+                document.getElementById('timeCount').innerHTML = "高考结束了<br>期待你的好成绩！";
+                clearInterval(intervalId);
+                return;
+            }
+        }
+
+        // 目标时间：2027年6月7日 9:00:00
+        var endTime = 'June 7, 2027 9:00:00';
+
+        // 每 100ms 更新一次
+        var intervalId = setInterval(function() {
+            countdown(endTime);
+        }, 100);
+
+        // 页面加载后立即执行一次，避免空白
+        window.addEventListener('DOMContentLoaded', function() {
+            countdown(endTime);
+        });
+    </script>
+</head>
+<body id="bg">
+
+    <!-- 返回按钮 -->
+    <a id="backBtn" class="back-btn" href="../buy.html">← 返回</a>
+
+    <!-- 主题切换按钮 -->
+    <button id="btn" onclick="changeTheme()" type="button"></button>
+
+    <!-- 倒计时显示 -->
+    <div id="fixed">
+        温馨提示<br>距离高考还剩<br>
+        <span id="timeCount"></span>
+    </div>
+
+</body>
+</html>

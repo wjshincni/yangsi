@@ -1,0 +1,84 @@
+
+*{
+    margin: 0;
+    padding: 0;
+}
+
+	
+*::selection{appearance: none;}
+canvas{
+    background: linear-gradient(60deg,#1f1955,black);
+    height: 100%;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1;
+}
+div{
+    position: fixed;
+    color: greenyellow;
+    font-size: 30px;
+    transition: 3s;
+    height: 5%;
+	opacity: 0.8;
+}
+input{
+    background-color: white;
+    color: red;
+    width: 10%;
+    height: 100%;
+    font-size: 40px;
+}
+#hideBtn{
+	z-index: 999;
+	position: fixed;
+	height: 50px;
+	width: 50px;
+	right: 0;
+	top: 0;
+	opacity: 0;
+	transition: ease-in-out .3s; 
+}
+
+#hideBtn:hover{
+	opacity: 1;
+}
+#message{
+	width: 400px;
+	color: black;
+}
+/* 全局返回按钮 */
+.back-btn {
+	position: fixed;
+	top: 20px;
+	right: 20px;
+	z-index: 1000;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	padding: 20px 40px;
+	background: rgba(0, 0, 0, 0.6);
+	border: 2px solid greenyellow;
+	border-radius: 8px;
+	color: greenyellow;
+	font-size: 18px;
+	font-family: monospace;
+	text-decoration: none;
+	cursor: pointer;
+	transition: all 0.3s ease;
+	text-shadow: 0 0 8px greenyellow;
+	box-shadow: 0 0 12px rgba(173, 255, 47, 0.3), inset 0 0 8px rgba(173, 255, 47, 0.1);
+}
+.back-btn:hover {
+	background: greenyellow;
+	color: #1f1955;
+	text-shadow: none;
+	box-shadow: 0 0 20px rgba(173, 255, 47, 0.6), inset 0 0 12px rgba(255, 255, 255, 0.3);
+	transform: scale(1.05);
+}
+.back-btn::before {
+	content: "←";
+	font-size: 20px;
+	font-weight: bold;
+}

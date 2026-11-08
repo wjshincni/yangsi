@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>ChatGPP</title>
+	<!-- 引入 jQuery（若已全局引入则不需要） -->
+	<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+	<style>
+		* {
+			padding: 0;
+			margin: 0;
+			box-sizing: border-box;
+		}
+		html, body {
+			height: 100%;
+            background-color:pink;
+		}
+		ul li {
+			list-style: none;
+		}
+		.wrap {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			height: 60%;
+		}
+		.container {
+			padding: 20px;
+			width: 75%;
+			height: 75%;
+			border:100%;
+			overflow: auto;
+		}
+		.bar-group {
+			padding: 20px;
+			text-align: center;
+		}
+		.bar-group input:first-of-type {
+			padding: 5px;
+			width: 300px;
+		}
+		.bar-group input:not(:first-of-type) {
+			padding: 5px 20px;
+		}
+		.text{
+			position: fixed;
+			right: 0;
+			color: cornflowerblue;
+			font-size: 20px;
+			font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+		}
+		
+		/* ===== 返回按钮 ===== */
+		#back {
+			position: absolute;
+			left: 12px;
+			top: 12px;
+			z-index: 99999;
+			padding: 0 18px;
+			height: 40px;
+			line-height: 40px;
+			border: none;
+			border-radius: 40px;
+			font-size: 16px;
+			font-weight: 500;
+			color: #fff;
+			background: linear-gradient(135deg, #6e8efb, #a777e3);
+			box-shadow: 0 2px 10px rgba(110, 142, 251, 0.3);
+			cursor: pointer;
+			transition: transform 0.2s;
+			text-align: center;
+		}
+		#back:hover {
+			transform: scale(1.02);
+		}
+	</style>
+</head>
+<body>
+	<button id="back">返回</button>
+
+	<span class="text">这是一个人工智能,但每天只有有限次数,它不鸟你了就是gg了</span>
+	<div class="wrap">
+		<div class="container">
+			<ul class="msg"></ul>
+		</div>
+	</div>
+	<hr />
+	<form onsubmit="return false">
+		<p class="bar-group">
+			<input type="text" id="umsg" placeholder="文明用语 从你妈说起"/>
+			<input type="submit" value="发送" onclick="send()" />
+		</p>
+		<p class="bar-group">
+			清除页面的缓存:
+			<input type="reset" value="重置页面" onclick="clearTxt()"/>
+		</p>
+	</form>
+	<script>
+		var container = document.querySelector('.container');
+		var msg = document.querySelector('.msg');
+		var umsg = document.querySelector('#umsg');
+		
+		function send() {
+			if (umsg.value) {
+				// 显示用户消息
+				var uli = document.createElement('li');
+				uli.textContent = '丑逼：' + umsg.value;
+				msg.appendChild(uli);
+
+				var msgContent = umsg.value;
+				var tianApiKey = '868ffe977d3b445b541e7e28acb51e41';
+
+				$.post('https://apis.tianapi.com/robot/index', {
+					key: tianApiKey,
+					question: msgContent
+				})
+				.done(function(res) {
+					// 检查返回状态
+					if (res.code === 200 && res.result && res.result.reply) {
+						var reply = res.result.reply
+							.replace(/\{appellation\}/g, '大佬')
+							.replace(/\{robotname\}/g, '小天');
+						
+						var hli = document.createElement('li');
+						hli.textContent = '帅比：' + reply;
+						msg.appendChild(hli);
+					} else {
+						// 接口返回错误（如 key 无效、次数不足等）
+						var errMsg = res.msg || '未知错误';
+						var hli = document.createElement('li');
+						hli.textContent = '帅比：出错啦！' + errMsg + '（错误码：' + res.code + '）';
+						msg.appendChild(hli);
+					}
+					container.scrollTop = container.scrollHeight;
+				})
+				.fail(function(jqXHR, textStatus) {
+					// 网络或跨域错误
+					var hli = document.createElement('li');
+					hli.textContent = '帅比：网络请求失败，请检查网络或稍后再试。';
+					msg.appendChild(hli);
+					container.scrollTop = container.scrollHeight;
+					console.error('请求失败:', textStatus, jqXHR);
+				});
+
+				umsg.value = '';
+			}
+			umsg.focus();
+			container.scrollTop = container.scrollHeight;
+		}
+		
+		function clearTxt() {
+			msg.innerHTML = null;
+			umsg.value = null;
+			umsg.focus();
+		}
+		
+		umsg.focus();
+
+		// 返回按钮
+		document.getElementById('back').addEventListener('click', function() {
+			window.location.href = '../buy.html';
+		});
+	</script>
+</body>
+</html>

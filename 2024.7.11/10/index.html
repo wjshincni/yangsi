@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Proudly made by what made this</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft Yahei", system-ui, sans-serif;
+        }
+        body {
+            background: #12161c;
+            color: #f8f8f8;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px 12px;
+        }
+        .container {
+            width: 100%;
+            max-width: 1600px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+        }
+        h1 {
+            color: #ffc107;
+            letter-spacing: 2px;
+            text-align: center;
+            font-size: clamp(1.3rem, 3vw, 2rem);
+        }
+        .btn-wrap {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+        }
+        #randomBtn, #openProbBtn, #historyBtn {
+            padding: 14px 36px;
+            font-size: clamp(15px, 1.8vw, 18px);
+            border: none;
+            color: #fff;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        #randomBtn {
+            background: #d32f2f;
+        }
+        #randomBtn:hover {
+            background: #b71c1c;
+            transform: scale(1.03);
+        }
+        #openProbBtn {
+            background: #2563eb;
+        }
+        #openProbBtn:hover {
+            background: #1d4ed8;
+            transform: scale(1.03);
+        }
+        #historyBtn {
+            background: #0284c7;
+        }
+        #historyBtn:hover {
+            background: #0369a1;
+            transform: scale(1.03);
+        }
+        #resetBtn {
+            width: 48px;
+            height: 48px;
+            border: none;
+            border-radius: 8px;
+            background: #333842;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s;
+        }
+        #resetBtn:hover {
+            background: #444a55;
+            transform: scale(1.03);
+        }
+        #resetBtn::before {
+            content: '';
+            position: absolute;
+            width: 26px;
+            height: 26px;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        #resetBtn::after {
+            content: '';
+            position: absolute;
+            width: 12px;
+            height: 2px;
+            background: #fff;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(45deg);
+        }
+        #resetBtn span {
+            position: absolute;
+            width: 12px;
+            height: 2px;
+            background: #fff;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+        }
+        .result-row {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .item-card {
+            flex: 1;
+            min-width: 120px;
+            max-width: 160px;
+            height: 180px;
+            position: relative;
+            border: 1px solid #333;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #1a2028;
+            box-shadow: 0 2px 8px #0005;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        .item-card.locked{
+            opacity:0.6;
+            cursor:not-allowed;
+        }
+        .item-card.running-flash{
+            animation: flashRed 0.4s ease-in-out 2;
+        }
+        @keyframes flashRed {
+            0%,100% {border-color:#333;}
+            50% {border-color:#ff3333;}
+        }
+        .item-card:hover:not(.locked):not(.running-flash) {
+            border-color: #ffc107;
+        }
+        .card-title {
+            text-align: center;
+            padding: 8px 0;
+            background: #272e38;
+            font-size: 13px;
+            color: #aaa;
+            pointer-events: none;
+        }
+        .scroll-box {
+            height: calc(100% - 34px);
+            position: relative;
+            overflow: hidden;
+        }
+        .zone-1 {
+            position: absolute;
+            top: 0;
+            height: 30%;
+            width: 100%;
+            z-index: 2;
+            background: linear-gradient(to bottom, #1a2028, transparent);
+        }
+        .zone-2 {
+            position: absolute;
+            top: 30%;
+            height: 40%;
+            width: 100%;
+            z-index: 3;
+            border-top: 1px solid #ffc10744;
+            border-bottom: 1px solid #ffc10744;
+            box-shadow: 0 0 12px #ffc10722 inset;
+        }
+        .zone-3 {
+            position: absolute;
+            bottom: 0;
+            height: 30%;
+            width: 100%;
+            z-index: 2;
+            background: linear-gradient(to top, #1a2028, transparent);
+        }
+        .scroll-list {
+            position: absolute;
+            width: 100%;
+            top: 0;
+            left: 0;
+            will-change: transform;
+        }
+        .scroll-item {
+            height: 58px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 0 4px;
+            font-size: 12px;
+            color: #f8f8;
+            opacity: 0.45;
+            white-space: nowrap;
+            transition: all 0.15s ease;
+        }
+        .scroll-item.active {
+            font-size: 16px;
+            opacity: 1;
+            color: #ffffff;
+            font-weight: bold;
+            transform: scale(1.05);
+            text-shadow: 0 0 6px #ffc10777;
+        }
+        .quality-gray { color: #b0b0b0; }
+        .quality-green { color: #66bb6a; }
+        .quality-blue { color: #42a5f5; }
+        .quality-purple { color: #ba68c8; }
+        .quality-gold { color: #ffd600; }
+        .quality-red { color:#ff3333; }
+        .cost-text { color: #ff9800; }
+        .durability-text {
+            font-size: 10px;
+            margin-top: 3px;
+            opacity: 0.65;
+        }
+        .dur-broken { color: #b0b0b0; }
+        .dur-near { color: #ba68c8; }
+        .dur-new { color: #ffd600; }
+        .modal-mask {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.75);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            padding:16px;
+        }
+        .modal-box {
+            background: #1a2028;
+            border: 1px solid #444;
+            border-radius: 14px;
+            width:92vw;
+            max-width: 560px;
+            max-height: 68vh;
+            display:flex;
+            flex-direction:column;
+            overflow:hidden;
+        }
+        .modal-box h3 {
+            color: #ffc107;
+            padding:20px 16px 12px;
+            text-align: center;
+            font-size:17px;
+            flex-shrink: 0;
+        }
+        #probContainer, #historyContainer{
+            padding:0 18px;
+            overflow-y:auto;
+            flex-grow:1;
+            padding-bottom:8px;
+        }
+        .prob-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 10px 0;
+            gap: 10px;
+        }
+        .prob-row .chk-label{
+            display:flex;
+            align-items:center;
+            gap:6px;
+            width: 140px;
+            font-size:13px;
+            flex-shrink:0;
+        }
+        .prob-row input[type="number"] {
+            flex: 1;
+            padding: 8px 10px;
+            background: #272e38;
+            border: 1px solid #444;
+            color: #fff;
+            border-radius: 6px;
+            font-size:14px;
+        }
+        .modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            padding:18px 16px 22px;
+            flex-shrink: 0;
+        }
+        .modal-buttons button {
+            padding: 10px 32px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size:16px;
+        }
+        #saveProb {
+            background: #23a055;
+            color: white;
+        }
+        #closeProb, #closeHistory, #clearHistory {
+            background: #555;
+            color: white;
+        }
+        .history-item {
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .history-time {
+            color: #ffc107;
+            margin-bottom: 6px;
+        }
+        .history-line {
+            margin: 4px 0;
+            font-size: 13px;
+        }
+        /* 全局返回按钮 */
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: #1a2028;
+            border: 1px solid #444;
+            border-radius: 8px;
+            color: #ffc107;
+            font-size: 14px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+        }
+        .back-btn:hover {
+            background: #ffc107;
+            color: #12161c;
+            border-color: #ffc107;
+            transform: scale(1.03);
+        }
+        .back-btn::before {
+            content: "←";
+            font-size: 16px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- 全局返回按钮 -->
+    <a href="../buy.html" class="back-btn">返回</a>
+    <div class="container">
+        <h1>三脚猪行动 随机配装生成器</h1>
+        <div class="btn-wrap">
+            <button id="randomBtn">一键随机配装</button>
+            <button id="openProbBtn">调整随机概率</button>
+            <button id="historyBtn">查看随机历史</button>
+            <button id="resetBtn"><span></span></button>
+        </div>
+        <div class="result-row">
+            <div class="item-card" data-type="map">
+                <div class="card-title">地图</div>
+                <div class="scroll-box">
+                    <div class="zone-1"></div>
+                    <div class="zone-2"></div>
+                    <div class="zone-3"></div>
+                    <div class="scroll-list"></div>
+                </div>
+            </div>
+            <div class="item-card" data-type="helmet">
+                <div class="card-title">头盔</div>
+                <div class="scroll-box">
+                    <div class="zone-1"></div>
+                    <div class="zone-2"></div>
+                    <div class="zone-3"></div>
+                    <div class="scroll-list"></div>
+                </div>
+            </div>
+            <div class="item-card" data-type="armor">
+                <div class="card-title">护甲</div>
+                <div class="scroll-box">
+                    <div class="zone-1"></div>
+                    <div class="zone-2"></div>
+                    <div class="zone-3"></div>
+                    <div class="scroll-list"></div>
+                </div>
+            </div>
+            <div class="item-card" data-type="chest">
+                <div class="card-title">胸挂</div>
+                <div class="scroll-box">
+                    <div class="zone-1"></div>
+                    <div class="zone-2"></div>
+                    <div class="zone-3"></div>
+                    <div class="scroll-list"></div>
+                </div>
+            </div>
+            <div class="item-card" data-type="bag">
+                <div class="card-title">背包</div>
+                <div class="scroll-box">
+                    <div class="zone-1"></div>
+                    <div class="zone-2"></div>
+                    <div class="zone-3"></div>
+                    <div class="scroll-list"></div>
+                </div>
+            </div>
+            <div class="item-card" data-type="operator">
+                <div class="card-title">干员</div>
+                <div class="scroll-box">
+                    <div class="zone-1"></div>
+                    <div class="zone-2"></div>
+                    <div class="zone-3"></div>
+                    <div class="scroll-list"></div>
+                </div>
+            </div>
+            <div class="item-card" data-type="gun">
+                <div class="card-title">枪械</div>
+                <div class="scroll-box">
+                    <div class="zone-1"></div>
+                    <div class="zone-2"></div>
+                    <div class="zone-3"></div>
+                    <div class="scroll-list"></div>
+                </div>
+            </div>
+            <div class="item-card" data-type="bullet">
+                <div class="card-title">子弹等级</div>
+                <div class="scroll-box">
+                    <div class="zone-1"></div>
+                    <div class="zone-2"></div>
+                    <div class="zone-3"></div>
+                    <div class="scroll-list"></div>
+                </div>
+            </div>
+            <div class="item-card" data-type="modifyCost">
+                <div class="card-title">改装预算</div>
+                <div class="scroll-box">
+                    <div class="zone-1"></div>
+                    <div class="zone-2"></div>
+                    <div class="zone-3"></div>
+                    <div class="scroll-list"></div>
+                </div>
+            </div>
+            <div class="item-card" data-type="mission">
+                <div class="card-title">随机任务</div>
+                <div class="scroll-box">
+                    <div class="zone-1"></div>
+                    <div class="zone-2"></div>
+                    <div class="zone-3"></div>
+                    <div class="scroll-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-mask" id="probModal">
+        <div class="modal-box">
+            <h3>调整权重（数值越大概率越高）</h3>
+            <div id="probContainer"></div>
+            <div class="modal-buttons">
+                <button id="saveProb">保存</button>
+                <button id="closeProb">关闭</button>
+            </div>
+        </div>
+    </div>
+    <div class="modal-mask" id="historyModal">
+        <div class="modal-box">
+            <h3>随机配装历史记录</h3>
+            <div id="historyContainer"></div>
+            <div class="modal-buttons">
+                <button id="clearHistory">清空记录</button>
+                <button id="closeHistory">关闭</button>
+            </div>
+        </div>
+    </div>
+<script>
+(function() {
+    const HISTORY_STORAGE_KEY = "tricorn_random_history";
+    function showToast(text) {
+        const toast = document.createElement('div');
+        toast.style.cssText = `
+            position:fixed;top:36px;left:50%;transform:translateX(-50%);
+            background:#222831;color:#fff;padding:10px 20px;border-radius:8px;
+            z-index:99999;font-size:14px;white-space:nowrap;
+            box-shadow:0 4px 12px rgba(0,0,0,0.4);
+        `;
+        toast.textContent = text;
+        document.body.appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transition = 'opacity 1s';
+            setTimeout(() => toast.remove(), 1000);
+        }, 1800);
+    }
+    function getFullTimeStr(){
+        const d = new Date();
+        const y = d.getFullYear();
+        const m = String(d.getMonth()+1).padStart(2,'0');
+        const day = String(d.getDate()).padStart(2,'0');
+        const h = String(d.getHours()).padStart(2,'0');
+        const mi = String(d.getMinutes()).padStart(2,'0');
+        const s = String(d.getSeconds()).padStart(2,'0');
+        return `${y}-${m}-${day} ${h}:${mi}:${s}`;
+    }
+    function loadLocalHistory(){
+        try{
+            const raw = localStorage.getItem(HISTORY_STORAGE_KEY);
+            return raw ? JSON.parse(raw) : [];
+        }catch(e){
+            return [];
+        }
+    }
+    function saveLocalHistory(list){
+        localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(list));
+    }
+    function clearLocalHistory(){
+        localStorage.removeItem(HISTORY_STORAGE_KEY);
+    }
+    function addHistoryRecord(recordObj){
+        const list = loadLocalHistory();
+        list.push({
+            time: getFullTimeStr(),
+            data: recordObj
+        });
+        saveLocalHistory(list);
+    }
+    let randomHistory = loadLocalHistory();
+    const dataPool = {
+      map: [
+        { name: "AZ3", level: "机密", tag: "quality-blue", weight: 10, enable:true },
+        { name: "零号大坝", level: "机密", tag: "quality-blue", weight: 10, enable:true },
+        { name: "长弓溪谷", level: "机密", tag: "quality-blue", weight: 10, enable:true },
+        { name: "巴克什", level: "机密", tag: "quality-blue", weight: 10, enable:true },
+        { name: "航天基地", level: "机密", tag: "quality-blue", weight: 10, enable:true },
+        { name: "巴克什", level: "绝密", tag: "quality-gold", weight: 8, enable:true },
+        { name: "航天基地", level: "绝密", tag: "quality-gold", weight: 8, enable:true },
+        { name: "潮汐监狱", level: "绝密", tag: "quality-gold", weight: 8, enable:true },
+        { name: "随意", level: "绝密", tag: "quality-gold", weight: 12, enable:true },
+        { name: "随意", level: "机密", tag: "quality-blue", weight: 12, enable:true }
+      ],
+      helmet: [
+        { name: "老式钢盔", quality: "gray", weight: 14, enable:true },
+        { name: "安保头盔", quality: "gray", weight: 14, enable:true },
+        { name: "奔尼帽", quality: "gray", weight: 14, enable:true },
+        { name: "户外棒球帽", quality: "gray", weight: 14, enable:true },
+        { name: "H01战术头盔", quality: "green", weight: 11, enable:true },
+        { name: "DRO战术头盔", quality: "green", weight: 11, enable:true },
+        { name: "复古摩托头盔", quality: "green", weight: 11, enable:true },
+        { name: "MC防弹头盔", quality: "green", weight: 11, enable:true },
+        { name: "防暴头盔", quality: "blue", weight: 9, enable:true },
+        { name: "H07战术头盔", quality: "blue", weight: 9, enable:true },
+        { name: "DSA防弹头盔", quality: "blue", weight: 9, enable:true },
+        { name: "MC201防弹头盔", quality: "blue", weight: 9, enable:true },
+        { name: "D6战术头盔", quality: "purple", weight: 6, enable:true },
+        { name: "MHS战术头盔", quality: "purple", weight: 6, enable:true },
+        { name: "DICH训练头盔", quality: "purple", weight: 6, enable:true },
+        { name: "GTI战术头盔", quality: "purple", weight: 6, enable:true },
+        { name: "MASK-1铁壁头盔", quality: "gold", weight: 3, enable:true },
+        { name: "H09防暴头盔", quality: "gold", weight: 3, enable:true },
+        { name: "GN重型头盔", quality: "gold", weight: 3, enable:true },
+        { name: "DICH-1战术头盔", quality: "gold", weight: 3, enable:true },
+        { name: "随意", quality: "red", weight: 16, enable:true }
+      ],
+      armor: [
+        { name: "安保防弹衣", quality: "gray", weight: 14, enable:true },
+        { name: "尼龙防刺衣", quality: "gray", weight: 14, enable:true },
+        { name: "轻型防弹衣", quality: "gray", weight: 14, enable:true },
+        { name: "摩托马甲", quality: "gray", weight: 14, enable:true },
+        { name: "简易防刺服", quality: "green", weight: 11, enable:true },
+        { name: "HT战术背心", quality: "green", weight: 11, enable:true },
+        { name: "TG战术防弹衣", quality: "green", weight: 11, enable:true },
+        { name: "通用战术背心", quality: "green", weight: 11, enable:true },
+        { name: "制式防弹背心", quality: "blue", weight: 9, enable:true },
+        { name: "Hvk快拆防弹衣", quality: "blue", weight: 9, enable:true },
+        { name: "TG-H防弹衣", quality: "blue", weight: 9, enable:true },
+        { name: "射手战术背心", quality: "blue", weight: 9, enable:true },
+        { name: "HMP特勤防弹衣", quality: "purple", weight: 6, enable:true },
+        { name: "武士防弹背心", quality: "purple", weight: 6, enable:true },
+        { name: "突击者防弹背心", quality: "purple", weight: 6, enable:true },
+        { name: "DT-AVS防弹衣", quality: "purple", weight: 6, enable:true },
+        { name: "MK-2战术背心", quality: "purple", weight: 6, enable:true },
+        { name: "精英防弹背心", quality: "gold", weight: 3, enable:true },
+        { name: "Hvk-2防弹衣", quality: "gold", weight: 3, enable:true },
+        { name: "FS复合防弹衣", quality: "gold", weight: 3, enable:true },
+        { name: "重型突击背心", quality: "gold", weight: 3, enable:true },
+        { name: "随意", quality: "red", weight: 12, enable:true }
+      ],
+      gun: [
+        { name: "随意", quality: "red", weight: 10, enable:true },
+        { name: "PKM", quality: "white", weight: 10, enable:true },
+        { name: "SR-25", quality: "white", weight: 10, enable:true },
+        { name: "AS-Val", quality: "white", weight: 10, enable:true },
+        { name: "M250", quality: "white", weight: 10, enable:true },
+        { name: "AWM", quality: "white", weight: 10, enable:true },
+        { name: "M14", quality: "white", weight: 10, enable:true },
+        { name: "M7", quality: "white", weight: 10, enable:true },
+        { name: "ASh-12", quality: "white", weight: 10, enable:true },
+        { name: "M1014", quality: "white", weight: 10, enable:true },
+        { name: "SMG-45", quality: "white", weight: 10, enable:true },
+        { name: "PTR-32", quality: "white", weight: 10, enable:true },
+        { name: "杠杆", quality: "white", weight: 10, enable:true },
+        { name: "M4A1", quality: "white", weight: 10, enable:true },
+        { name: "QCQ171", quality: "white", weight: 10, enable:true },
+        { name: "腾龙", quality: "white", weight: 10, enable:true },
+        { name: "K437", quality: "white", weight: 10, enable:true },
+        { name: "SR-3M", quality: "white", weight: 10, enable:true },
+        { name: "AKM", quality: "white", weight: 10, enable:true },
+        { name: "MP7", quality: "white", weight: 10, enable:true },
+        { name: "KC17", quality: "white", weight: 10, enable:true },
+        { name: "K416", quality: "white", weight: 10, enable:true },
+        { name: "Vector", quality: "white", weight: 10, enable:true },
+        { name: "SV-98", quality: "white", weight: 10, enable:true },
+        { name: "SVD", quality: "white", weight: 10, enable:true },
+        { name: "R93", quality: "white", weight: 10, enable:true },
+        { name: "MK47", quality: "white", weight: 10, enable:true },
+        { name: "M700", quality: "white", weight: 10, enable:true },
+        { name: "PSG-1", quality: "white", weight: 10, enable:true },
+        { name: "P90", quality: "white", weight: 10, enable:true },
+        { name: "QJB201", quality: "white", weight: 10, enable:true },
+        { name: "S12K", quality: "white", weight: 10, enable:true },
+        { name: "勇士", quality: "white", weight: 10, enable:true },
+        { name: "复合弓", quality: "white", weight: 10, enable:true },
+        { name: "SKS", quality: "white", weight: 10, enable:true },
+        { name: "M249", quality: "white", weight: 10, enable:true },
+        { name: "725双管", quality: "white", weight: 10, enable:true },
+        { name: "AK-12", quality: "white", weight: 10, enable:true },
+        { name: "SCAR-H", quality: "white", weight: 10, enable:true },
+        { name: "QBZ95-1", quality: "white", weight: 10, enable:true },
+        { name: "G3", quality: "white", weight: 10, enable:true },
+        { name: "SG552", quality: "white", weight: 10, enable:true },
+        { name: "MP5", quality: "white", weight: 10, enable:true },
+        { name: "VSS", quality: "white", weight: 10, enable:true },
+        { name: "AUG", quality: "white", weight: 10, enable:true },
+        { name: "SR9", quality: "white", weight: 10, enable:true },
+        { name: "Mini-14", quality: "white", weight: 10, enable:true },
+        { name: "AKS-74U", quality: "white", weight: 10, enable:true },
+        { name: "UZI", quality: "white", weight: 10, enable:true },
+        { name: "野牛", quality: "white", weight: 10, enable:true },
+        { name: "CAR-15", quality: "white", weight: 10, enable:true },
+        { name: "M870", quality: "white", weight: 10, enable:true },
+        { name: "M16A4", quality: "white", weight: 10, enable:true },
+        { name: "刀", quality: "white", weight: 10, enable:true }
+      ],
+      bullet: [
+        { name: "1级子弹", quality: "gray", lv: 1, weight: 14, enable:true },
+        { name: "2级子弹", quality: "green", lv: 2, weight: 12, enable:true },
+        { name: "3级子弹", quality: "blue", lv: 3, weight: 10, enable:true },
+        { name: "4级子弹", quality: "purple", lv: 4, weight: 7, enable:true },
+        { name: "5级子弹", quality: "gold", lv: 5, weight: 4, enable:true },
+        { name: "6级子弹", quality: "red", lv: 7, weight: 0,enable:false},
+        { name: "随意", quality: "red", lv: 6, weight: 4, enable:true }
+      ],
+      modifyCostNormal: (() => {
+        let arr = [];
+        for (let w = 0; w <= 80; w += 1) {
+          arr.push({ cost: `${w * 10000}`, weight: Math.max(1, 22 - Math.floor(w / 4)), enable:true });
+        }
+        return arr;
+      })(),
+      modifyCostSecret: (() => {
+        let arr = [];
+        for (let w = 50; w <= 80; w += 1) {
+          arr.push({ cost: `${w * 10000}`, weight: Math.max(1, 22 - Math.floor(w / 4)), enable:true });
+        }
+        return arr;
+      })(),
+      chest: [
+        { name: "便携胸包", quality: "gray", weight: 12, enable:true },
+        { name: "快速侦察胸挂", quality: "gray", weight: 12, enable:true },
+        { name: "轻型战术胸挂", quality: "gray", weight: 12, enable:true },
+        { name: "简易挂载包", quality: "gray", weight: 12, enable:true },
+        { name: "尼龙挂载包", quality: "green", weight: 9, enable:true },
+        { name: "HD3便携胸挂", quality: "green", weight: 9, enable:true },
+        { name: "D01轻型弹挂", quality: "green", weight: 9, enable:true },
+        { name: "通用战术胸挂", quality: "green", weight: 9, enable:true },
+        { name: "简易携行弹挂", quality: "blue", weight: 7, enable:true },
+        { name: "HD3战术胸挂", quality: "blue", weight: 7, enable:true },
+        { name: "DSA战术胸挂", quality: "blue", weight: 7, enable:true },
+        { name: "G01战术弹挂", quality: "blue", weight: 7, enable:true },
+        { name: "强袭战术背心", quality: "purple", weight: 4, enable:true },
+        { name: "突击者战术背心", quality: "purple", weight: 4, enable:true },
+        { name: "DLC先进侦察胸挂", quality: "purple", weight: 4, enable:true },
+        { name: "GIR野战胸挂", quality: "purple", weight: 4, enable:true },
+        { name: "随意", quality: "red", weight: 10, enable:true }
+      ],
+      bag: [
+        { name: "斜挎包", quality: "gray", weight: 14, enable:true },
+        { name: "运动背包", quality: "gray", weight: 14, enable:true },
+        { name: "旅行背包", quality: "gray", weight: 14, enable:true },
+        { name: "帆布背囊", quality: "gray", weight: 14, enable:true },
+        { name: "DG运动背包", quality: "gray", weight: 14, enable:true },
+        { name: "轻型户外背包", quality: "green", weight: 11, enable:true },
+        { name: "露营背包", quality: "green", weight: 11, enable:true },
+        { name: "战术快拆背包", quality: "green", weight: 11, enable:true },
+        { name: "突袭战术背包", quality: "green", weight: 11, enable:true },
+        { name: "大型登山包", quality: "blue", weight: 9, enable:true },
+        { name: "3H战术背包", quality: "blue", weight: 9, enable:true },
+        { name: "Dash战术背包", quality: "blue", weight: 9, enable:true },
+        { name: "GA野战背包", quality: "blue", weight: 9, enable:true },
+        { name: "雨林猎手背包", quality: "blue", weight: 9, enable:true },
+        { name: "MAP侦察背包", quality: "purple", weight: 6, enable:true },
+        { name: "野战徒步背包", quality: "purple", weight: 6, enable:true },
+        { name: "D2战术登山包", quality: "purple", weight: 6, enable:true },
+        { name: "GT1户外登山包", quality: "purple", weight: 6, enable:true },
+        { name: "生存战术背包", quality: "purple", weight: 6, enable:true },
+        { name: "ALS背负系统", quality: "gold", weight: 3, enable:true },
+        { name: "HLS-2重型背包", quality: "gold", weight: 3, enable:true },
+        { name: "D3战术登山包", quality: "gold", weight: 3, enable:true },
+        { name: "GT5野战背包", quality: "gold", weight: 3, enable:true },
+        { name: "无背包", quality: "white", weight: 10, enable:true },
+        { name: "随意", quality: "red", weight: 10, enable:true }
+      ],
+      operator: [
+        { name: "红狗", quality: "white", weight: 10, enable:true },
+        { name: "威虫", quality: "white", weight: 10, enable:true },
+        { name: "疾风", quality: "white", weight: 10, enable:true },
+        { name: "老祖", quality: "white", weight: 10, enable:true },
+        { name: "哈吉蜂", quality: "white", weight: 10, enable:true },
+        { name: "女医", quality: "white", weight: 10, enable:true },
+        { name: "蝶", quality: "white", weight: 10, enable:true },
+        { name: "鸟兽兽", quality: "white", weight: 10, enable:true },
+        { name: "老黑", quality: "white", weight: 10, enable:true },
+        { name: "盾构", quality: "white", weight: 10, enable:true },
+        { name: "书呆子", quality: "white", weight: 10, enable:true },
+        { name: "液氮", quality: "white", weight: 10, enable:true },
+        { name: "麦晓雯", quality: "white", weight: 10, enable:true },
+        { name: "银翼", quality: "white", weight: 10, enable:true },
+        { name: "露娜", quality: "white", weight: 10, enable:true },
+        { name: "老鸟", quality: "white", weight: 10, enable:true },
+        { name: "回响", quality: "white", weight: 10, enable:true },
+        { name: "随意", quality: "red", weight: 10, enable:true }
+      ],
+      mission: [
+        { name: "不得常规撤离", weight: 10, enable:true },
+        { name: "不得更换装备", weight: 10, enable:true },
+        { name: "不得装配倍镜", weight: 10, enable:true },
+        { name: "全低亮度游戏", weight: 10, enable:true },
+        { name: "不得攻击人机", weight: 20, enable:true },
+        { name: "不得攻击真人", weight: 10, enable:true },
+        { name: "系统默认两指操作", weight: 10, enable:true },
+        { name: "只允许修脚", weight: 20, enable:true },
+        { name: "开分屏玩", weight: 5, enable:true },
+        { name: "身上最差装备丢给队友", weight: 5, enable:true }
+      ]
+    };
+    const gunMinBulletLv = {
+      "随意": -1,
+      "PKM": 3, "SR-25": 2, "AS-Val": 3, "M250": 4, "AWM": 5, "M14": 2, "M7": 4,
+      "ASh-12": 3, "M1014": 1, "SMG-45": 1, "PTR-32": 2, "杠杆": 3, "M4A1": 1,
+      "QCQ171": 1, "腾龙": 2, "K437": 3, "SR-3M": 3, "AKM": 1, "MP7": 3, "KC17": 1,
+      "K416": 1, "Vector": 1, "SV-98": 3, "SVD": 3, "R93": 2, "MK47": 1, "M700": 2,
+      "PSG-1": 2, "P90": 1, "QJB201": 2, "S12K": 1, "勇士": 1, "复合弓": 3, "SKS": 1,
+      "M249": 1, "725双管": 1, "AK-12": 1, "SCAR-H": 2, "QBZ95-1": 2, "G3": 2,
+      "SG552": 1, "MP5": 1, "VSS": 3, "AUG": 1, "SR9": 2, "Mini-14": 1, "AKS-74U": 1,
+      "UZI": 1, "野牛": 1, "CAR-15": 1, "M870": 1, "M16A4": 1, "刀": 0
+    };
+    const randomOrder = ["map","helmet","armor","chest","bag","operator"];
+    const typeOrder = ["map","helmet","armor","gun","bullet","modifyCost","chest","bag","operator","mission"];
+    const cardState = new Map();
+    let lastMapResult = null;
+    let mapRolled = false;
+    let currentSelectedGunName = "";
+    let currentRollResult = {};
+    const typeNameMap = {
+      map:"作战地图", helmet:"头盔", armor:"护甲", gun:"枪械", bullet:"子弹等级",
+      modifyCost:"改装预算", chest:"胸挂", bag:"背包", operator:"干员", mission:"随机任务"
+    };
+    const ITEM_HEIGHT = 58;
+    const BOX_VIEW_HEIGHT = 144;
+    const BOX_CENTER_Y = BOX_VIEW_HEIGHT / 2;
+    const ZONE2_TOP = BOX_VIEW_HEIGHT * 0.3;
+    const ZONE2_BOTTOM = BOX_VIEW_HEIGHT * 0.7;
+    const CONSTANT_SPEED_DURATION = 2000;
+    function getRandomDurability() {
+      const list = [
+        { label: "破损", cls: "dur-broken" },
+        { label: "几乎全新", cls: "dur-near" },
+        { label: "全新", cls: "dur-new" }
+      ];
+      return list[Math.floor(Math.random() * list.length)];
+    }
+    function getQualityClass(qualityStr) {
+      if (qualityStr === "white") return "";
+      return `quality-${qualityStr}`;
+    }
+function weightedRandom(rawList) {
+  const list = rawList.filter(item => item.enable && Number(item.weight) > 0);
+  if(list.length === 0) return rawList[0];
+  let total = list.reduce((s, i) => s + Number(i.weight), 0);
+  let r = Math.random() * total;
+  for (let item of list) {
+    r -= Number(item.weight);
+    if (r <= 0) return item;
+  }
+  return list[0];
+}
+    function renderHtml(type, item) {
+      if (type === "map") {
+        const cls = getQualityClass(item.tag.replace("quality-", ""));
+        return `<span class="${cls}">${item.name}【${item.level}】</span>`;
+      }
+      if (type === "helmet" || type === "armor") {
+        const cls = getQualityClass(item.quality);
+        const dur = getRandomDurability();
+        return `<span class="${cls}">${item.name}</span><div class="durability-text ${dur.cls}">${dur.label}</div>`;
+      }
+      if (type === "chest" || type === "bag") return `<span class="${getQualityClass(item.quality)}">${item.name}</span>`;
+      if (type === "bullet") return `<span class="${getQualityClass(item.quality)}">${item.name}</span>`;
+      if (type === "modifyCost") return `<span class="cost-text">预算: ${Number(item.cost).toLocaleString()}</span>`;
+      if(type === "mission") return `<span style="color:#ffffff">${item.name}</span>`;
+      return item.name;
+    }
+    function getCostPool() {
+      return lastMapResult?.level === "绝密" ? dataPool.modifyCostSecret : dataPool.modifyCostNormal;
+    }
+    function getPoolByType(type) {
+      if (type === "modifyCost") return getCostPool();
+      return dataPool[type];
+    }
+    function filterSecretQualityPool(pool) {
+      return pool.filter(item => ["blue","purple","gold","red"].includes(item.quality));
+    }
+    function getFilterBulletPool(gunName) {
+      const minLv = gunMinBulletLv[gunName] ?? 1;
+      if(gunName === "刀") return dataPool.bullet.filter(b=>b.lv <= 0);
+      if(gunName === "随意") return [...dataPool.bullet];
+      if(gunName === "AWM") return dataPool.bullet.filter(b => b.lv >= 7);
+      if(["野牛","UZI","勇士","MP5","M1014","QCQ171","S12K","725双管","M870"].includes(gunName)){
+        return dataPool.bullet.filter(b => b.lv <= 4);
+      }
+      return dataPool.bullet.filter(b => b.lv >= minLv);
+    }
+    function buildDiskList(listDom, type, pool) {
+      listDom.innerHTML = "";
+      for (let i = 0; i < 45; i++) {
+        const item = weightedRandom(pool);
+        const div = document.createElement("div");
+        div.className = "scroll-item";
+        div.innerHTML = renderHtml(type, item);
+        listDom.appendChild(div);
+      }
+    }
+    function refreshZoneHighlight(listDom, scrollOffset) {
+      const items = listDom.querySelectorAll(".scroll-item");
+      items.forEach(el => el.classList.remove("active"));
+      items.forEach((itemEl, idx) => {
+        const itemViewCenter = idx * ITEM_HEIGHT + ITEM_HEIGHT / 2 - scrollOffset;
+        if (itemViewCenter >= ZONE2_TOP && itemViewCenter <= ZONE2_BOTTOM) itemEl.classList.add("active");
+      });
+    }
+    function isAnyRolling(){
+      for(const [k,state] of cardState){
+        if(state.running) return true;
+      }
+      return false;
+    }
+    function triggerFlash(card){
+      card.classList.add("running-flash");
+      setTimeout(()=>card.classList.remove("running-flash"),400);
+    }
+    function startDiskRoll(card, onFinish, customPool = null) {
+      const type = card.dataset.type;
+      if (cardState.get(type)?.running) return;
+      const listWrap = card.querySelector(".scroll-list");
+      let usePool;
+      if(customPool){
+        usePool = customPool;
+      }else{
+        if(lastMapResult?.level === "绝密" && ["helmet","armor","chest","bag"].includes(type)){
+          usePool = filterSecretQualityPool(getPoolByType(type));
+        }else{
+          usePool = getPoolByType(type);
+        }
+      }
+      buildDiskList(listWrap, type, usePool);
+      const prev = cardState.get(type);
+      if (prev?.raf) cancelAnimationFrame(prev.raf);
+      let scrollOffset = 0;
+      let speed = 870 + Math.random() * 110;
+      const state = { running: true, raf: null, startTime: Date.now() };
+      cardState.set(type, state);
+      function animate() {
+        if (!state.running) return;
+        const runTime = Date.now() - state.startTime;
+        scrollOffset += speed * 16 / 1000;
+        listWrap.style.transform = `translateY(-${scrollOffset}px)`;
+        refreshZoneHighlight(listWrap, scrollOffset);
+        if (runTime > CONSTANT_SPEED_DURATION) speed = speed > 40 ? speed * 0.97 : speed * 0.78;
+        if (speed <= 0.6) {
+          const targetListPixel = scrollOffset + BOX_CENTER_Y;
+          const targetIndex = Math.round(targetListPixel / ITEM_HEIGHT);
+          const finalOffset = targetIndex * ITEM_HEIGHT + ITEM_HEIGHT / 2 - BOX_CENTER_Y;
+          listWrap.style.transition = "transform 0.52s cubic-bezier(0.20, 1.00, 0.30, 1.00)";
+          listWrap.style.transform = `translateY(-${finalOffset}px)`;
+          setTimeout(() => {
+            refreshZoneHighlight(listWrap, finalOffset);
+            listWrap.style.transition = "";
+            state.running = false;
+            const activeItem = listWrap.querySelector(".scroll-item.active");
+            currentRollResult[type] = activeItem?.innerHTML || "";
+            if (type === "map") {
+              lastMapResult = weightedRandom(dataPool.map);
+              mapRolled = true;
+              updateCardLock();
+            }
+            typeof onFinish === "function" && onFinish();
+          },520);
+          return;
+        }
+        state.raf = requestAnimationFrame(animate);
+      }
+      animate();
+    }
+    function updateCardLock(){
+      document.querySelectorAll(".item-card").forEach(card=>{
+        const t = card.dataset.type;
+        if(t === "map") return;
+        card.classList.toggle("locked", !mapRolled);
+      })
+    }
+    document.getElementById("randomBtn").onclick = async function(){
+      if(isAnyRolling()) return;
+      currentRollResult = {};
+      for(const t of randomOrder){
+        const card = document.querySelector(`.item-card[data-type="${t}"]`);
+        await new Promise(res=>startDiskRoll(card,res));
+      }
+      await runGunGroupParallel();
+      const missionCard = document.querySelector(`[data-type="mission"]`);
+      await new Promise(res=>startDiskRoll(missionCard, res));
+      addHistoryRecord(currentRollResult);
+      randomHistory = loadLocalHistory();
+      setTimeout(
+        showToast("一键配装完成！更多好东西尽在更多好东西在的地方！")
+      ,3000)
+      
+    }
+    document.querySelectorAll(".item-card").forEach(card=>{
+      card.onclick = function(){
+        const type = this.dataset.type;
+        if(isAnyRolling()){
+          triggerFlash(this);
+          return;
+        }
+        if(type === "map"){ startDiskRoll(this); return; }
+        if(!mapRolled) return;
+        if(type === "gun" || type === "bullet" || type === "modifyCost"){
+          runGunGroupParallel();
+          return;
+        }
+        if(type === "mission"){
+          startDiskRoll(this);
+          return;
+        }
+        startDiskRoll(this);
+      }
+    });
+    async function runGunGroupParallel(){
+      const gunCard = document.querySelector(`[data-type="gun"]`);
+      const bulletCard = document.querySelector(`[data-type="bullet"]`);
+      const costCard = document.querySelector(`[data-type="modifyCost"]`);
+      await new Promise(res=>startDiskRoll(gunCard, res));
+      const gunWrap = gunCard.querySelector(".scroll-list");
+      const items = gunWrap.querySelectorAll(".scroll-item.active");
+      currentSelectedGunName = items[0]?.innerText || "";
+      const legalBulletPool = getFilterBulletPool(currentSelectedGunName);
+      startDiskRoll(bulletCard, null, legalBulletPool);
+      startDiskRoll(costCard);
+    }
+    const modal = document.getElementById("probModal");
+    const container = document.getElementById("probContainer");
+    const openBtn = document.getElementById("openProbBtn");
+    const saveBtn = document.getElementById("saveProb");
+    const closeBtn = document.getElementById("closeProb");
+    function renderProbPanel(){
+      container.innerHTML = "";
+      for(let t of typeOrder){
+        let list = t === "modifyCost" ? dataPool.modifyCostNormal : dataPool[t];
+        const groupDiv = document.createElement("div");
+        groupDiv.style.marginBottom="16px";
+        groupDiv.innerHTML = `<div style="color:#fbbf24;margin-bottom:6px;font-weight:bold;">【${typeNameMap[t]}】</div>`;
+        list.forEach((item,idx)=>{
+          const row = document.createElement("div");
+          row.className="prob-row";
+          const displayName = item.name ?? item.cost ?? `条目${idx+1}`;
+          row.innerHTML = `
+            <label class="chk-label">
+              <input type="checkbox" data-type="${t}" data-idx="${idx}" ${item.enable?"checked":""}>
+              ${displayName}
+            </label>
+            <input data-type="${t}" data-idx="${idx}" type="number" min="1" value="${item.weight}">
+          `;
+          groupDiv.appendChild(row);
+        })
+        container.appendChild(groupDiv);
+      }
+    }
+    openBtn.onclick = ()=>{
+      renderProbPanel();
+      modal.style.display="flex";
+    }
+    closeBtn.onclick = ()=> modal.style.display="none";
+    function syncSecretCost() {
+      const normal = dataPool.modifyCostNormal;
+      const secret = dataPool.modifyCostSecret;
+      secret.forEach(secretItem => {
+        const match = normal.find(n => n.cost === secretItem.cost);
+        if (match) {
+          secretItem.enable = match.enable;
+          secretItem.weight = match.weight;
+        }
+      });
+    }
+    saveBtn.onclick = ()=>{
+      const rows = container.querySelectorAll(".prob-row");
+      rows.forEach(row => {
+        const checkbox = row.querySelector('input[type="checkbox"]');
+        const numInput = row.querySelector('input[type="number"]');
+        if(!checkbox || !numInput) return;
+        const t = checkbox.dataset.type;
+        const idx = Number(checkbox.dataset.idx);
+        if(!t) return;
+        let targetList = t === "modifyCost" ? dataPool.modifyCostNormal : dataPool[t];
+        if(!Array.isArray(targetList) || idx >= targetList.length) return;
+        targetList[idx].enable = checkbox.checked;
+        targetList[idx].weight = Math.max(1, Number(numInput.value) || 1);
+      });
+      syncSecretCost();
+      showToast("权重与启用状态保存成功！");
+      modal.style.display="none";
+    }
+    document.getElementById("resetBtn").onclick = function(){
+      location.reload();
+    }
+    updateCardLock();
+    showToast("made by 贞观之治的老大");
+    // 历史弹窗逻辑
+    const historyModal = document.getElementById("historyModal");
+    const historyContainer = document.getElementById("historyContainer");
+    const historyBtn = document.getElementById("historyBtn");
+    const closeHistoryBtn = document.getElementById("closeHistory");
+    const clearHistoryBtn = document.getElementById("clearHistory");
+    function renderHistory(){
+      historyContainer.innerHTML = "";
+      const list = loadLocalHistory();
+      if(list.length === 0){
+        historyContainer.innerHTML = `<div style="text-align:center;padding:30px;color:#aaa">暂无随机记录</div>`;
+        return;
+      }
+      // 倒序，最新在上
+      const reverse = [...list].reverse();
+      reverse.forEach((rec, idx)=>{
+        const wrap = document.createElement("div");
+        wrap.className = "history-item";
+        let html = `<div class="history-time">第${reverse.length - idx}次｜${rec.time}</div>`;
+        const data = rec.data;
+        for(let key of typeOrder){
+          if(data[key]){
+            html += `<div class="history-line"><b>${typeNameMap[key]}：</b>${data[key]}</div>`;
+          }
+        }
+        wrap.innerHTML = html;
+        historyContainer.appendChild(wrap);
+      })
+    }
+    historyBtn.onclick = ()=>{
+      renderHistory();
+      historyModal.style.display = "flex";
+    }
+    closeHistoryBtn.onclick = ()=> historyModal.style.display = "none";
+    clearHistoryBtn.onclick = ()=>{
+      clearLocalHistory();
+      randomHistory = [];
+      renderHistory();
+      showToast("历史记录已全部清空");
+    }
+})();
+</script>
+</body>
+</html>

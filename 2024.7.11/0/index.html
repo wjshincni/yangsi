@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
+    <title>网页DIY，个性化定制</title>
+    <style>
+        /* 完全沿用主站 index.css 的变量，不重新造轮子 */
+        html.theme-day {
+            --bg-main: #f4f5f7;
+            --bg-card: #ffffff;
+            --text-main: #222222;
+            --text-sub: #888888;
+            --border-color: #eeeeee;
+        }
+        html.theme-night {
+            --bg-main: #1a1d24;
+            --bg-card: #262a33;
+            --text-main: #e6e8ed;
+            --text-sub: #a0a6b3;
+            --border-color: #333842;
+        }
+        html {
+            --bg-main: #1a1d24;
+            --bg-card: #262a33;
+            --text-main: #e6e8ed;
+            --text-sub: #a0a6b3;
+            --border-color: #333842;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg-main);
+            color: var(--text-main);
+            transition: background 0.4s ease, color 0.4s ease, border-color 0.4s;
+        }
+
+        /* 返回按钮，全站统一common-btn */
+        .back-wrap {
+            position: fixed;
+            top: 16px;
+            left: 16px;
+            z-index: 999;
+        }
+        .common-btn {
+            padding: 8px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 40px;
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            color: #fff;
+            cursor: pointer;
+            font-weight: 500;
+            box-shadow: 0 2px 10px rgba(110, 142, 251, 0.3);
+            transition: transform 0.2s;
+            min-height: 44px;
+        }
+        .common-btn:hover {
+            transform: scale(1.02);
+        }
+
+        /* 顶部大字 */
+        .page-title {
+            width: 100%;
+            text-align: center;
+            padding-top: 80px;
+            padding-bottom: 40px;
+            font-size: 3rem;
+            font-weight: bold;
+            letter-spacing: 4px;
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        /* ========== 完全复制主index聊天部分，不改动任何类名 ========== */
+        .start-chat-scroll {
+            height: calc(100vh - 220px);
+            padding: 0 12% 40px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+        .chat-item {
+            margin: 16px 0;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.5s, transform 0.5s;
+        }
+        .chat-item.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .chat-item.user { text-align: left; }
+        .chat-item.service { text-align: right; }
+        .msg {
+            display: inline-block;
+            padding: 10px 16px;
+            font-size: 16px;
+            line-height: 1.6;
+            max-width: 70%;
+            border-radius: 12px;
+            background: var(--border-color);
+            color: var(--text-main);
+            word-break: break-word;
+            transition: background 0.4s ease, color 0.4s ease;
+        }
+        .service .msg {
+            background: #72bfff;
+            color: #fff;
+            border-radius: 12px 12px 4px 12px;
+        }
+        .user .msg {
+            border-radius: 12px 12px 12px 4px;
+        }
+
+        @media (max-width: 600px) {
+            .page-title {
+                font-size: 1.8rem;
+                padding-top: 60px;
+            }
+            .start-chat-scroll {
+                padding: 0 8% 40px;
+            }
+            .msg {
+                font-size: 14px;
+                max-width: 85%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="back-wrap">
+        <button class="common-btn" id="backBtn">← 返回</button>
+    </div>
+
+    <h1 class="page-title">网页DIY，个性化定制</h1>
+
+    <div class="start-chat-scroll" id="chatScroll">
+        <!-- JS渲染对话 -->
+    </div>
+
+    <script>
+        document.getElementById('backBtn').addEventListener('click', function(){
+            window.location.href = '../buy.html';
+        });
+
+        //对话：user=客户(左侧深色气泡)，service=帮工(右侧蓝色气泡)
+        const chatList = [
+            { type: 'user', text: '你好，我要做一个关于……的网页' },
+            { type: 'service', text: '*对方发送了一个初版录屏' },
+            { type: 'user', text: '这里再……，然后加上这些素材' },
+            { type: 'user', text: '*图片' },
+            { type: 'service', text: '………………' },
+            { type: 'service', text: '*对方发送了最终版录屏' },
+            { type: 'user', text: '好了，很满意' },
+            { type: 'service', text: '定价为……（一般2‑30元不等，取决于难度）' },
+            { type: 'user', text: '*转账' }
+        ];
+
+        const chatScroll = document.getElementById('chatScroll');
+        let msgIndex = 0;
+        let msgDomList = [];
+
+        function initChatBox(){
+            chatScroll.innerHTML = '';
+            chatList.forEach(item => {
+                const wrap = document.createElement('div');
+                wrap.className = `chat-item ${item.type}`;
+                const bubble = document.createElement('div');
+                bubble.className = 'msg';
+                bubble.textContent = '';
+                wrap.appendChild(bubble);
+                chatScroll.appendChild(wrap);
+                msgDomList.push({wrapEl:wrap, bubbleEl:bubble, text:item.text});
+            });
+            showNextMsg();
+        }
+
+        function showNextMsg(){
+            if(msgIndex >= msgDomList.length){
+                chatScroll.scrollTop = chatScroll.scrollHeight;
+                return;
+            }
+            const item = msgDomList[msgIndex];
+            item.wrapEl.classList.add('visible');
+            let charIdx = 0;
+            function typeWrite(){
+                if(charIdx < item.text.length){
+                    item.bubbleEl.textContent += item.text[charIdx];
+                    charIdx++;
+                    setTimeout(typeWrite,35);
+                }else{
+                    setTimeout(()=>{
+                        msgIndex++;
+                        showNextMsg();
+                    },1200);
+                }
+            }
+            typeWrite();
+        }
+
+        window.onload = initChatBox;
+    </script>
+</body>
+</html>

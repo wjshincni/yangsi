@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
+    <style>
+        body {
+            background-color: #040420;
+            margin: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+        /* 返回按钮样式 */
+        .back-btn {
+            position: fixed;
+            top: 16px;
+            left: 16px;
+            z-index: 999;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(4px);
+            color: #fff;
+            font-size: 14px;
+            font-family: "Andale Mono", monospace;
+            text-decoration: none;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            transition: background 0.2s;
+            user-select: none;
+        }
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        .back-btn:active {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .sun {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 16px;
+            height: 16px;
+            transform: translate(-50%, -50%);
+            background-image: url(wu~/sun.png);
+            background-size: 16px 16px;
+        }
+        .earth, .moon {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+        }
+        .earth {
+            background-image: url(wu~/earth.png);
+            background-size: 16px 16px;
+            z-index: 1;
+            top: -8px;
+            left: -8px;
+        }
+        .moon {
+            top: -8px;
+            left: -8px;
+            background-image: url(wu~/moon.png);
+            background-size: 16px 16px;
+            z-index: 2;
+        }
+        canvas {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            opacity: 0.66;
+        }
+        .canvas-back {
+            z-index: 0;
+        }
+        .canvas-front {
+            z-index: 1;
+        }
+        .credit {
+            position: absolute;
+            z-index: 2;
+            bottom: 8px;
+            right: 8px;
+            font-size: 11px;
+            font-family: "Andale Mono", monospace;
+            color: #585858;
+        }
+        .credit a {
+            color: #0175a9;
+        }
+        .texts {
+            color: azure;
+            font-size: 15px;
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 3;
+            background: rgba(0,0,0,0.3);
+            padding: 6px 14px;
+            border-radius: 20px;
+            backdrop-filter: blur(2px);
+            pointer-events: none;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 返回按钮 -->
+    <a href="../buy.html" class="back-btn">← 返回</a>
+
+    <span class="texts">试试鼠标左右拖动? 或者按住屏幕拖?</span>
+
+    <canvas class="canvas-back"></canvas>
+    <canvas class="canvas-front"></canvas>
+    <div class="sun"></div>
+    <div class="earth"></div>
+    <div class="moon"></div>
+
+    <script src="wu/site.min.js"></script>
+    <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+        ga('create', 'UA-88910308-1', 'auto');
+        ga('send', 'pageview');
+    </script>
+</body>
+</html>

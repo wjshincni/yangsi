@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>贪吃的唐斯雨</title>
+    <meta charset="UTF-8">
+    <meta name="keywords" content="唐天笑大帅逼">
+    <meta name="Description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <style type="text/css">
+        /* ===== 全局重置 & 基础 ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(145deg, #0b0e1a 0%, #1a1e2f 40%, #2a1f3d 100%);
+            font-family: 'Segoe UI', 'PingFang SC', Roboto, 'Helvetica Neue', sans-serif;
+            padding: 16px;
+        }
+
+        /* ===== 主容器 ===== */
+        .game-wrapper {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 32px;
+            padding: 24px 28px 28px;
+            box-shadow:
+                0 30px 60px rgba(0, 0, 0, 0.7),
+                0 0 0 1px rgba(255, 255, 255, 0.06) inset,
+                0 0 40px rgba(100, 80, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            max-width: 1000px;
+            width: fit-content;
+            transition: all 0.3s;
+        }
+
+        /* ===== 顶栏 ===== */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding: 0 4px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #f0eaff;
+            text-shadow: 0 0 20px rgba(150, 120, 255, 0.4);
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .title .emoji {
+            font-size: 28px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .score-box {
+            background: rgba(0, 0, 0, 0.45);
+            padding: 6px 18px;
+            border-radius: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.10);
+            font-size: 18px;
+            font-weight: 600;
+            color: #c8d6ff;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        .score-box span {
+            color: #ffd866;
+            font-size: 20px;
+            margin-left: 4px;
+        }
+
+        .btn-back {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #d0d9ff;
+            padding: 6px 20px;
+            border-radius: 40px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.25s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            backdrop-filter: blur(4px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+        .btn-back:hover {
+            background: rgba(255, 255, 255, 0.18);
+            border-color: rgba(255, 255, 255, 0.35);
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(100, 80, 255, 0.25);
+        }
+        .btn-back:active {
+            transform: translateY(0px);
+        }
+
+        /* ===== 画布容器 ===== */
+        .canvas-wrapper {
+            position: relative;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow:
+                0 0 0 1px rgba(255, 255, 255, 0.08),
+                0 20px 50px rgba(0, 0, 0, 0.6);
+            background: #0d0f1a;
+            line-height: 0;
+        }
+
+        #canvas {
+            display: block;
+            background: #0d0f1a;
+            width: 100%;
+            height: auto;
+            aspect-ratio: 900 / 600;
+            image-rendering: pixelated;
+        }
+
+        /* ===== 游戏结束遮罩 ===== */
+        .game-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.72);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            border-radius: 18px;
+            animation: fadeIn 0.4s ease;
+        }
+        .game-overlay.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.96);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .game-over-content {
+            background: rgba(20, 22, 40, 0.94);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: 48px 40px 40px;
+            border-radius: 32px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.10);
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.7), 0 0 60px rgba(120, 80, 255, 0.10);
+            max-width: 420px;
+            width: 90%;
+            animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        @keyframes popIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.85) translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+        .game-over-content h2 {
+            font-size: 30px;
+            font-weight: 700;
+            color: #f0eaff;
+            margin-bottom: 6px;
+            letter-spacing: 1px;
+        }
+        .game-over-content .final-score {
+            font-size: 52px;
+            font-weight: 800;
+            color: #ffd866;
+            text-shadow: 0 0 30px rgba(255, 216, 102, 0.25);
+            margin: 12px 0 24px;
+        }
+        .game-over-content .final-score small {
+            font-size: 22px;
+            font-weight: 400;
+            color: #a8b5e0;
+            margin-right: 8px;
+        }
+
+        .game-over-actions {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 4px;
+        }
+        .game-over-actions button {
+            padding: 14px 32px;
+            border: none;
+            border-radius: 40px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s;
+            flex: 1;
+            min-width: 120px;
+            letter-spacing: 0.5px;
+        }
+        .btn-restart {
+            background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+            color: #fff;
+            box-shadow: 0 6px 20px rgba(108, 92, 231, 0.35);
+        }
+        .btn-restart:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(108, 92, 231, 0.50);
+        }
+        .btn-restart:active {
+            transform: translateY(0px);
+        }
+
+        .btn-go-home {
+            background: rgba(255, 255, 255, 0.10);
+            color: #d0d9ff;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+        .btn-go-home:hover {
+            background: rgba(255, 255, 255, 0.20);
+            color: #fff;
+            transform: translateY(-3px);
+        }
+        .btn-go-home:active {
+            transform: translateY(0px);
+        }
+
+        /* ===== 触控按钮 ===== */
+        .touch-controls {
+            margin-top: 18px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            touch-action: none;
+        }
+
+        .ctrl-grid {
+            display: grid;
+            grid-template-columns: 64px 64px 64px;
+            grid-template-rows: 64px 64px;
+            gap: 8px;
+            touch-action: none;
+        }
+
+        .ctrl-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
+            color: #d0d9ff;
+            font-size: 26px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.15s;
+            backdrop-filter: blur(4px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            touch-action: none;
+            -webkit-touch-callout: none;
+        }
+
+        .ctrl-btn:active {
+            background: rgba(255, 255, 255, 0.25);
+            transform: scale(0.92);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .ctrl-up {
+            grid-column: 2;
+            grid-row: 1;
+        }
+        .ctrl-left {
+            grid-column: 1;
+            grid-row: 2;
+        }
+        .ctrl-down {
+            grid-column: 2;
+            grid-row: 2;
+        }
+        .ctrl-right {
+            grid-column: 3;
+            grid-row: 2;
+        }
+
+        /* ===== 响应式 ===== */
+        @media (max-width: 700px) {
+            .game-wrapper {
+                padding: 14px 16px 18px;
+                border-radius: 20px;
+            }
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+            }
+            .title {
+                font-size: 20px;
+                justify-content: center;
+            }
+            .header-right {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+            .score-box {
+                font-size: 16px;
+                padding: 4px 14px;
+            }
+            .game-over-content {
+                padding: 34px 24px 30px;
+            }
+            .game-over-content .final-score {
+                font-size: 40px;
+            }
+            .game-over-actions button {
+                padding: 12px 18px;
+                font-size: 15px;
+                min-width: 90px;
+            }
+            .btn-back {
+                padding: 5px 14px;
+                font-size: 13px;
+            }
+
+            .ctrl-grid {
+                grid-template-columns: 56px 56px 56px;
+                grid-template-rows: 56px 56px;
+                gap: 6px;
+            }
+            .ctrl-btn {
+                font-size: 22px;
+                border-radius: 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .game-wrapper {
+                padding: 10px 10px 14px;
+                border-radius: 14px;
+            }
+            .title {
+                font-size: 17px;
+            }
+            .score-box {
+                font-size: 14px;
+                padding: 3px 10px;
+            }
+            .game-over-content {
+                padding: 28px 18px 24px;
+            }
+            .game-over-content h2 {
+                font-size: 24px;
+            }
+            .game-over-content .final-score {
+                font-size: 34px;
+            }
+            .game-over-actions button {
+                padding: 10px 14px;
+                font-size: 13px;
+                min-width: 70px;
+            }
+
+            .ctrl-grid {
+                grid-template-columns: 48px 48px 48px;
+                grid-template-rows: 48px 48px;
+                gap: 5px;
+            }
+            .ctrl-btn {
+                font-size: 18px;
+                border-radius: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="game-wrapper">
+        <!-- ===== 顶栏 ===== -->
+        <div class="header">
+            <div class="title">
+                <span class="emoji">🐍</span> 贪吃的狗弟
+            </div>
+            <div class="header-right">
+                <div class="score-box">
+                    得分&nbsp;<span id="scoreDisplay">0</span>
+                </div>
+                <button class="btn-back" id="backBtn">← 返回</button>
+            </div>
+        </div>
+
+        <!-- ===== 画布 + 遮罩 ===== -->
+        <div class="canvas-wrapper">
+            <canvas id="canvas" height="600" width="900"></canvas>
+
+            <!-- 游戏结束遮罩 -->
+            <div class="game-overlay" id="gameOverlay">
+                <div class="game-over-content">
+                    <div class="final-score">
+                        <small>得分</small> <span id="finalScore">0</span>
+                    </div>
+                    <div class="game-over-actions">
+                        <button class="btn-restart" id="restartBtn">重来</button>
+                        <button class="btn-go-home" id="homeBtn">返回购买</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== 触控按钮 ===== -->
+        <div class="touch-controls">
+            <div class="ctrl-grid">
+                <button class="ctrl-btn ctrl-up" data-dir="up">▲</button>
+                <button class="ctrl-btn ctrl-left" data-dir="left">◀</button>
+                <button class="ctrl-btn ctrl-down" data-dir="down">▼</button>
+                <button class="ctrl-btn ctrl-right" data-dir="right">▶</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        // ============================================================
+        //  1. DOM 引用
+        // ============================================================
+        var canvas = document.getElementById("canvas");
+        var ctx = canvas.getContext("2d");
+        var scoreDisplay = document.getElementById("scoreDisplay");
+        var finalScoreSpan = document.getElementById("finalScore");
+        var gameOverlay = document.getElementById("gameOverlay");
+        var restartBtn = document.getElementById("restartBtn");
+        var homeBtn = document.getElementById("homeBtn");
+        var backBtn = document.getElementById("backBtn");
+
+        // ============================================================
+        //  2. 游戏状态
+        // ============================================================
+        var snake = [];
+        var snakeCount = 2;
+        var foodx = 0;
+        var foody = 0;
+        var togo = 3; // 默认向右
+        var gameInterval = null;
+        var isGameOver = false;
+
+        // ============================================================
+        //  3. 核心函数
+        // ============================================================
+
+        // ---- 绘制网格 + 蛇 + 食物 ----
+        function drawtable() {
+            // 清空画布（用深色背景）
+            ctx.fillStyle = "#0d0f1a";
+            ctx.fillRect(0, 0, 900, 600);
+
+            // ---- 网格 ----
+            ctx.strokeStyle = "rgba(255,255,255,0.06)";
+            ctx.lineWidth = 0.8;
+            for (var i = 0; i <= 60; i++) {
+                ctx.beginPath();
+                ctx.moveTo(15 * i, 0);
+                ctx.lineTo(15 * i, 600);
+                ctx.stroke();
+            }
+            for (var j = 0; j <= 40; j++) {
+                ctx.beginPath();
+                ctx.moveTo(0, 15 * j);
+                ctx.lineTo(900, 15 * j);
+                ctx.stroke();
+            }
+
+            // ---- 食物（带发光效果） ----
+            ctx.shadowColor = "#ff4757";
+            ctx.shadowBlur = 18;
+            ctx.fillStyle = "#ff4757";
+            ctx.beginPath();
+            ctx.arc(foodx + 7.5, foody + 7.5, 7, 0, Math.PI * 2);
+            ctx.fill();
+            // 内圈高光
+            ctx.shadowBlur = 6;
+            ctx.fillStyle = "#ff6b81";
+            ctx.beginPath();
+            ctx.arc(foodx + 7.5, foody + 7.5, 4, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+            ctx.shadowColor = "transparent";
+
+            // ---- 蛇 ----
+            for (var k = 0; k < snakeCount; k++) {
+                var isHead = (k === snakeCount - 1);
+                var x = snake[k].x;
+                var y = snake[k].y;
+
+                // 蛇身圆角矩形
+                var radius = 3;
+                ctx.beginPath();
+                ctx.moveTo(x + radius, y);
+                ctx.lineTo(x + 15 - radius, y);
+                ctx.quadraticCurveTo(x + 15, y, x + 15, y + radius);
+                ctx.lineTo(x + 15, y + 15 - radius);
+                ctx.quadraticCurveTo(x + 15, y + 15, x + 15 - radius, y + 15);
+                ctx.lineTo(x + radius, y + 15);
+                ctx.quadraticCurveTo(x, y + 15, x, y + 15 - radius);
+                ctx.lineTo(x, y + radius);
+                ctx.quadraticCurveTo(x, y, x + radius, y);
+                ctx.closePath();
+
+                if (isHead) {
+                    // 蛇头：亮金色 + 发光
+                    ctx.shadowColor = "#ffd93d";
+                    ctx.shadowBlur = 20;
+                    var grad = ctx.createLinearGradient(x, y, x + 15, y + 15);
+                    grad.addColorStop(0, "#ffd93d");
+                    grad.addColorStop(1, "#f6b93b");
+                    ctx.fillStyle = grad;
+                } else {
+                    ctx.shadowBlur = 0;
+                    // 蛇身：从深绿到青绿渐变
+                    var ratio = k / snakeCount;
+                    var r = Math.round(30 + ratio * 20);
+                    var g = Math.round(180 + ratio * 50);
+                    var b = Math.round(120 + ratio * 40);
+                    ctx.fillStyle = "rgb(" + r + "," + g + "," + b + ")";
+                    ctx.strokeStyle = "rgba(0,0,0,0.2)";
+                    ctx.lineWidth = 0.5;
+                }
+                ctx.fill();
+                if (!isHead) {
+                    ctx.stroke();
+                }
+                ctx.shadowBlur = 0;
+                ctx.shadowColor = "transparent";
+
+                // 蛇头眼睛
+                if (isHead) {
+                    ctx.fillStyle = "#1a1a2e";
+                    ctx.beginPath();
+                    ctx.arc(x + 4, y + 4, 2.5, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.arc(x + 11, y + 4, 2.5, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.fillStyle = "#fff";
+                    ctx.beginPath();
+                    ctx.arc(x + 3.5, y + 3, 1.2, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.arc(x + 10.5, y + 3, 1.2, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+        }
+
+        // ---- 生成食物 ----
+        function addfood() {
+            var maxAttempts = 1000;
+            while (maxAttempts-- > 0) {
+                foodx = Math.floor(Math.random() * 60) * 15;
+                foody = Math.floor(Math.random() * 40) * 15;
+                var overlap = false;
+                for (var k = 0; k < snakeCount; k++) {
+                    if (foodx === snake[k].x && foody === snake[k].y) {
+                        overlap = true;
+                        break;
+                    }
+                }
+                if (!overlap) {
+                    return;
+                }
+            }
+            // 极端情况：实在找不到位置，就放在 (0,0) 但确保没有蛇
+            foodx = 0;
+            foody = 0;
+            for (var k = 0; k < snakeCount; k++) {
+                if (snake[k].x === 0 && snake[k].y === 0) {
+                    foodx = 15;
+                    foody = 0;
+                    break;
+                }
+            }
+        }
+
+        // ---- 初始化 ----
+        function start() {
+            snake = [];
+            snakeCount = 2;
+            togo = 3;
+            isGameOver = false;
+            gameOverlay.classList.remove("active");
+
+            for (var k = 0; k < snakeCount; k++) {
+                snake[k] = { x: k * 15, y: 0 };
+            }
+
+            addfood();
+            updateScore();
+            drawtable();
+
+            if (gameInterval) {
+                clearInterval(gameInterval);
+                gameInterval = null;
+            }
+            gameInterval = setInterval(move, 150);
+        }
+
+        // ---- 移动 ----
+        function move() {
+            if (isGameOver) return;
+
+            var newX = snake[snakeCount - 1].x;
+            var newY = snake[snakeCount - 1].y;
+
+            switch (togo) {
+                case 1:
+                    newX -= 15;
+                    break;
+                case 2:
+                    newY -= 15;
+                    break;
+                case 3:
+                    newX += 15;
+                    break;
+                case 4:
+                    newY += 15;
+                    break;
+                case 5:
+                    newX -= 15;
+                    newY -= 15;
+                    break;
+                case 6:
+                    newX += 15;
+                    newY += 15;
+                    break;
+                default:
+                    newX += 15;
+                    break;
+            }
+
+            snake.push({ x: newX, y: newY });
+            snake.shift();
+
+            // 检查是否吃到食物
+            if (snake[snakeCount - 1].x === foodx && snake[snakeCount - 1].y === foody) {
+                snake.unshift({ x: -15, y: -15 });
+                snakeCount++;
+                addfood();
+                updateScore();
+            }
+
+            // 检测死亡
+            if (isDeadCheck()) {
+                return;
+            }
+
+            drawtable();
+        }
+
+        // ---- 死亡检测 ----
+        function isDeadCheck() {
+            var head = snake[snakeCount - 1];
+            var hx = head.x;
+            var hy = head.y;
+
+            if (hx > 885 || hy > 585 || hx < 0 || hy < 0) {
+                gameOver();
+                return true;
+            }
+
+            for (var k = 0; k < snakeCount - 1; k++) {
+                if (snake[k].x === hx && snake[k].y === hy) {
+                    gameOver();
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // ---- 游戏结束 ----
+        function gameOver() {
+            if (isGameOver) return;
+            isGameOver = true;
+
+            if (gameInterval) {
+                clearInterval(gameInterval);
+                gameInterval = null;
+            }
+
+            var finalScore = Math.max(0, snakeCount - 2);
+            finalScoreSpan.textContent = finalScore;
+            gameOverlay.classList.add("active");
+            drawtable();
+        }
+
+        // ---- 更新分数 ----
+        function updateScore() {
+            var score = Math.max(0, snakeCount - 2);
+            scoreDisplay.textContent = score;
+        }
+
+        // ---- 重新开始 ----
+        function restartGame() {
+            start();
+        }
+
+        // ---- 键盘控制 ----
+        function keydown(e) {
+            if (isGameOver) return;
+            var code = e.keyCode;
+            if ([37, 38, 39, 40].indexOf(code) > -1) {
+                e.preventDefault();
+            }
+            switch (code) {
+                case 37:
+                    togo = 1;
+                    break;
+                case 38:
+                    togo = 2;
+                    break;
+                case 39:
+                    togo = 3;
+                    break;
+                case 40:
+                    togo = 4;
+                    break;
+                case 65:
+                    togo = 5;
+                    break; // A
+                case 68:
+                    togo = 6;
+                    break; // D
+            }
+        }
+
+        // ---- 触控方向设置 ----
+        function setDirection(dir) {
+            if (isGameOver) return;
+            switch (dir) {
+                case 'up':
+                    togo = 2;
+                    break;
+                case 'down':
+                    togo = 4;
+                    break;
+                case 'left':
+                    togo = 1;
+                    break;
+                case 'right':
+                    togo = 3;
+                    break;
+            }
+        }
+
+        // ============================================================
+        //  4. 事件绑定
+        // ============================================================
+
+        document.onkeydown = keydown;
+
+        // 返回按钮（顶栏）
+        backBtn.addEventListener("click", function() {
+            window.location.href = "../buy.html";
+        });
+
+        // 重新开始按钮（遮罩）
+        restartBtn.addEventListener("click", function() {
+            restartGame();
+        });
+
+        // 返回按钮（遮罩）
+        homeBtn.addEventListener("click", function() {
+            window.location.href = "../buy.html";
+        });
+
+        // ---- 触控按钮事件 ----
+        var ctrlBtns = document.querySelectorAll('.ctrl-btn');
+        ctrlBtns.forEach(function(btn) {
+            // 触摸事件
+            btn.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                var dir = this.getAttribute('data-dir');
+                setDirection(dir);
+            }, { passive: false });
+
+            // 鼠标事件（PC调试）
+            btn.addEventListener('mousedown', function(e) {
+                e.preventDefault();
+                var dir = this.getAttribute('data-dir');
+                setDirection(dir);
+            });
+        });
+
+        // 防止触摸时页面滚动/缩放
+        document.querySelector('.touch-controls').addEventListener('touchmove', function(e) {
+            e.preventDefault();
+        }, { passive: false });
+
+        // ============================================================
+        //  5. 启动游戏
+        // ============================================================
+
+        window.onload = function() {
+            start();
+        };
+    </script>
+
+</body>
+</html>

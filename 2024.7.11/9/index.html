@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>上海市钓鱼考试院</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft Yahei", SimSun, sans-serif;
+        }
+        body {
+            background-color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        /* 静态斜纹背景水印 */
+        body::before {
+            content: "个人娱乐请勿当真！查分请移步至cx.shmeea.edu.cn";
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            color: #cccccc;
+            font-size: 22px;
+            transform: rotate(-30deg);
+            pointer-events: none;
+            line-height: 800px;
+            text-align: center;
+        }
+        /* 动态移动红色水印 */
+        .float-watermark {
+            position: fixed;
+            z-index: 99;
+            color: #ff0000;
+            font-size: 26px;
+            font-weight: bold;
+            opacity: 0.2;
+            pointer-events: none;
+            white-space: nowrap;
+            animation: floatMove 12s linear infinite;
+        }
+        @keyframes floatMove {
+            0% {
+                left: -300px;
+                top: 10vh;
+            }
+            50% {
+                left: calc(100vw + 300px);
+                top: 80vh;
+            }
+            100% {
+                left: -300px;
+                top: 10vh;
+            }
+        }
+        .container {
+            max-width: 900px;
+            position: relative;
+            z-index: 1;
+        }
+        .header-wrap {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background-image: url('icon.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            color: #0260bb;
+        }
+        .logo-text-main {
+            font-size: 34px;
+            color: #0260bb;
+            font-weight: bold;
+        }
+        .logo-en {
+            font-size: 12px;
+            color: #0260bb;
+            letter-spacing: 0.5px;
+        }
+        .page-title {
+            font-size: 20px;
+            color: #444444;
+            margin: 24px 0;
+            letter-spacing: 1px;
+        }
+        .info-bar {
+            display: flex;
+            justify-content: center;
+            gap: 48px;
+            font-size: 14px;
+            color: #333;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #dddddd;
+            margin-bottom: 24px;
+        }
+        .score-row {
+            display: flex;
+            justify-content: center;
+            gap: 26px;
+            font-size: 15px;
+            color: #222;
+            margin-bottom: 6px;
+            flex-wrap: wrap;
+        }
+        .score-item {
+            text-align: center;
+            min-width: 70px;
+        }
+        .score-item .subject-name {
+            margin-bottom: 4px;
+        }
+        .note-text {
+            margin-top: 32px;
+            text-align: center;
+            font-size: 13px;
+            color: #dd0000;
+        }
+        /* css模拟红色印章 */
+        .seal-wrap {
+            position: relative;
+        }
+        .seal {
+            position: absolute;
+            right: 120px;
+            top: -140px;
+            width: 90px;
+            height: 90px;
+            border: 2px solid #dd0000;
+            border-radius: 4px;
+            transform: rotate(12deg);
+            font-size: 11px;
+            color: #dd0000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            line-height: 1.4;
+            font-weight: bold;
+        }
+        /* 模态框样式 */
+        .modal-mask {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-box {
+            background: #fff;
+            width: 460px;
+            padding: 28px;
+            border-radius: 8px;
+        }
+        .modal-box h4 {
+            font-size: 16px;
+            margin-bottom: 16px;
+            line-height: 1.7;
+        }
+        .modal-box em {
+            color: red;
+            font-style: normal;
+        }
+        .modal-btn-group {
+            margin-top: 22px;
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+        .modal-btn-group button {
+            padding: 8px 18px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn-primary {
+            background: #0270c5;
+            color: white;
+        }
+        .btn-default {
+            background: #eeeeee;
+        }
+        .checkbox-wrap {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin: 14px 0;
+        }
+        .hide {
+            display: none !important;
+        }
+        /* 全局返回按钮 */
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            color: #0260bb;
+            font-size: 14px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .back-btn:hover {
+            background: #0260bb;
+            color: #fff;
+            border-color: #0260bb;
+        }
+        .back-btn::before {
+            content: "←";
+            font-size: 16px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<!-- 全局返回按钮 -->
+<a href="../buy.html" class="back-btn">返回</a>
+<!-- 浮动红色移动水印 -->
+<div class="float-watermark">个人娱乐、请勿当真</div>
+<!-- 第一层警告弹窗 -->
+<div id="modal1" class="modal-mask">
+    <div class="modal-box">
+        <h4><em>本网站仅供个人娱乐</em><br>并<em>非</em>真正的上海市合格考查分网站，若希望查询分数请前往<a href="javascript:void(0)" onclick="searchOfficial()">cx.shmeea.edu.cn</a>!</h4>
+        <div class="modal-btn-group">
+            <button class="btn-default" onclick="searchOfficial()">我要求实</button>
+            <button class="btn-primary" onclick="nextModal()">好的</button>
+        </div>
+    </div>
+</div>
+<!-- 第二层弹窗：选择科目 -->
+<div id="modal2" class="modal-mask hide">
+    <div class="modal-box">
+        <h4>你想要过哪几门</h4>
+        <div class="checkbox-wrap">
+            <label><input type="checkbox" value="抛里踢克" checked> 思想政治</label>
+            <label><input type="checkbox" value="黑丝脱力" checked> 历史</label>
+            <label><input type="checkbox" value="奇偶古拉非" checked> 地理</label>
+            <label><input type="checkbox" value="菲谁克" checked> 物理</label>
+            <label><input type="checkbox" value="开米口" checked> 化学</label>
+            <label><input type="checkbox" value="白懊恼机" checked> 生物</label>
+            <label><input type="checkbox" value="挨踢"> 信息技术</label>
+            <label><input type="checkbox" value="菲谁克斯格伊欧斯" checked> 物理学技能</label>
+            <label><input type="checkbox" value="开米口斯格伊欧斯" checked> 化学技能</label>
+            <label><input type="checkbox" value="白懊恼机斯格伊欧斯" checked> 生物学技能</label>
+        </div>
+        <div class="modal-btn-group">
+            <button class="btn-default" onclick="searchOfficial()">我要求实</button>
+            <button class="btn-primary" onclick="showResult()">确认</button>
+        </div>
+    </div>
+</div>
+<!-- 成绩页面 -->
+<div id="resultPage" class="container seal-wrap hide">
+    <div class="seal">
+        海上钓鱼考试院<br>个人娱乐、请勿当真
+    </div>
+    <div class="header-wrap">
+        <div class="logo-box">
+            <div class="logo-icon"></div>
+            <div>
+                <div class="logo-text-main">海上钓鱼考试院</div>
+                <div class="logo-en">HAISHANG FISHING EXAMINATIONS AUTHORITY</div>
+            </div>
+        </div>
+        <h2 class="page-title">贞观元年伏月苏州昆山县上海乡，州县官学合格性科举水平查询</h2>
+    </div>
+    <div class="info-bar">
+        <div>报名号：贰肆壹伍*******</div>
+        <div>姓名：门生</div>
+        <div>考试时间：贞观元年</div>
+    </div>
+    <div class="score-row" id="scoreContainer"></div>
+    <div class="note-text">
+        注： “/” 表示本次未报考该科目，“Q” 表示该科目缺考
+    </div>
+</div>
+
+<script>
+    //科目列表，和复选框value严格对应
+    const subjectList = [
+        {name:"抛里踢克"},
+        {name:"黑丝脱力"},
+        {name:"奇偶古拉非"},
+        {name:"菲谁克"},
+        {name:"开米口"},
+        {name:"白懊恼机"},
+        {name:"挨踢"},
+        {name:"菲谁克斯格伊欧斯"},
+        {name:"开米口斯格伊欧斯"},
+        {name:"白懊恼机斯格伊欧斯"}
+    ];
+
+    //第一层弹窗切换第二层弹窗
+    function nextModal(){
+        document.getElementById('modal1').classList.add('hide');
+        document.getElementById('modal2').classList.remove('hide');
+    }
+
+    //求实按钮：百度搜索上海市合格考
+    function searchOfficial(){
+        window.open("https://www.baidu.com/s?wd=上海市合格考","_blank");
+    }
+
+    //渲染成绩，根据用户勾选动态判断合格/不合格
+    function showResult(){
+        //关闭选择弹窗，展示成绩页面
+        document.getElementById('modal2').classList.add('hide');
+        document.getElementById('resultPage').classList.remove('hide');
+
+        //获取所有勾选框的值
+        const checkedItems = Array.from(document.querySelectorAll("#modal2 input[type='checkbox']:checked"))
+            .map(item => item.value);
+
+        const container = document.getElementById("scoreContainer");
+        container.innerHTML = "";
+
+        //循环生成每一门科目成绩
+        subjectList.forEach(subject => {
+            let resultText = "不合格";
+            //如果用户勾选了这门，则显示合格
+            if (checkedItems.includes(subject.name)) {
+                resultText = "合格";
+            }
+            const dom = document.createElement("div");
+            dom.className = "score-item";
+            dom.innerHTML = `
+                <div class="subject-name">${subject.name}</div>
+                <div class="result-val">${resultText}</div>
+            `;
+            container.appendChild(dom);
+        });
+    }
+</script>
+</body>
+</html>
