@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>我喜欢你</title>
+    <style>
+        /* ─── 全局重置 ─── */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #121016;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: 'Georgia', 'Times New Roman', '华文楷体', serif;
+            padding: 2rem 1rem 4rem;
+            position: relative;
+        }
+
+        /* ─── 背景纹理 ─── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background: radial-gradient(ellipse at 30% 40%, rgba(50, 40, 60, 0.2), transparent 70%),
+                radial-gradient(ellipse at 70% 80%, rgba(30, 25, 40, 0.3), transparent 60%);
+            pointer-events: none;
+        }
+
+        /* ─── 返回按钮 ─── */
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            display: inline-block;
+            padding: 8px 18px;
+            background: rgba(20, 18, 26, 0.75);
+            backdrop-filter: blur(6px);
+            color: rgba(210, 200, 220, 0.7);
+            border: 1px solid rgba(180, 160, 190, 0.12);
+            border-radius: 40px;
+            font-size: 0.95rem;
+            font-family: 'Georgia', '华文楷体', serif;
+            letter-spacing: 4px;
+            text-decoration: none;
+            transition: all 0.4s ease;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .back-btn:hover {
+            background: rgba(30, 28, 40, 0.85);
+            border-color: rgba(180, 160, 190, 0.25);
+            color: rgba(230, 220, 240, 0.9);
+            transform: translateY(-2px);
+        }
+
+        /* ─── 主容器 ─── */
+        .book {
+            position: relative;
+            z-index: 10;
+            max-width: 780px;
+            width: 100%;
+            background: rgba(18, 15, 22, 0.88);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(180, 160, 190, 0.08);
+            border-radius: 32px;
+            padding: 3rem 2.2rem 2.6rem;
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(180, 160, 190, 0.04) inset;
+            animation: riseBook 1.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes riseBook {
+            0% {
+                opacity: 0;
+                transform: translateY(30px) scale(0.98);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* ─── 标题 ─── */
+        .book-title {
+            text-align: center;
+            margin-bottom: 2.8rem;
+            border-bottom: 1px solid rgba(180, 160, 190, 0.06);
+            padding-bottom: 1.2rem;
+        }
+
+        .book-title h1 {
+            font-size: 3.4rem;
+            font-weight: 300;
+            letter-spacing: 16px;
+            color: rgba(210, 200, 220, 0.75);
+            text-shadow: 0 0 40px rgba(140, 120, 170, 0.06);
+        }
+
+        .book-title .sub {
+            display: block;
+            font-size: 1.0rem;
+            font-weight: 300;
+            letter-spacing: 10px;
+            color: rgba(180, 170, 190, 0.25);
+            margin-top: 0.4rem;
+        }
+
+        /* ─── 条目（回忆单元） ─── */
+        .entry {
+            margin-bottom: 3.6rem;
+            opacity: 0;
+            animation: fadeEntry 1.0s ease forwards;
+            animation-delay: calc(0.2s * var(--i, 1));
+        }
+
+        .entry:last-child {
+            margin-bottom: 1.2rem;
+        }
+
+        @keyframes fadeEntry {
+            0% {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .entry-img {
+            width: 100%;
+            height: 220px;
+            border-radius: 20px;
+            background-size: cover;
+            background-position: center;
+            margin-bottom: 1.2rem;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(180, 160, 190, 0.06);
+            transition: transform 0.4s ease;
+            background-color: #2a2430;
+        }
+
+        .entry-img:hover {
+            transform: scale(1.01);
+        }
+
+        .entry-img .placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            color: rgba(180, 170, 190, 0.15);
+            font-size: 0.9rem;
+            letter-spacing: 4px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 20px;
+        }
+
+        .entry-text {
+            color: rgba(210, 200, 220, 0.80);
+            font-size: 1.08rem;
+            font-weight: 300;
+            line-height: 2.0rem;
+            letter-spacing: 1.5px;
+            padding: 0 0.2rem;
+            min-height: 2.4rem;
+        }
+
+        .entry-text .date {
+            display: inline-block;
+            font-size: 0.85rem;
+            color: rgba(180, 170, 190, 0.25);
+            letter-spacing: 4px;
+            margin-right: 0.8rem;
+            font-weight: 300;
+        }
+
+        .entry-text .body-text {
+            display: inline;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        /* 光标（打字时闪烁） */
+        .cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1.2em;
+            background: rgba(180, 170, 190, 0.3);
+            margin-left: 2px;
+            vertical-align: text-bottom;
+            animation: blink 0.8s step-end infinite;
+        }
+
+        @keyframes blink {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0;
+            }
+        }
+
+        /* ─── 结尾告白 ─── */
+        .finale {
+            margin-top: 2.8rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(180, 160, 190, 0.06);
+            text-align: center;
+        }
+
+        .finale p {
+            font-size: 1.2rem;
+            font-weight: 300;
+            color: rgba(200, 190, 215, 0.60);
+            letter-spacing: 6px;
+            line-height: 2.2rem;
+        }
+
+        .finale .accent {
+            color: rgba(210, 195, 230, 0.80);
+            font-weight: 400;
+            letter-spacing: 8px;
+        }
+
+        .finale .signature {
+            margin-top: 1.2rem;
+            font-size: 0.8rem;
+            color: rgba(180, 170, 190, 0.15);
+            letter-spacing: 8px;
+        }
+
+        /* ─── 响应式 ─── */
+        @media (max-width: 600px) {
+            .book {
+                padding: 2rem 1.2rem 1.8rem;
+                border-radius: 24px;
+            }
+            .book-title h1 {
+                font-size: 2.4rem;
+                letter-spacing: 10px;
+            }
+            .entry-img {
+                height: 160px;
+            }
+            .entry-text {
+                font-size: 0.95rem;
+                line-height: 1.8rem;
+            }
+            .finale p {
+                font-size: 1.0rem;
+                letter-spacing: 4px;
+            }
+            .back-btn {
+                top: 12px;
+                left: 12px;
+                padding: 6px 14px;
+                font-size: 0.8rem;
+                letter-spacing: 2px;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .book-title h1 {
+                font-size: 1.8rem;
+                letter-spacing: 6px;
+            }
+            .entry-text {
+                font-size: 0.85rem;
+                line-height: 1.6rem;
+            }
+            .entry-img {
+                height: 130px;
+            }
+            .back-btn {
+                top: 10px;
+                left: 10px;
+                padding: 4px 12px;
+                font-size: 0.7rem;
+            }
+        }
+
+        /* ─── 滚动条美化 ─── */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(180, 160, 190, 0.15);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ─── 返回按钮 ─── -->
+    <a href="../buy.html" class="back-btn">← 返回</a>
+
+    <!-- ─── 回忆录主容器 ─── -->
+    <div class="book">
+
+        <!-- 标题 -->
+        <div class="book-title">
+            <h1>回 忆 录</h1>
+            <span class="sub">—— 这只是个简易模板，有意向请返回购买 ——</span>
+        </div>
+
+        <!-- 条目 1 -->
+        <div class="entry" style="--i:1;">
+            <div class="entry-img" style="background-image: url('https://picsum.photos/seed/memory1/800/500');">
+                <div class="placeholder">· 初 见 ·</div>
+            </div>
+            <div class="entry-text">
+                <span class="date">· 秋 ·</span>
+                <span class="body-text" data-text="那天的光很淡，风也懒。你从人群里走过来，像一页被风翻开的书。
+我没有说话，只是记住了你袖口沾着的一片枯叶。
+后来我才明白，那是我所有故事的开头。"></span>
+                <span class="cursor" id="cursor1"></span>
+            </div>
+        </div>
+
+        <!-- 条目 2 -->
+        <div class="entry" style="--i:2;">
+            <div class="entry-img" style="background-image: url('https://picsum.photos/seed/memory2/800/500');">
+                <div class="placeholder">· 对 话 ·</div>
+            </div>
+            <div class="entry-text">
+                <span class="date">· 冬 ·</span>
+                <span class="body-text" data-text="你说，喜欢看雪落在旧瓦上。我说，我也是。
+其实那是我第一次认真看雪——因为你看着它的时候，眼神很安静。
+像深水，不声不响，却藏着整片天空。"></span>
+                <span class="cursor" id="cursor2"></span>
+            </div>
+        </div>
+
+        <!-- 条目 3 -->
+        <div class="entry" style="--i:3;">
+            <div class="entry-img" style="background-image: url('https://picsum.photos/seed/memory3/800/500');">
+                <div class="placeholder">· 平 常 ·</div>
+            </div>
+            <div class="entry-text">
+                <span class="date">· 春 ·</span>
+                <span class="body-text" data-text="我们走很长的路，有时说话，有时沉默。
+沉默的时候，我听见你的脚步声和我的叠在一起，像一首没有谱的曲子。
+我忽然觉得，一辈子大概就是这样——安静地，走在同一条路上。"></span>
+                <span class="cursor" id="cursor3"></span>
+            </div>
+        </div>
+
+        <!-- 条目 4 -->
+        <div class="entry" style="--i:4;">
+            <div class="entry-img" style="background-image: url('https://picsum.photos/seed/memory4/800/500');">
+                <div class="placeholder">· 记 忆 ·</div>
+            </div>
+            <div class="entry-text">
+                <span class="date">· 夏 ·</span>
+                <span class="body-text" data-text="你笑的时候，眼角有一点细纹。你说那是岁月的痕迹，我说那是光的形状。
+我把那些细纹记在心里，就像记下每一片你喜欢的落叶。
+它们拼凑起来，就是我全部的四季。"></span>
+                <span class="cursor" id="cursor4"></span>
+            </div>
+        </div>
+
+        <!-- 结尾告白 -->
+        <div class="finale">
+            <p>
+                <span class="accent">后来的后来，</span><br />
+                我依然不擅长说那些滚烫的字眼。<br />
+                但如果你翻开这本回忆录——<br />
+                你会看见，每一页都只有 <span class="accent">你</span>。
+            </p>
+            <div class="signature">— 惟君 · 不渝 —</div>
+        </div>
+
+    </div>
+
+    <script>
+        (function() {
+            'use strict';
+
+            // 获取所有需要打字的 body-text 元素
+            const bodyTexts = document.querySelectorAll('.entry .body-text');
+            const cursors = document.querySelectorAll('.entry .cursor');
+
+            // 打字速度 (ms)
+            const TYPING_SPEED = 45;
+            // 条目间延迟 (ms)
+            const ENTRY_DELAY = 600;
+
+            /**
+             * 对单个元素执行打字效果
+             * @param {HTMLElement} el - body-text 元素
+             * @param {HTMLElement} cursor - 对应的光标元素
+             * @param {string} text - 要显示的文本
+             * @returns {Promise} 完成后 resolve
+             */
+            function typeElement(el, cursor, text) {
+                return new Promise((resolve) => {
+                    let index = 0;
+                    el.textContent = ''; // 清空
+                    cursor.style.display = 'inline-block';
+
+                    function typeNext() {
+                        if (index < text.length) {
+                            const char = text.charAt(index);
+                            // 处理换行符
+                            if (char === '\n') {
+                                el.appendChild(document.createElement('br'));
+                            } else {
+                                el.textContent += char;
+                            }
+                            index++;
+                            setTimeout(typeNext, TYPING_SPEED);
+                        } else {
+                            // 打字完成，隐藏光标
+                            cursor.style.display = 'none';
+                            resolve();
+                        }
+                    }
+
+                    // 开始打字
+                    typeNext();
+                });
+            }
+
+            /**
+             * 按顺序对每个条目执行打字
+             */
+            async function startTyping() {
+                for (let i = 0; i < bodyTexts.length; i++) {
+                    const el = bodyTexts[i];
+                    const cursor = cursors[i];
+                    const text = el.getAttribute('data-text') || '';
+                    if (text) {
+                        await typeElement(el, cursor, text);
+                        // 条目间延迟
+                        if (i < bodyTexts.length - 1) {
+                            await new Promise(resolve => setTimeout(resolve, ENTRY_DELAY));
+                        }
+                    }
+                }
+            }
+
+            // 页面加载后启动
+            window.addEventListener('load', () => {
+                // 先隐藏所有光标，打字时再显示
+                cursors.forEach(c => c.style.display = 'none');
+                // 延迟一点让动画先展现
+                setTimeout(startTyping, 600);
+            });
+
+        })();
+    </script>
+
+</body>
+</html>

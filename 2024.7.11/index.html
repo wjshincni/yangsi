@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, maximum-scale=1.0, user-scalable=yes" />
+    <title>小天堂 By 堂天小</title>
+    <script src="index/jq.min.js"></script>
+    <link rel="stylesheet" href="index/index.css" />
+</head>
+<body>
+<div class="exp">提要求，我来做</div>
+<!-- 悬浮客服 -->
+<div class="service-float" id="serviceFloat">
+    <span>客服咨询</span>
+</div>
+<div class="service-tip" id="serviceTip">
+    <p>微信一对一：XueMingTangTaiZong</p>
+    <p>工作时间：未知</p>
+    <button class="tip-close">×</button>
+</div>
+
+<!-- 新版昼夜按钮 -->
+<div class="theme-toggle-wrap">
+    <button class="theme-toggle-btn" id="themeToggleBtn">
+        <div class="toggle-dot"></div>
+    </button>
+</div>
+
+<!-- 启动页 -->
+<div id="startPage" class="page start-page show" style="display:flex; transform:translateY(0); opacity:1; pointer-events:auto;">
+    <div class="start-chat-layer">
+        <div class="start-chat-scroll" id="startChatScroll"></div>
+    </div>
+    <div class="start-btn-wrap">
+        <button class="primary-btn" data-target="page11" id="startBtn">前往挑选</button>
+    </div>
+</div>
+<!-- 目录页 -->
+<div id="page11" class="page catalog-wrap">
+    <div class="catalog-header">
+        <h2>项目目录</h2>
+        <span class="catalog-sub">点击「试用」体验 · 点击「购买」定制</span>
+    </div>
+    <div class="catalog-grid" id="catalogGrid"></div>
+    <div class="catalog-footer"><span>小天堂网页代做 · 用心做好每一个网页</span></div>
+</div>
+<!-- 站内详情页（占位） -->
+<div id="page1" class="page detail-page"><h1></h1><div class="detail-back"><a class="small-btn" data-target="page11">← 返回目录</a></div></div>
+<div id="page2" class="page detail-page"><h1></h1><div class="detail-back"><a class="small-btn" data-target="page11">← 返回目录</a></div></div>
+<div id="page3" class="page detail-page"><h1></h1><div class="detail-back"><a class="small-btn" data-target="page11">← 返回目录</a></div></div>
+<div id="page4" class="page detail-page"><h1></h1><div class="detail-back"><a class="small-btn" data-target="page11">← 返回目录</a></div></div>
+<div id="page5" class="page detail-page"><h1></h1><div class="detail-back"><a class="small-btn" data-target="page11">← 返回目录</a></div></div>
+<div id="page6" class="page detail-page"><h1></h1><div class="detail-back"><a class="small-btn" data-target="page11">← 返回目录</a></div></div>
+<div id="page7" class="page detail-page"><h1></h1><div class="detail-back"><a class="small-btn" data-target="page11">← 返回目录</a></div></div>
+<div id="page8" class="page detail-page"><h1></h1><div class="detail-back"><a class="small-btn" data-target="page11">← 返回目录</a></div></div>
+<div id="page9" class="page detail-page"><h1></h1><div class="detail-back"><a class="small-btn" data-target="page11">← 返回目录</a></div></div>
+<div id="page10" class="page detail-page"><h1></h1><div class="detail-back"><a class="small-btn" data-target="page11">← 返回目录</a></div></div>
+<!-- 购买弹窗 -->
+<div class="modal-overlay" id="purchaseModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <span>购买定制</span>
+            <button class="modal-close" id="modalCloseBtn">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="buyerName">称呼</label>
+                <input type="text" id="buyerName" placeholder="请输入您的称呼" />
+            </div>
+            <div class="form-group">
+                <label for="buyProduct">购买商品</label>
+                <input type="text" id="buyProduct" disabled />
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-btn cancel-btn" id="modalCancelBtn">再看看</button>
+            <button class="modal-btn confirm-btn" id="modalConfirmBtn">确认购买</button>
+        </div>
+    </div>
+</div>
+<!-- 下单成功弹窗 -->
+<div class="modal-overlay" id="successModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <span>下单成功</span>
+            <button class="modal-close" id="successCloseBtn">&times;</button>
+        </div>
+        <div class="modal-body success-body">
+            <div class="form-group">
+                <label>帮工微信号</label>
+                <div class="copy-row">
+                    <input type="text" id="wxText" value="XueMingTangTaiZong" readonly>
+                    <button class="copy-btn" id="copyWxBtn">复制</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>4位验证码（发给微信帮工）</label>
+                <div class="copy-row">
+                    <input type="text" id="codeText" readonly>
+                    <button class="copy-btn" id="copyCodeBtn">复制</button>
+                </div>
+            </div>
+            <p class="tip-text">添加微信后，发送验证码即可开始网页DIY定制</p>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-btn confirm-btn" id="successFinishBtn">完成</button>
+        </div>
+    </div>
+</div>
+
+<!-- ====== 竖屏提示弹窗（关键） ====== -->
+<div class="modal-overlay" id="portraitModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <span>提示</span>
+            <button class="modal-close" id="portraitCloseBtn">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p style="font-size:1rem; line-height:1.6; color:var(--text-main);">
+                手机版不支持该网页，点击“是”将跳转至视频展示页面。
+            </p>
+        </div>
+        <div class="modal-footer" style="justify-content:center; gap:16px;">
+            <button class="modal-btn cancel-btn" id="portraitCancelBtn">算了</button>
+            <button class="modal-btn confirm-btn" id="portraitConfirmBtn">是</button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast容器 -->
+<div class="toast-wrap" id="toastWrap"></div>
+<script src="index/index.js"></script>
+</body>
+</html>

@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🌸 母亲节祝福 🌸</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #0a0a1a;
+            font-family: 'Avenir', 'Helvetica Neue', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+
+        #fireworkCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: auto;
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 10px 22px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+            background: rgba(255, 255, 255, 0.10);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 40px;
+            text-decoration: none;
+            transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            cursor: pointer;
+            user-select: none;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+            letter-spacing: 0.5px;
+        }
+        .back-btn:hover {
+            transform: scale(1.06);
+            background: rgba(255, 215, 0, 0.20);
+            border-color: rgba(255, 215, 0, 0.40);
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.15);
+            color: #ffd866;
+        }
+        .back-btn:active {
+            transform: scale(0.94);
+        }
+        .back-btn svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+            transition: transform 0.3s;
+        }
+        .back-btn:hover svg {
+            transform: translateX(-3px);
+        }
+
+        .blessing-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+        }
+
+        .main-title {
+            font-size: clamp(2.8rem, 10vw, 6.5rem);
+            font-weight: 900;
+            background: linear-gradient(135deg, #f7971e, #ffd200, #f7971e);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 60px rgba(255, 200, 0, 0.25), 0 0 120px rgba(255, 150, 0, 0.15);
+            animation: gradientShift 4s ease-in-out infinite alternate, titleFloat 3s ease-in-out infinite;
+            letter-spacing: 0.04em;
+            filter: drop-shadow(0 0 30px rgba(255, 200, 0, 0.10));
+            line-height: 1.2;
+            text-align: center;
+            padding: 0 20px;
+        }
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+            100% {
+                background-position: 100% 50%;
+            }
+        }
+        @keyframes titleFloat {
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-8px);
+            }
+        }
+
+        .sub-title {
+            margin-top: clamp(12px, 2.5vh, 30px);
+            font-size: clamp(1.4rem, 4vw, 2.8rem);
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.92);
+            text-shadow: 0 0 40px rgba(255, 200, 255, 0.20), 0 0 80px rgba(200, 150, 255, 0.10);
+            letter-spacing: 0.15em;
+            text-align: center;
+            padding: 0 20px;
+            min-height: 1.6em;
+            background: linear-gradient(135deg, #f093fb, #f5576c, #4facfe, #43e97b);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 5s ease-in-out infinite alternate, subtitlePulse 2.8s ease-in-out infinite;
+            filter: drop-shadow(0 0 30px rgba(200, 150, 255, 0.10));
+            transition: opacity 0.6s ease;
+        }
+        @keyframes subtitlePulse {
+            0%,
+            100% {
+                opacity: 0.85;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.02);
+            }
+        }
+
+        .deco-text {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 10;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.20);
+            letter-spacing: 2px;
+            font-weight: 300;
+            pointer-events: none;
+            text-transform: uppercase;
+            font-family: 'Avenir', sans-serif;
+        }
+
+        @media (max-width: 480px) {
+            .back-btn {
+                top: 14px;
+                left: 14px;
+                padding: 8px 16px;
+                font-size: 13px;
+                border-radius: 30px;
+            }
+            .back-btn svg {
+                width: 15px;
+                height: 15px;
+            }
+            .deco-text {
+                display: none;
+            }
+        }
+        @media (max-width: 380px) {
+            .main-title {
+                font-size: clamp(2rem, 8vw, 2.6rem);
+            }
+            .sub-title {
+                font-size: clamp(1rem, 3.2vw, 1.4rem);
+                margin-top: 8px;
+            }
+        }
+
+        .loading-mask {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: #0a0a1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.2);
+            font-size: 18px;
+            transition: opacity 1s ease;
+            pointer-events: none;
+        }
+        .loading-mask.hide {
+            opacity: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="loading-mask" id="loadingMask">✨ 加载中 ...</div>
+
+    <canvas id="fireworkCanvas"></canvas>
+
+    <a href="../buy.html" class="back-btn" id="backBtn">
+        <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+        返回
+    </a>
+
+    <div class="blessing-wrapper">
+        <div class="main-title">母亲节快乐</div>
+        <div class="sub-title" id="subTitle">福如东海</div>
+    </div>
+
+    <div class="deco-text">✦ 愿时光温柔 ✦</div>
+
+    <script>
+        // ========================== 祝福语轮播 ==========================
+        const BLESSINGS = [
+            '福如东海', '寿比南山', '万事如意', '青春永驻',
+            '一帆风顺', '两全其美', '三阳开泰', '四季平安',
+            '五福临门', '六六大顺', '七星高照', '八方来财',
+            '九九同心', '十全十美', '百废俱兴', '千载难逢',
+            '万花丛中开', '笑口常开', '身体健康', '幸福美满',
+            '平安喜乐', '岁月静好', '爱你老妈❤️'
+        ];
+        let blessingIndex = 0;
+        const subEl = document.getElementById('subTitle');
+        setInterval(() => {
+            blessingIndex = (blessingIndex + 1) % BLESSINGS.length;
+            subEl.style.opacity = '0';
+            setTimeout(() => {
+                subEl.textContent = BLESSINGS[blessingIndex];
+                subEl.style.opacity = '1';
+            }, 350);
+        }, 3500);
+
+        // ========================== Canvas 烟花系统 (稳定版) ==========================
+        const canvas = document.getElementById('fireworkCanvas');
+        const ctx = canvas.getContext('2d');
+        let W, H;
+
+        function resize() {
+            W = canvas.width = window.innerWidth;
+            H = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        // ---------- 工具 ----------
+        function rand(min, max) { return Math.random() * (max - min) + min; }
+
+        function randInt(min, max) { return Math.floor(rand(min, max + 1)); }
+
+        function lerp(a, b, t) { return a + (b - a) * t; }
+
+        function dist(x1, y1, x2, y2) { return Math.hypot(x2 - x1, y2 - y1); }
+
+        // ---------- 调色板 (确保永远有效) ----------
+        const PALETTES = [
+            [
+                [255, 100, 100],
+                [255, 180, 50],
+                [255, 50, 150]
+            ],
+            [
+                [100, 200, 255],
+                [50, 255, 200],
+                [150, 100, 255]
+            ],
+            [
+                [255, 220, 50],
+                [255, 150, 50],
+                [255, 80, 80]
+            ],
+            [
+                [50, 255, 150],
+                [100, 255, 100],
+                [50, 200, 200]
+            ],
+            [
+                [255, 100, 200],
+                [200, 100, 255],
+                [255, 50, 150]
+            ],
+            [
+                [255, 180, 100],
+                [255, 230, 150],
+                [255, 200, 50]
+            ],
+            [
+                [150, 200, 255],
+                [100, 150, 255],
+                [200, 100, 255]
+            ],
+            [
+                [255, 80, 80],
+                [255, 200, 80],
+                [255, 80, 200]
+            ],
+        ];
+
+        // 安全获取调色板
+        function randomPalette() {
+            if (!PALETTES || PALETTES.length === 0) {
+                return [
+                    [255, 200, 100],
+                    [255, 100, 200],
+                    [200, 100, 255]
+                ];
+            }
+            return PALETTES[randInt(0, PALETTES.length - 1)];
+        }
+
+        // 安全颜色插值 ———— 彻底修复
+        function pickColor(palette, t) {
+            // 如果调色板无效，返回金色
+            if (!Array.isArray(palette) || palette.length === 0) {
+                return [255, 215, 0];
+            }
+            // 确保 t 在 [0,1] 之间
+            t = Math.max(0, Math.min(1, t));
+            const idx = t * (palette.length - 1);
+            const i = Math.floor(idx);
+            const f = idx - i;
+            // 防止越界
+            const c1 = palette[Math.min(i, palette.length - 1)];
+            const c2 = palette[Math.min(i + 1, palette.length - 1)];
+            return [
+                lerp(c1[0], c2[0], f),
+                lerp(c1[1], c2[1], f),
+                lerp(c1[2], c2[2], f)
+            ];
+        }
+
+        // ---------- 星星背景 ----------
+        class Star {
+            constructor() {
+                this.reset(true);
+            }
+            reset(init = false) {
+                this.x = rand(0, W);
+                this.y = rand(0, H);
+                this.size = rand(0.5, 2.2);
+                this.baseAlpha = rand(0.15, 0.9);
+                this.alpha = this.baseAlpha;
+                this.twinkleSpeed = rand(0.005, 0.025);
+                this.phase = rand(0, Math.PI * 2);
+            }
+            update() {
+                this.phase += this.twinkleSpeed;
+                this.alpha = this.baseAlpha * (0.6 + 0.4 * Math.sin(this.phase));
+            }
+            draw(ctx) {
+                ctx.globalAlpha = this.alpha;
+                ctx.fillStyle = '#fff';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.globalAlpha = 1;
+            }
+        }
+        let stars = [];
+
+        function initStars(count) {
+            stars = [];
+            for (let i = 0; i < count; i++) stars.push(new Star());
+        }
+        initStars(180);
+
+        // ---------- 烟花粒子 ----------
+        class Particle {
+            constructor(x, y, vx, vy, radius, color, life, type = 'normal') {
+                this.x = x;
+                this.y = y;
+                this.vx = vx;
+                this.vy = vy;
+                this.radius = radius;
+                this.color = color;
+                this.life = life;
+                this.maxLife = life;
+                this.alpha = 1;
+                this.type = type;
+                this.trail = [];
+                this.trailLen = type === 'trail' ? 8 : 4;
+                this.gravity = type === 'willow' ? 0.06 : 0.03;
+                this.drag = type === 'willow' ? 0.985 : 0.990;
+                this.sizeDecay = type === 'willow' ? 0.992 : 0.996;
+            }
+            update() {
+                this.life--;
+                if (this.life <= 0) return false;
+                this.trail.push({ x: this.x, y: this.y });
+                if (this.trail.length > this.trailLen) this.trail.shift();
+                this.vy += this.gravity;
+                this.vx *= this.drag;
+                this.vy *= this.drag;
+                this.x += this.vx;
+                this.y += this.vy;
+                this.radius *= this.sizeDecay;
+                this.alpha = Math.min(1, (this.life / this.maxLife) * 1.2);
+                return this.life > 0 && this.radius > 0.3;
+            }
+            draw(ctx) {
+                if (this.alpha <= 0.01) return;
+                // 拖尾
+                if (this.trail.length > 1) {
+                    for (let i = 1; i < this.trail.length; i++) {
+                        const t = i / this.trail.length;
+                        const alpha = t * this.alpha * 0.5;
+                        const r = this.radius * (0.3 + 0.7 * t);
+                        ctx.globalAlpha = alpha;
+                        ctx.fillStyle = `rgb(${this.color[0]|0},${this.color[1]|0},${this.color[2]|0})`;
+                        ctx.beginPath();
+                        ctx.arc(this.trail[i].x, this.trail[i].y, r * 0.6, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                }
+                // 主粒子
+                ctx.globalAlpha = this.alpha * 0.95;
+                const grad = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius);
+                const c = this.color;
+                grad.addColorStop(0, `rgba(${c[0]|0},${c[1]|0},${c[2]|0},1)`);
+                grad.addColorStop(0.4, `rgba(${c[0]|0},${c[1]|0},${c[2]|0},0.8)`);
+                grad.addColorStop(1, `rgba(${c[0]|0},${c[1]|0},${c[2]|0},0)`);
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fill();
+                // 高光
+                if (this.radius > 2) {
+                    ctx.globalAlpha = this.alpha * 0.25;
+                    ctx.fillStyle = '#fff';
+                    ctx.beginPath();
+                    ctx.arc(this.x - this.radius * 0.25, this.y - this.radius * 0.25, this.radius * 0.3, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                ctx.globalAlpha = 1;
+            }
+        }
+
+        // ---------- 烟花爆炸 ----------
+        class Firework {
+            constructor(x, y, targetX, targetY, colorPalette) {
+                this.x = x;
+                this.y = y;
+                this.targetX = targetX;
+                this.targetY = targetY;
+                this.palette = (colorPalette && colorPalette.length > 0) ? colorPalette : randomPalette();
+                this.particles = [];
+                this.state = 'rising';
+                this.speed = rand(5, 10);
+                this.angle = Math.atan2(targetY - y, targetX - x);
+                this.vx = Math.cos(this.angle) * this.speed;
+                this.vy = Math.sin(this.angle) * this.speed;
+                this.trail = [];
+                this.trailLen = 12;
+                this.radius = rand(2, 4);
+                this.done = false;
+                this.riseTime = 0;
+                this.maxRiseTime = dist(x, y, targetX, targetY) / this.speed * 1.2;
+                this.explosionType = randInt(0, 3);
+                this.particleCount = randInt(150, 300);
+                this.exploded = false;
+            }
+            update() {
+                if (this.done) return false;
+                if (this.state === 'rising') {
+                    this.riseTime++;
+                    this.trail.push({ x: this.x, y: this.y });
+                    if (this.trail.length > this.trailLen) this.trail.shift();
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    this.vx += rand(-0.03, 0.03);
+                    this.vy += rand(-0.02, 0.02);
+                    const d = dist(this.x, this.y, this.targetX, this.targetY);
+                    if (d < 15 || this.riseTime > this.maxRiseTime + 30) {
+                        this.state = 'exploding';
+                        this.explode();
+                        return true;
+                    }
+                    return true;
+                } else if (this.state === 'exploding') {
+                    let alive = false;
+                    for (let p of this.particles) {
+                        if (p.update()) alive = true;
+                    }
+                    if (!alive) {
+                        this.done = true;
+                        return false;
+                    }
+                    return true;
+                }
+                return false;
+            }
+            explode() {
+                if (this.exploded) return;
+                this.exploded = true;
+                const type = this.explosionType;
+                const count = this.particleCount;
+                const baseR = rand(3, 7);
+                const pal = this.palette;
+                for (let i = 0; i < count; i++) {
+                    let angle, speed, pType = 'normal';
+                    let r = baseR * rand(0.6, 1.4);
+                    if (type === 0) {
+                        angle = rand(0, Math.PI * 2);
+                        speed = rand(2, 8) * (0.7 + Math.random() * 0.6);
+                        pType = 'normal';
+                    } else if (type === 1) {
+                        const baseAngle = rand(0, Math.PI * 2);
+                        const spread = rand(-0.25, 0.25);
+                        angle = baseAngle + spread;
+                        speed = rand(3, 11) * (0.8 + Math.random() * 0.4);
+                        pType = 'trail';
+                        r = baseR * rand(0.5, 1.8);
+                    } else if (type === 2) {
+                        angle = rand(-Math.PI * 0.8, Math.PI * 0.8);
+                        speed = rand(1.5, 6) * (0.6 + Math.random() * 0.5);
+                        pType = 'willow';
+                        r = baseR * rand(0.4, 1.2);
+                    } else {
+                        const ring = i < count / 2 ? 0 : 1;
+                        const baseA = ring === 0 ? 0 : Math.PI;
+                        const spread = 0.3;
+                        angle = baseA + rand(-spread, spread) + rand(0, Math.PI * 2) * 0.6;
+                        speed = rand(3, 8) * (0.7 + Math.random() * 0.5);
+                        pType = 'trail';
+                        r = baseR * rand(0.5, 1.6);
+                    }
+                    const vx = Math.cos(angle) * speed;
+                    const vy = Math.sin(angle) * speed;
+                    const colorT = i / count;
+                    const c = pickColor(pal, colorT + rand(-0.1, 0.1));
+                    const life = randInt(40, 110);
+                    const p = new Particle(this.x, this.y, vx * rand(0.85, 1.15), vy * rand(0.85, 1.15),
+                        r * rand(0.6, 1.4), c, life, pType);
+                    p.gravity = pType === 'willow' ? rand(0.04, 0.09) : rand(0.015, 0.04);
+                    p.drag = pType === 'willow' ? rand(0.980, 0.990) : rand(0.988, 0.995);
+                    this.particles.push(p);
+                }
+                // 闪光小粒子
+                for (let i = 0; i < 40; i++) {
+                    const angle = rand(0, Math.PI * 2);
+                    const speed = rand(0.5, 2.5);
+                    const p = new Particle(this.x, this.y, Math.cos(angle) * speed, Math.sin(angle) * speed,
+                        rand(0.8, 2.5), [255, 255, 255], randInt(15, 40), 'normal');
+                    p.gravity = 0.01;
+                    p.drag = 0.96;
+                    this.particles.push(p);
+                }
+            }
+            draw(ctx) {
+                if (this.done) return;
+                if (this.state === 'rising') {
+                    if (this.trail.length > 1) {
+                        for (let i = 1; i < this.trail.length; i++) {
+                            const t = i / this.trail.length;
+                            const alpha = t * 0.6;
+                            const r = this.radius * (0.2 + 0.8 * t);
+                            ctx.globalAlpha = alpha;
+                            ctx.fillStyle = `rgba(255,220,150,${alpha*0.8})`;
+                            ctx.beginPath();
+                            ctx.arc(this.trail[i].x, this.trail[i].y, r, 0, Math.PI * 2);
+                            ctx.fill();
+                        }
+                    }
+                    ctx.globalAlpha = 1;
+                    const grad = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius * 2.5);
+                    grad.addColorStop(0, 'rgba(255,255,200,1)');
+                    grad.addColorStop(0.3, 'rgba(255,200,100,0.8)');
+                    grad.addColorStop(1, 'rgba(255,150,50,0)');
+                    ctx.fillStyle = grad;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius * 2.5, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.fillStyle = '#fff';
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius * 0.6, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.globalAlpha = 1;
+                } else if (this.state === 'exploding') {
+                    for (let p of this.particles) {
+                        p.draw(ctx);
+                    }
+                }
+            }
+        }
+
+        // ---------- 烟花管理器 ----------
+        let fireworks = [];
+        let spawnTimer = 0;
+
+        function spawnFirework() {
+            const x = rand(W * 0.05, W * 0.95);
+            const y = H + rand(10, 60);
+            const targetX = rand(W * 0.08, W * 0.92);
+            const targetY = rand(H * 0.08, H * 0.65);
+            const pal = randomPalette();
+            const fw = new Firework(x, y, targetX, targetY, pal);
+            fw.particleCount = randInt(130, 300);
+            fw.explosionType = randInt(0, 3);
+            fireworks.push(fw);
+        }
+
+        // 初始生成多颗烟花，确保立即看到
+        for (let i = 0; i < 8; i++) {
+            setTimeout(() => spawnFirework(), i * 200);
+        }
+
+        // ---------- 主循环 ----------
+        function drawBackground() {
+            const grad = ctx.createLinearGradient(0, 0, 0, H);
+            grad.addColorStop(0, '#0a0a1a');
+            grad.addColorStop(0.4, '#12102a');
+            grad.addColorStop(0.7, '#1a1030');
+            grad.addColorStop(1, '#0d0d20');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, W, H);
+            for (let s of stars) {
+                s.update();
+                s.draw(ctx);
+            }
+            const glowGrad = ctx.createRadialGradient(W / 2, H * 0.92, 0, W / 2, H * 0.92, H * 0.5);
+            glowGrad.addColorStop(0, 'rgba(100,50,150,0.06)');
+            glowGrad.addColorStop(0.5, 'rgba(60,30,120,0.04)');
+            glowGrad.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.fillStyle = glowGrad;
+            ctx.fillRect(0, 0, W, H);
+        }
+
+        let frameCount = 0;
+
+        function animate() {
+            frameCount++;
+            drawBackground();
+
+            // 生成新烟花
+            spawnTimer++;
+            const activeCount = fireworks.filter(f => !f.done).length;
+            let interval = Math.max(6, 20 - activeCount * 0.3);
+            interval = Math.min(interval, 35);
+            if (spawnTimer >= interval) {
+                spawnTimer = 0;
+                const num = activeCount < 10 ? randInt(1, 3) : randInt(0, 1);
+                for (let i = 0; i < num; i++) {
+                    spawnFirework();
+                }
+            }
+
+            // 更新烟花
+            for (let i = fireworks.length - 1; i >= 0; i--) {
+                const fw = fireworks[i];
+                const alive = fw.update();
+                if (!alive || fw.done) {
+                    fireworks.splice(i, 1);
+                }
+            }
+
+            // 绘制烟花
+            for (let fw of fireworks) {
+                fw.draw(ctx);
+            }
+
+            // 限制数量
+            if (fireworks.length > 120) {
+                fireworks.splice(0, fireworks.length - 120);
+            }
+
+            // 飘落微光
+            if (frameCount % 3 === 0 && Math.random() < 0.08) {
+                const x = rand(0, W);
+                const y = rand(0, H * 0.3);
+                const r = rand(0.5, 1.8);
+                const alpha = rand(0.05, 0.2);
+                ctx.globalAlpha = alpha;
+                ctx.fillStyle = `hsl(${rand(200,360)},80%,70%)`;
+                ctx.beginPath();
+                ctx.arc(x, y, r, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.globalAlpha = 1;
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        // ---------- 窗口自适应 ----------
+        window.addEventListener('resize', () => {
+            resize();
+            for (let s of stars) {
+                s.x = rand(0, W);
+                s.y = rand(0, H);
+            }
+        });
+
+        // ---------- 启动 ----------
+        setTimeout(() => {
+            document.getElementById('loadingMask').classList.add('hide');
+            setTimeout(() => {
+                document.getElementById('loadingMask').style.display = 'none';
+            }, 1000);
+        }, 400);
+
+        animate();
+
+        // ---------- 点击手动放烟花 ----------
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const pal = randomPalette();
+            const fw = new Firework(rand(W * 0.1, W * 0.9), H + rand(10, 50), x, y, pal);
+            fw.particleCount = randInt(180, 350);
+            fw.explosionType = randInt(0, 3);
+            fireworks.push(fw);
+        });
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const rect = canvas.getBoundingClientRect();
+            const x = touch.clientX - rect.left;
+            const y = touch.clientY - rect.top;
+            const pal = randomPalette();
+            const fw = new Firework(rand(W * 0.1, W * 0.9), H + rand(10, 50), x, y, pal);
+            fw.particleCount = randInt(180, 350);
+            fw.explosionType = randInt(0, 3);
+            fireworks.push(fw);
+        }, { passive: false });
+
+        console.log('🌸 母亲节快乐！点击屏幕可手动放烟花～');
+        console.log('💖 愿所有妈妈都被温柔以待');
+    </script>
+</body>
+</html>
